@@ -39,7 +39,7 @@ object AccessibilityNodeInfoHelper {
 
     fun getBoundsInParent(nodeInfo: AccessibilityNodeInfo): Rect {
         val rect = Rect()
-        nodeInfo.getBoundsInParent(rect)
+        nodeInfo.getBoundsInScreen(rect)
         return rect
     }
 

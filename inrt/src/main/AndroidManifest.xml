@@ -4,7 +4,8 @@
     package="com.stardust.auojs.inrt">
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
     <uses-permission android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT" />
@@ -16,27 +17,30 @@
 
     <application
         android:name=".App"
-        android:allowBackup="false"
+        android:allowBackup="true"
+        android:fullBackupOnly="true"
         android:icon="@mipmap/ic_launcher"
         android:label="${appName}"
         android:supportsRtl="true"
+        android:extractNativeLibs="true"
         android:theme="@style/ScriptTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:label, android:allowBackup"
-        tools:targetApi="m">
+        tools:targetApi="p">
         <activity
             android:name=".LoginActivity"
-            android:label="@string/title_activity_login"></activity>
+            android:label="@string/title_activity_login" />
 
-        <activity android:name=".LogActivity"></activity>
-        <activity android:name=".FeatureActivity"></activity>
+        <activity android:name=".LogActivity" />
+        <activity android:name=".FeatureActivity" />
 
         <activity
             android:name=".SplashActivity"
             android:clearTaskOnLaunch="true"
             android:finishOnTaskLaunch="true"
-            android:theme="@style/AppTheme.Splash">
+            android:theme="@style/AppTheme.Splash"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -47,7 +51,8 @@
         <service
             android:name="com.stardust.notification.NotificationListenerService"
             android:label="inrt"
-            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>

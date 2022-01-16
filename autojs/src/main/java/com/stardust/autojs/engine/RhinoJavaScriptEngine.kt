@@ -1,8 +1,6 @@
 package com.stardust.autojs.engine
 
 import android.util.Log
-import android.view.View
-import com.stardust.autojs.core.ui.ViewExtras
 import com.stardust.autojs.engine.module.AssetAndUrlModuleSourceProvider
 import com.stardust.autojs.execution.ExecutionConfig
 import com.stardust.autojs.project.ScriptConfig
@@ -12,7 +10,10 @@ import com.stardust.autojs.runtime.ScriptRuntime
 import com.stardust.autojs.script.JavaScriptSource
 import com.stardust.automator.UiObjectCollection
 import com.stardust.pio.UncheckedIOException
-import org.mozilla.javascript.*
+import org.mozilla.javascript.Context
+import org.mozilla.javascript.Script
+import org.mozilla.javascript.Scriptable
+import org.mozilla.javascript.ScriptableObject
 import org.mozilla.javascript.commonjs.module.RequireBuilder
 import org.mozilla.javascript.commonjs.module.provider.SoftCachingModuleScriptProvider
 import java.io.File
@@ -27,7 +28,8 @@ import java.util.concurrent.ConcurrentHashMap
  * Created by Stardust on 2017/4/2.
  */
 
-open class RhinoJavaScriptEngine(private val mAndroidContext: android.content.Context) : JavaScriptEngine() {
+open class RhinoJavaScriptEngine(private val mAndroidContext: android.content.Context) :
+    JavaScriptEngine() {
 
     val context: Context
     private val mScriptable: TopLevelScope
@@ -121,13 +123,15 @@ open class RhinoJavaScriptEngine(private val mAndroidContext: android.content.Co
     }
 
     internal fun initRequireBuilder(context: Context, scope: Scriptable) {
-        val provider = AssetAndUrlModuleSourceProvider(mAndroidContext, MODULES_PATH,
-                listOf<URI>(File("/").toURI()))
+        val provider = AssetAndUrlModuleSourceProvider(
+            mAndroidContext, MODULES_PATH,
+            listOf<URI>(File("/").toURI())
+        )
         RequireBuilder()
-                .setModuleScriptProvider(SoftCachingModuleScriptProvider(provider))
-                .setSandboxed(true)
-                .createRequire(context, scope)
-                .install(scope)
+            .setModuleScriptProvider(SoftCachingModuleScriptProvider(provider))
+            .setSandboxed(true)
+            .createRequire(context, scope)
+            .install(scope)
 
     }
 
@@ -158,15 +162,6 @@ open class RhinoJavaScriptEngine(private val mAndroidContext: android.content.Co
                 obj is String -> runtime.bridges.toString(obj.toString())
                 staticType == UiObjectCollection::class.java -> runtime.bridges.asArray(obj)
                 else -> super.wrap(cx, scope, obj, staticType)
-            }
-        }
-
-        override fun wrapAsJavaObject(cx: Context?, scope: Scriptable, javaObject: Any?, staticType: Class<*>?): Scriptable? {
-            //Log.d(LOG_TAG, "wrapAsJavaObject: java = " + javaObject + ", result = " + result + ", scope = " + scope);
-            return if (javaObject is View) {
-                ViewExtras.getNativeView(scope, javaObject, staticType, runtime)
-            } else {
-                super.wrapAsJavaObject(cx, scope, javaObject, staticType)
             }
         }
 

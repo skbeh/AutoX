@@ -20,7 +20,6 @@ import com.stardust.app.DialogUtils;
 import com.stardust.app.GlobalAppContext;
 import com.stardust.pio.PFiles;
 import com.stardust.pio.UncheckedIOException;
-import com.tencent.bugly.crashreport.BuglyLog;
 
 import org.autojs.autojs.Pref;
 import org.autojs.autojs.R;
@@ -323,7 +322,6 @@ public class ScriptOperations {
 
 
     public Observable<ScriptFile> download(String url) {
-        BuglyLog.i(LOG_TAG, "dir = " + Pref.getScriptDirPath() + ", sdcard = " + Environment.getExternalStorageDirectory() + ", url = " + url);
         String fileName = DownloadManager.parseFileNameLocally(url);
         return new FileChooserDialogBuilder(mContext)
                 .title(R.string.text_select_save_path)

@@ -3,6 +3,7 @@ package com.stardust.autojs.apkbuilder;
 import android.text.TextUtils;
 
 import com.stardust.autojs.apkbuilder.util.StreamUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

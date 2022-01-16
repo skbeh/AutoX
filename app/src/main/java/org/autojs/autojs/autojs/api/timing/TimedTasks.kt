@@ -16,8 +16,4 @@ object TimedTasks {
         TimedTaskManager.getInstance().addTask(TimedTask.disposableTask(LocalDateTime(millis), path, ExecutionConfig()))
     }
 
-    fun weekly(path: String, millis: Long) {
-        //TimedTaskManager.getInstance().addTask(TimedTask.weeklyTask(LocalDateTime(millis), path, ExecutionConfig()))
-    }
-
 }
