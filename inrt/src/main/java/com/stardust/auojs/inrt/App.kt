@@ -27,6 +27,7 @@ import com.stardust.auojs.inrt.autojs.GlobalKeyObserver
 import com.stardust.auojs.inrt.pluginclient.AutoXKeepLiveService
 import com.stardust.autojs.core.ui.inflater.ImageLoader
 import com.stardust.autojs.core.ui.inflater.util.Drawables
+import com.stardust.autojs.execution.ScriptExecuteActivity
 
 
 /**

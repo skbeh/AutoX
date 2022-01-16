@@ -88,7 +88,7 @@ android {
             reset()
 
             // Specifies a list of ABIs that Gradle should create APKs for.
-            include "x86", "armeabi-v7a", "arm64-v8a"
+            include "armeabi-v7a", "arm64-v8a"
 
             // Specifies that we do not want to also generate a universal APK that includes all ABIs.
             universalApk false
@@ -178,7 +178,8 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
     kapt 'com.jakewharton:butterknife-compiler:10.2.1'
     // Android supports
-    implementation 'androidx.appcompat:appcompat:1.4.0' //
+    implementation 'androidx.preference:preference-ktx:1.1.1'
+    implementation 'androidx.appcompat:appcompat:1.4.0'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.google.android.material:material:1.6.0-alpha01'
     // Personal libraries
@@ -248,4 +249,5 @@ dependencies {
     implementation project(':common')
     implementation project(':autojs')
     implementation project(':apkbuilder')
+    implementation 'androidx.multidex:multidex:2.0.1'
 }

@@ -117,11 +117,17 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
     @ViewById(R.id.main_file_name)
     EditText mMainFileName;
 
+    @ViewById(R.id.default_hideLaucher)
+    CheckBoxCompat mHideLaucher;
+
     @ViewById(R.id.default_stable_mode)
     CheckBoxCompat mStableMode;
 
     @ViewById(R.id.default_hideLogs)
     CheckBoxCompat mHideLogs;
+
+    @ViewById(R.id.default_volume_up)
+    CheckBoxCompat mVolumeUp;
 
     @ViewById(R.id.app_splash_text)
     EditText mSplashText;
@@ -238,7 +244,9 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
         // 运行配置
         mMainFileName.setText(mProjectConfig.getMainScriptFile());
         mStableMode.setChecked(mProjectConfig.getLaunchConfig().isStableMode());
+        mHideLaucher.setChecked(mProjectConfig.getLaunchConfig().isHideLauncher());
         mHideLogs.setChecked(mProjectConfig.getLaunchConfig().shouldHideLogs());
+        mVolumeUp.setChecked(mProjectConfig.getLaunchConfig().isVolumeUpcontrol());
         mSplashText.setText(mProjectConfig.getLaunchConfig().getSplashText());
         mServiceDesc.setText(mProjectConfig.getLaunchConfig().getServiceDesc());
         String splashIcon = mProjectConfig.getLaunchConfig().getSplashIcon();
@@ -288,12 +296,26 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
         }
     }
 
+    @OnCheckedChanged(R.id.default_hideLaucher)
+    void onHideLaucherCheckedChanged() {
+        if (mProjectConfig != null) {
+            mProjectConfig.getLaunchConfig().setHideLauncher(mHideLaucher.isChecked());
+        }
+    }
+
     @OnCheckedChanged(R.id.default_hideLogs)
     void onHideLogsCheckedChanged() {
         if (mProjectConfig != null) {
             mProjectConfig.getLaunchConfig().setHideLogs(mHideLogs.isChecked());
         }
     }
+    @OnCheckedChanged(R.id.default_volume_up)
+    void onVolumeUpCheckedChanged() {
+        if (mProjectConfig != null) {
+            mProjectConfig.getLaunchConfig().setHideLogs(mVolumeUp.isChecked());
+        }
+    }
+
 
     @Click(R.id.sign_choose)
     void chooseSign() {
@@ -397,12 +419,6 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
 
     private boolean syncProjectConfig() {
         if (mProjectConfig == null) {
-//            new ThemeColorMaterialDialogBuilder(this)
-//                    .title(R.string.text_invalid_project_config)
-//                    .positiveText(R.string.ok)
-//                    .dismissListener(dialogInterface -> finish())
-//                    .show();
-//            return false;
             mProjectConfig = new ProjectConfig();
             if (PFiles.isFile(mSource)) {
                 mProjectConfig.setMainScriptFile(new File(mSource).getName());
@@ -414,7 +430,9 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
         mProjectConfig.setPackageName(mPackageName.getText().toString());
         mProjectConfig.setMainScriptFile(mMainFileName.getText().toString());
         mProjectConfig.getLaunchConfig().setStableMode(mStableMode.isChecked());
+        mProjectConfig.getLaunchConfig().setHideLauncher(mHideLaucher.isChecked());
         mProjectConfig.getLaunchConfig().setHideLogs(mHideLogs.isChecked());
+        mProjectConfig.getLaunchConfig().setVolumeUpcontrol(mVolumeUp.isChecked());
         mProjectConfig.getLaunchConfig().setSplashText(mSplashText.getText().toString());
         mProjectConfig.getLaunchConfig().setServiceDesc(mServiceDesc.getText().toString());
         if (mKeyStore != null) {
