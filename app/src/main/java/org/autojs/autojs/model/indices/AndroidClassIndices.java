@@ -24,10 +24,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class AndroidClassIndices {
 
@@ -41,12 +41,12 @@ public class AndroidClassIndices {
     @SuppressLint("StaticFieldLeak")
     private static AndroidClassIndices sInstance;
 
-    private static Type ANDROID_CLASS_LIST_TYPE = new TypeToken<List<AndroidClass>>() {
+    private static final Type ANDROID_CLASS_LIST_TYPE = new TypeToken<List<AndroidClass>>() {
     }.getType();
     //packageName -> package classes
-    private LinkedHashMap<String, ArrayList<ClassSearchingItem>> mPackages = new LinkedHashMap<>();
-    private Context mContext;
-    private ExecutorService mSingleThreadExecutor = new ThreadPoolExecutor(1, 1,
+    private final LinkedHashMap<String, ArrayList<ClassSearchingItem>> mPackages = new LinkedHashMap<>();
+    private final Context mContext;
+    private final ExecutorService mSingleThreadExecutor = new ThreadPoolExecutor(1, 1,
             2, TimeUnit.MINUTES, new LinkedBlockingQueue<>());
     private Throwable mLoadThrowable;
 

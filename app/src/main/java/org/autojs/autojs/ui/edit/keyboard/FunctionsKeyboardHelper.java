@@ -27,9 +27,9 @@ public class FunctionsKeyboardHelper implements BackPressedHandler {
 
     private static final String SHARE_PREFERENCE_NAME = "FunctionsKeyboardHelper";
     private static final String SHARE_PREFERENCE_SOFT_INPUT_HEIGHT = "soft_input_height";
-    private Activity mActivity;
-    private InputMethodManager mInputManager;
-    private SharedPreferences mPreferences;
+    private final Activity mActivity;
+    private final InputMethodManager mInputManager;
+    private final SharedPreferences mPreferences;
     private View mFunctionsLayout;
     private View mEditView;
     private View mContentView;

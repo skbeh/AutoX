@@ -7,10 +7,6 @@ package com.stardust.autojs.core.record.inputevent;
 public class EventFormatException extends RuntimeException {
 
 
-    public static EventFormatException forEventStr(String eventStr, NumberFormatException e) {
-        return new EventFormatException(eventStr, e);
-    }
-
     public EventFormatException(Exception e) {
         super(e);
     }
@@ -21,5 +17,9 @@ public class EventFormatException extends RuntimeException {
 
     public EventFormatException(String eventStr) {
         super("eventStr=" + eventStr);
+    }
+
+    public static EventFormatException forEventStr(String eventStr, NumberFormatException e) {
+        return new EventFormatException(eventStr, e);
     }
 }

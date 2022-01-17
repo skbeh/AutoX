@@ -2,10 +2,6 @@ package org.autojs.autojs.ui.update;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import androidx.annotation.NonNull;
-import androidx.preference.PreferenceManager;
-
-
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.view.View;
@@ -15,6 +11,9 @@ import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.stardust.util.IntentUtil;
@@ -29,7 +28,7 @@ import org.autojs.autojs.ui.widget.CommonMarkdownView;
 
 import java.io.File;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 
 /**
  * Created by Stardust on 2017/4/9.
@@ -39,7 +38,7 @@ public class UpdateInfoDialogBuilder extends MaterialDialog.Builder {
 
     private static final String KEY_DO_NOT_ASK_AGAIN_FOR_VERSION = "I cannot forget you...cannot help missing you...";
     private View mView;
-    private SharedPreferences mSharedPreferences;
+    private final SharedPreferences mSharedPreferences;
     private VersionInfo mVersionInfo;
 
     public UpdateInfoDialogBuilder(@NonNull Context context, VersionInfo info) {

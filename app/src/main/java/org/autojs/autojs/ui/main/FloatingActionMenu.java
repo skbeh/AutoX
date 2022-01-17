@@ -3,11 +3,6 @@ package org.autojs.autojs.ui.main;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
-import androidx.annotation.AttrRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,9 +10,16 @@ import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import androidx.annotation.AttrRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import org.autojs.autojs.R;
 
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.rxjava3.subjects.PublishSubject;
 
 /**
  * Created by Stardust on 2017/9/24.
@@ -39,8 +41,8 @@ public class FloatingActionMenu extends FrameLayout implements View.OnClickListe
     private FloatingActionButton[] mFabs;
     private View[] mFabContainers;
     private boolean mExpanded = false;
-    private int mInterval = 30;
-    private int mDuration = 250;
+    private final int mInterval = 30;
+    private final int mDuration = 250;
     private final Interpolator mInterpolator = new FastOutSlowInInterpolator();
     private final PublishSubject<Boolean> mState = PublishSubject.create();
     private OnFloatingActionButtonClickListener mOnFloatingActionButtonClickListener;

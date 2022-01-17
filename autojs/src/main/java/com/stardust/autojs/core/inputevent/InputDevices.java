@@ -1,8 +1,9 @@
 package com.stardust.autojs.core.inputevent;
 
-import androidx.annotation.Nullable;
 import android.util.Log;
 import android.view.InputDevice;
+
+import androidx.annotation.Nullable;
 
 
 /**
@@ -16,7 +17,7 @@ public class InputDevices {
     @Nullable
     public static String getTouchDeviceName() {
         InputDevice device = getTouchDevice();
-        return  device == null ? null : device.getName();
+        return device == null ? null : device.getName();
     }
 
     @Nullable

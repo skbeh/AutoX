@@ -30,14 +30,27 @@ public class Drawables {
     private static ImageLoader sDefaultImageLoader = new DefaultImageLoader();
     private ImageLoader mImageLoader = sDefaultImageLoader;
 
+    public static ImageLoader getDefaultImageLoader() {
+        return sDefaultImageLoader;
+    }
+
     public static void setDefaultImageLoader(ImageLoader defaultImageLoader) {
         if (defaultImageLoader == null)
             throw new NullPointerException();
         sDefaultImageLoader = defaultImageLoader;
     }
 
-    public static ImageLoader getDefaultImageLoader() {
-        return sDefaultImageLoader;
+    public static Bitmap loadBase64Data(String data) {
+        Matcher matcher = DATA_PATTERN.matcher(data);
+        String base64;
+        if (!matcher.matches() || matcher.groupCount() != 2) {
+            base64 = data;
+        } else {
+            String mimeType = matcher.group(1);
+            base64 = matcher.group(2);
+        }
+        byte[] bytes = Base64.decode(base64, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
     }
 
     public Drawable parse(Context context, String value) {
@@ -102,19 +115,6 @@ public class Drawables {
         view.setImageBitmap(bitmap);
     }
 
-    public static Bitmap loadBase64Data(String data) {
-        Matcher matcher = DATA_PATTERN.matcher(data);
-        String base64;
-        if (!matcher.matches() || matcher.groupCount() != 2) {
-            base64 = data;
-        } else {
-            String mimeType = matcher.group(1);
-            base64 = matcher.group(2);
-        }
-        byte[] bytes = Base64.decode(base64, Base64.DEFAULT);
-        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-    }
-
     public void setupWithViewBackground(View view, String value) {
         if (value.startsWith("http://") || value.startsWith("https://")) {
             loadIntoBackground(view, Uri.parse(value));
@@ -127,12 +127,12 @@ public class Drawables {
         }
     }
 
-    public void setImageLoader(ImageLoader imageLoader) {
-        mImageLoader = imageLoader;
-    }
-
     public ImageLoader getImageLoader() {
         return mImageLoader;
+    }
+
+    public void setImageLoader(ImageLoader imageLoader) {
+        mImageLoader = imageLoader;
     }
 
     private static class DefaultImageLoader implements ImageLoader {

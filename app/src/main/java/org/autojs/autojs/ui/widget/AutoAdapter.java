@@ -1,7 +1,8 @@
 package org.autojs.autojs.ui.widget;
 
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.ViewGroup;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,7 +14,7 @@ import java.util.List;
 
 public class AutoAdapter<DT> extends RecyclerView.Adapter<BindableViewHolder<DT>> {
 
-    private ViewHolderSupplier<? extends BindableViewHolder<DT>> mViewHolderSupplier;
+    private final ViewHolderSupplier<? extends BindableViewHolder<DT>> mViewHolderSupplier;
     private final List<DT> mData = new ArrayList<>();
 
     public AutoAdapter(ViewHolderSupplier<? extends BindableViewHolder<DT>> viewHolderSupplier) {

@@ -1,8 +1,9 @@
 package org.autojs.autojs.ui.main.drawer;
 
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.autojs.autojs.R;
 import org.autojs.autojs.ui.widget.BindableViewHolder;
@@ -20,7 +21,7 @@ public class DrawerMenuAdapter extends RecyclerView.Adapter<BindableViewHolder<D
     private static final int VIEW_TYPE_GROUP = 1;
 
 
-    private List<DrawerMenuItem> mDrawerMenuItems;
+    private final List<DrawerMenuItem> mDrawerMenuItems;
 
     public DrawerMenuAdapter(List<DrawerMenuItem> drawerMenuItems) {
         mDrawerMenuItems = drawerMenuItems;

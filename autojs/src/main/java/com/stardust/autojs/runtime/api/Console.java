@@ -1,7 +1,5 @@
 package com.stardust.autojs.runtime.api;
 
-import android.graphics.Color;
-
 import androidx.annotation.Nullable;
 
 import com.stardust.autojs.annotation.ScriptInterface;
@@ -45,6 +43,7 @@ public interface Console {
 
     @ScriptInterface
     void hide();
+
     @ScriptInterface
     boolean isAutoHide();
 
@@ -54,14 +53,13 @@ public interface Console {
     String println(int level, CharSequence charSequence);
 
     /**
-     *
-     * @param title  标题文字
-     * @param color  标题颜色 rgba
+     * @param title 标题文字
+     * @param color 标题颜色 rgba
      * @param size  标题字号，自动根据字号调整标题高度
      */
-    void setTitle(CharSequence title,String color,int size);
+    void setTitle(CharSequence title, String color, int size);
+
     /**
-     *
      * @param color 背景色 rgba
      */
     void setBackgroud(@Nullable String color);
@@ -73,7 +71,8 @@ public interface Console {
 
     /**
      * 设置是否可以输入
+     *
      * @param can
      */
-    public void  setCanInput(boolean can);
+    void setCanInput(boolean can);
 }

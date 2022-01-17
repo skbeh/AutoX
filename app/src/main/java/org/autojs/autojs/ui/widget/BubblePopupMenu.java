@@ -3,12 +3,13 @@ package org.autojs.autojs.ui.widget;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.autojs.autojs.R;
 
@@ -25,9 +26,9 @@ public class BubblePopupMenu extends PopupWindow {
         void onClick(View view, int position);
     }
 
-    private RecyclerView mRecyclerView;
+    private final RecyclerView mRecyclerView;
     private OnItemClickListener mOnItemClickListener;
-    private View mLittleTriangle;
+    private final View mLittleTriangle;
 
     public BubblePopupMenu(Context context, List<String> options) {
         super(context);
@@ -79,7 +80,7 @@ public class BubblePopupMenu extends PopupWindow {
 
     private class MenuItemViewHolder extends BindableViewHolder<String> {
 
-        private TextView mOption;
+        private final TextView mOption;
 
         public MenuItemViewHolder(View itemView) {
             super(itemView);

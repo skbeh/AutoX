@@ -8,7 +8,7 @@ import java.util.Arrays;
 
 public class Symbols {
 
-    private static CodeCompletions sSymbols = CodeCompletions.just(Arrays.asList(
+    private static final CodeCompletions sSymbols = CodeCompletions.just(Arrays.asList(
             "\"", "(", ")", "=", ";", "/", "{", "}", "!", "|", "&", "-",
             "[", "]", "+", "-", "<", ">", "\\", "*", "?"));
 

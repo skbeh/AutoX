@@ -1,6 +1,7 @@
 package com.stardust.autojs.codegeneration;
 
 import android.graphics.Rect;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
@@ -14,7 +15,7 @@ import com.stardust.view.accessibility.NodeInfo;
 
 public class ReadOnlyUiObject extends UiObject {
 
-    private NodeInfo mNodeInfo;
+    private final NodeInfo mNodeInfo;
 
     public ReadOnlyUiObject(NodeInfo info) {
         super(null, info.getDepth(), -1);

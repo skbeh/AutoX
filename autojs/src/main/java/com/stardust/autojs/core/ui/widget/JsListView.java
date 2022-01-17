@@ -4,18 +4,17 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.stardust.autojs.core.ui.ViewExtras;
 import com.stardust.autojs.core.ui.inflater.DynamicLayoutInflater;
 import com.stardust.autojs.core.ui.nativeview.NativeView;
 import com.stardust.autojs.core.ui.nativeview.ViewPrototype;
 import com.stardust.autojs.runtime.ScriptRuntime;
+import com.stardust.autojs.workground.WrapContentLinearLayoutManager;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import com.stardust.autojs.workground.WrapContentLinearLayoutManager;
-
-import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by Stardust on 2018/3/28.
@@ -23,28 +22,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class JsListView extends RecyclerView {
 
-    public interface DataSourceAdapter {
-
-        int getItemCount(Object dataSource);
-
-        Object getItem(Object dataSource, int i);
-
-        void setDataSource(Object dataSource);
-    }
-
-    public interface OnItemTouchListener {
-        void onItemClick(JsListView listView, View itemView, Object item, int pos);
-
-        boolean onItemLongClick(JsListView listView, View itemView, Object item, int pos);
-    }
-
+    private final ScriptRuntime mScriptRuntime;
     private Node mItemTemplate;
     private DynamicLayoutInflater mDynamicLayoutInflater;
-    private ScriptRuntime mScriptRuntime;
     private Object mDataSource;
     private DataSourceAdapter mDataSourceAdapter;
     private OnItemTouchListener mOnItemTouchListener;
-
     public JsListView(Context context, ScriptRuntime scriptRuntime) {
         super(context);
         mScriptRuntime = scriptRuntime;
@@ -85,6 +68,20 @@ public class JsListView extends RecyclerView {
         mItemTemplate = itemTemplate;
     }
 
+    public interface DataSourceAdapter {
+
+        int getItemCount(Object dataSource);
+
+        Object getItem(Object dataSource, int i);
+
+        void setDataSource(Object dataSource);
+    }
+
+    public interface OnItemTouchListener {
+        void onItemClick(JsListView listView, View itemView, Object item, int pos);
+
+        boolean onItemLongClick(JsListView listView, View itemView, Object item, int pos);
+    }
 
     public static class ItemHolder {
         private final ViewHolder mViewHolder;

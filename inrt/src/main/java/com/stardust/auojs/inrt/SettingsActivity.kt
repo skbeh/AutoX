@@ -1,11 +1,11 @@
 package com.stardust.auojs.inrt
 
 import android.os.Bundle
-import androidx.preference.Preference
 import android.util.Log
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 
 
@@ -32,18 +32,13 @@ class SettingsActivity : AppCompatActivity() {
 
     class PreferenceFragment : PreferenceFragmentCompat() {
 
-        override fun onCreate(@Nullable savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-
-        }
-
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             addPreferencesFromResource(R.xml.preference)
         }
 
         override fun onPreferenceTreeClick(preference: Preference?): Boolean {
             Log.d("inrt", "onPreferenceTreeClick: ")
-            Log.d("inrt", "onPreferenceTreeClick: "+Pref.shouldEnableFloatingWindow());
+            Log.d("inrt", "onPreferenceTreeClick: "+Pref.shouldEnableFloatingWindow())
             return super.onPreferenceTreeClick(preference)
         }
 

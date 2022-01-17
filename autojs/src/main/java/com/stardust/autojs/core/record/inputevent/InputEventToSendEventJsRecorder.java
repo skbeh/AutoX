@@ -1,11 +1,11 @@
 package com.stardust.autojs.core.record.inputevent;
 
+import static com.stardust.util.ScreenMetrics.getDeviceScreenHeight;
+import static com.stardust.util.ScreenMetrics.getDeviceScreenWidth;
+
 import androidx.annotation.NonNull;
 
 import com.stardust.autojs.core.inputevent.InputEventObserver;
-
-import static com.stardust.util.ScreenMetrics.getDeviceScreenHeight;
-import static com.stardust.util.ScreenMetrics.getDeviceScreenWidth;
 
 /**
  * Created by Stardust on 2017/5/3.
@@ -13,8 +13,8 @@ import static com.stardust.util.ScreenMetrics.getDeviceScreenWidth;
 
 public class InputEventToSendEventJsRecorder extends InputEventRecorder {
 
+    private final StringBuilder mCode = new StringBuilder();
     private double mLastEventTime;
-    private StringBuilder mCode = new StringBuilder();
     private int mTouchDevice = -1;
     private int mLastTouchX = -1;
     private int mLastTouchY = -1;

@@ -1,12 +1,10 @@
 package org.autojs.autojs.ui.common;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.stardust.app.DialogUtils;
 import com.stardust.app.GlobalAppContext;
@@ -24,8 +22,8 @@ import butterknife.ButterKnife;
 
 public class ScriptLoopDialog {
 
-    private ScriptFile mScriptFile;
-    private MaterialDialog mDialog;
+    private final ScriptFile mScriptFile;
+    private final MaterialDialog mDialog;
 
     @BindView(R.id.loop_times)
     EditText mLoopTimes;

@@ -102,7 +102,7 @@
     <string name="text_use_volume_to_stop_running">音量上键停止所有脚本</string>
     <string name="text_need_to_enable_accessibility_service">需要启用无障碍服务</string>
     <string name="text_import_fail">导入失败</string>
-    <string name="text_no_brower">没有浏览器耶o(╯□╰)o快去安装一个吧</string>
+    <string name="text_no_browser">没有浏览器耶o(╯□╰)o快去安装一个吧</string>
     <string name="text_refresh">刷新</string>
     <string name="notice_no_running_script"><![CDATA[没有正在运行的脚本 φ(>ω<*)]]></string>
     <string name="text_please_choose_a_script">请选择脚本</string>
@@ -144,7 +144,7 @@
     <string name="text_about_me_and_repo">关于项目与开发者</string>
     <string name="text_attribute">属性</string>
     <string name="text_value">值</string>
-    <string name="text_show_widget_infomation">查看控件信息</string>
+    <string name="text_show_widget_information">查看控件信息</string>
     <string name="text_show_layout_hierarchy">在布局层次中查看</string>
     <string name="text_show_layout_bounds">在布局范围中查看</string>
     <string name="text_more">更多</string>

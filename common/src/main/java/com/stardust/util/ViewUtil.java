@@ -2,11 +2,11 @@ package com.stardust.util;
 
 import android.app.Activity;
 import android.content.Context;
-import androidx.annotation.IdRes;
 import android.util.DisplayMetrics;
-import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.IdRes;
 
 /**
  * Created by Stardust on 2017/1/24.
@@ -48,7 +48,6 @@ public class ViewUtil {
         params.height = height;
         view.setLayoutParams(params);
     }
-
 
 
 }

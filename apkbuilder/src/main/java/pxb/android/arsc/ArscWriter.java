@@ -1,12 +1,12 @@
 /*
  * Copyright (c) 2009-2013 Panxiaobo
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,10 +38,10 @@ import pxb.android.axml.Util;
  * @see ArscParser
  */
 public class ArscWriter implements ResConst {
-    private List<PkgCtx> ctxs = new ArrayList<PkgCtx>(5);
-    private List<Pkg> pkgs;
-    private Map<String, StringItem> strTable = new TreeMap<String, StringItem>();
-    private StringItems strTable0 = new StringItems();
+    private final List<PkgCtx> ctxs = new ArrayList<PkgCtx>(5);
+    private final List<Pkg> pkgs;
+    private final Map<String, StringItem> strTable = new TreeMap<String, StringItem>();
+    private final StringItems strTable0 = new StringItems();
 
     public ArscWriter(List<Pkg> pkgs) {
         this.pkgs = pkgs;
@@ -229,7 +230,7 @@ public class ArscWriter implements ResConst {
             out.putInt(pctx.pkgSize);
             out.putInt(pctx.pkg.id);
             int p = out.position();
-            out.put(pctx.pkg.name.getBytes("UTF-16LE"));
+            out.put(pctx.pkg.name.getBytes(StandardCharsets.UTF_16LE));
             out.position(p + 256);
 
             out.putInt(pctx.typeStringOff);

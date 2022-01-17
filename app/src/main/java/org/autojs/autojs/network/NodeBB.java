@@ -4,9 +4,9 @@ import android.content.Context;
 import android.util.Log;
 
 import com.google.gson.GsonBuilder;
-import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory;
-import com.jakewharton.retrofit2.adapter.rxjava2.HttpException;
-import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import retrofit2.HttpException;
+import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory;
+
 import org.autojs.autojs.R;
 import org.autojs.autojs.network.api.ConfigApi;
 import org.autojs.autojs.network.util.WebkitCookieManagerProxy;
@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 
-import io.reactivex.Observable;
+import io.reactivex.rxjava3.core.Observable;
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
@@ -32,7 +32,7 @@ public class NodeBB {
     private static final String LOG_TAG = "NodeBB";
     private Map<String, String> mXCsrfToken;
 
-    private Retrofit mRetrofit;
+    private final Retrofit mRetrofit;
 
     NodeBB() {
         mRetrofit = new Retrofit.Builder()
@@ -40,8 +40,8 @@ public class NodeBB {
                 .addConverterFactory(GsonConverterFactory.create(new GsonBuilder()
                         .setLenient()
                         .create()))
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .addCallAdapterFactory(CoroutineCallAdapterFactory.create())
+                .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
+//                .addCallAdapterFactory(CoroutineCallAdapterFactory.create())
                 .client(new OkHttpClient.Builder()
                         .cookieJar(new WebkitCookieManagerProxy())
                         .build())

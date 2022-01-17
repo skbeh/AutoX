@@ -3,18 +3,15 @@ package org.autojs.autojs.model.script
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import androidx.annotation.Nullable
 import android.widget.Toast
-
+import androidx.annotation.Nullable
 import com.stardust.app.GlobalAppContext
 import com.stardust.autojs.execution.ExecutionConfig
 import com.stardust.autojs.execution.ScriptExecution
-import com.stardust.autojs.execution.ScriptExecutionListener
 import com.stardust.autojs.execution.SimpleScriptExecutionListener
 import com.stardust.autojs.runtime.exception.ScriptInterruptedException
 import com.stardust.autojs.script.ScriptSource
 import com.stardust.util.IntentUtil
-
 import org.autojs.autojs.Pref
 import org.autojs.autojs.R
 import org.autojs.autojs.autojs.AutoJs
@@ -23,9 +20,7 @@ import org.autojs.autojs.external.fileprovider.AppFileProvider
 import org.autojs.autojs.external.shortcut.Shortcut
 import org.autojs.autojs.external.shortcut.ShortcutActivity
 import org.autojs.autojs.ui.edit.EditActivity
-
 import org.mozilla.javascript.RhinoException
-
 import java.io.File
 import java.io.FileFilter
 

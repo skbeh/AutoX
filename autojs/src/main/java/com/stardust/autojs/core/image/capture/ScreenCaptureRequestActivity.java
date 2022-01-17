@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
@@ -18,7 +19,7 @@ import com.stardust.util.IntentExtras;
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class ScreenCaptureRequestActivity extends Activity {
 
-    private OnActivityResultDelegate.Mediator mOnActivityResultDelegateMediator = new OnActivityResultDelegate.Mediator();
+    private final OnActivityResultDelegate.Mediator mOnActivityResultDelegateMediator = new OnActivityResultDelegate.Mediator();
     private ScreenCaptureRequester mScreenCaptureRequester;
     private ScreenCaptureRequester.Callback mCallback;
 

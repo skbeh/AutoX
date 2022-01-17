@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class DumpEditor extends DumpAdapter {
 
-    private Map<String, String> mValueModifications;
+    private final Map<String, String> mValueModifications;
 
     public DumpEditor(Map<String, String> valueModifications) {
         mValueModifications = valueModifications;

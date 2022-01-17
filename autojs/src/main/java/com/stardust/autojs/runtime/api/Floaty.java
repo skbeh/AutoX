@@ -27,11 +27,11 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 public class Floaty {
 
-    private DynamicLayoutInflater mLayoutInflater;
-    private Context mContext;
-    private UiHandler mUiHandler;
-    private CopyOnWriteArraySet<JsWindow> mWindows = new CopyOnWriteArraySet<>();
-    private ScriptRuntime mRuntime;
+    private final DynamicLayoutInflater mLayoutInflater;
+    private final Context mContext;
+    private final UiHandler mUiHandler;
+    private final CopyOnWriteArraySet<JsWindow> mWindows = new CopyOnWriteArraySet<>();
+    private final ScriptRuntime mRuntime;
 
     public Floaty(UiHandler uiHandler, UI ui, ScriptRuntime runtime) {
         mUiHandler = uiHandler;
@@ -280,12 +280,12 @@ public class Floaty {
             runWithWindow(() -> mWindow.getWindowBridge().updatePosition(x, y));
         }
 
-        public void setAdjustEnabled(boolean enabled) {
-            runWithWindow(() -> mWindow.setAdjustEnabled(enabled));
-        }
-
         public boolean isAdjustEnabled() {
             return mWindow.isAdjustEnabled();
+        }
+
+        public void setAdjustEnabled(boolean enabled) {
+            runWithWindow(() -> mWindow.setAdjustEnabled(enabled));
         }
 
         public void exitOnClose() {

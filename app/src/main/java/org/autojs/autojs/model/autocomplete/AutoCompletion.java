@@ -8,8 +8,6 @@ import android.widget.EditText;
 import org.autojs.autojs.model.indices.Module;
 import org.autojs.autojs.model.indices.Modules;
 import org.autojs.autojs.model.indices.Property;
-import org.autojs.autojs.ui.widget.SimpleTextWatcher;
-import org.mozilla.javascript.ast.Loop;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,8 +18,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 /**
  * Created by Stardust on 2018/2/3.
@@ -39,12 +37,12 @@ public class AutoCompletion {
     private String mModuleName;
     private String mPropertyPrefill;
     private List<Module> mModules;
-    private DictionaryTree<Property> mGlobalPropertyTree = new DictionaryTree<>();
+    private final DictionaryTree<Property> mGlobalPropertyTree = new DictionaryTree<>();
     private AutoCompleteCallback mAutoCompleteCallback;
-    private ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
-    private AnyWordsCompletion mAnyWordsCompletion;
-    private AtomicInteger mExecuteId = new AtomicInteger();
-    private Handler mHandler = new Handler(Looper.getMainLooper());
+    private final ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
+    private final AnyWordsCompletion mAnyWordsCompletion;
+    private final AtomicInteger mExecuteId = new AtomicInteger();
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
     private final EditText mEditText;
 
     public AutoCompletion(Context context, EditText editText) {

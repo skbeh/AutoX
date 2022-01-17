@@ -19,6 +19,20 @@ public class BuildInfo {
     public BuildInfo() {
     }
 
+    public static BuildInfo generate(long buildNumber) {
+        BuildInfo info = new BuildInfo();
+        info.setBuildNumber(buildNumber);
+        info.setBuildTime(System.currentTimeMillis());
+        info.setBuildId(generateBuildId(buildNumber, info.getBuildTime()));
+        return info;
+    }
+
+    private static String generateBuildId(long buildNumber, long buildTime) {
+        CRC32 crc32 = new CRC32();
+        crc32.update((buildNumber + "" + buildTime).getBytes());
+        return String.format("%08X", crc32.getValue()) + "-" + buildNumber;
+    }
+
     public long getBuildNumber() {
         return mBuildNumber;
     }
@@ -41,19 +55,5 @@ public class BuildInfo {
 
     public void setBuildId(String buildId) {
         mBuildId = buildId;
-    }
-
-    public static BuildInfo generate(long buildNumber) {
-        BuildInfo info = new BuildInfo();
-        info.setBuildNumber(buildNumber);
-        info.setBuildTime(System.currentTimeMillis());
-        info.setBuildId(generateBuildId(buildNumber, info.getBuildTime()));
-        return info;
-    }
-
-    private static String generateBuildId(long buildNumber, long buildTime) {
-        CRC32 crc32 = new CRC32();
-        crc32.update((buildNumber + "" + buildTime).getBytes());
-        return String.format("%08X", crc32.getValue()) + "-" + buildNumber;
     }
 }

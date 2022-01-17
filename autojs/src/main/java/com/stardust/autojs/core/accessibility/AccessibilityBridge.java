@@ -1,21 +1,19 @@
 package com.stardust.autojs.core.accessibility;
 
-import android.app.ActivityManager;
 import android.app.AppOpsManager;
 import android.content.Context;
 import android.os.Build;
+import android.view.accessibility.AccessibilityNodeInfo;
+import android.view.accessibility.AccessibilityWindowInfo;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import android.view.accessibility.AccessibilityNodeInfo;
-import android.view.accessibility.AccessibilityWindowInfo;
-
 import com.stardust.app.AppOpsKt;
+import com.stardust.autojs.core.activity.ActivityInfoProvider;
 import com.stardust.autojs.runtime.accessibility.AccessibilityConfig;
 import com.stardust.util.IntentUtil;
 import com.stardust.util.UiHandler;
-import com.stardust.autojs.core.activity.ActivityInfoProvider;
 import com.stardust.view.accessibility.AccessibilityNotificationObserver;
 import com.stardust.view.accessibility.AccessibilityService;
 
@@ -30,24 +28,17 @@ import java.util.List;
 
 public abstract class AccessibilityBridge {
 
-    public interface WindowFilter {
-        boolean filter(AccessibilityWindowInfo info);
-    }
-
     public static final int MODE_NORMAL = 0;
     public static final int MODE_FAST = 1;
-
     public static final int FLAG_FIND_ON_UI_THREAD = 1;
     public static final int FLAG_USE_USAGE_STATS = 2;
     public static final int FLAG_USE_SHELL = 4;
-
-    private int mMode = MODE_NORMAL;
-    private int mFlags = 0;
     private final AccessibilityConfig mConfig;
-    private WindowFilter mWindowFilter;
     private final UiHandler mUiHandler;
     private final Context mContext;
-
+    private int mMode = MODE_NORMAL;
+    private int mFlags = 0;
+    private WindowFilter mWindowFilter;
     public AccessibilityBridge(Context context, AccessibilityConfig config, UiHandler uiHandler) {
         mConfig = config;
         mUiHandler = uiHandler;
@@ -148,5 +139,9 @@ public abstract class AccessibilityBridge {
 
     public AccessibilityConfig getConfig() {
         return mConfig;
+    }
+
+    public interface WindowFilter {
+        boolean filter(AccessibilityWindowInfo info);
     }
 }

@@ -1,14 +1,13 @@
 package com.stardust.autojs.runtime.api;
 
 import android.graphics.Bitmap;
-import android.graphics.Point;
 import android.util.Log;
-import com.baidu.paddle.lite.demo.ocr.OcrResultModel;
-import com.stardust.autojs.annotation.ScriptInterface;
-import com.stardust.autojs.core.image.ImageWrapper;
+
 import com.baidu.paddle.lite.demo.ocr.OcrHelper;
 import com.baidu.paddle.lite.demo.ocr.OcrResult;
-import java.util.ArrayList;
+import com.stardust.autojs.annotation.ScriptInterface;
+import com.stardust.autojs.core.image.ImageWrapper;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -16,14 +15,6 @@ public class Paddle {
 
     private final long tomeOut = 6000;
     private boolean isInitialized;
-
-    static class Ref<T> {
-        public T value;
-
-        public Ref(T value) {
-            this.value = value;
-        }
-    }
 
     @ScriptInterface
     public boolean init() {
@@ -56,12 +47,12 @@ public class Paddle {
 
     @ScriptInterface
     public String[] ocrText(ImageWrapper image, int cpuThreadNum) {
-        OcrResult results =  ocrImage(image, cpuThreadNum);
+        OcrResult results = ocrImage(image, cpuThreadNum);
         String[] outputResult = new String[results.words.size()];
         for (int i = 0; i < results.words.size(); i++) {
             outputResult[i] = results.words.get(i).text;
-            Log.i("outputResult", outputResult[i].toString()); // show LOG in Logcat panel
-         }
+            Log.i("outputResult", outputResult[i]); // show LOG in Logcat panel
+        }
         return outputResult;
     }
 
@@ -69,6 +60,14 @@ public class Paddle {
     public boolean end() {
         OcrHelper.getInstance().end();
         return true;
+    }
+
+    static class Ref<T> {
+        public T value;
+
+        public Ref(T value) {
+            this.value = value;
+        }
     }
 }
 

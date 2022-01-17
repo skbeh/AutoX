@@ -10,9 +10,9 @@ import java.util.Map;
  */
 
 public class MapAttrbuteSet implements AttributeSet {
-    private Map<String, String> mMap;
-    private ArrayList<String> mKeys;
-    private ArrayList<String> mValues;
+    private final Map<String, String> mMap;
+    private final ArrayList<String> mKeys;
+    private final ArrayList<String> mValues;
 
     public MapAttrbuteSet(Map<String, String> map) {
         mMap = map;

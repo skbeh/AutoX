@@ -6,9 +6,8 @@ import android.graphics.Path
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
-import androidx.annotation.RequiresApi
 import android.view.ViewConfiguration
-
+import androidx.annotation.RequiresApi
 import com.stardust.concurrent.VolatileBox
 import com.stardust.concurrent.VolatileDispose
 import com.stardust.util.ScreenMetrics
@@ -17,7 +16,10 @@ import com.stardust.util.ScreenMetrics
  * Created by Stardust on 2017/5/16.
  */
 
-class GlobalActionAutomator(private val mHandler: Handler?, private val serviceProvider: () -> AccessibilityService) {
+class GlobalActionAutomator(
+    private val mHandler: Handler?,
+    private val serviceProvider: () -> AccessibilityService
+) {
 
     private val service: AccessibilityService
         get() = serviceProvider()
@@ -165,7 +167,11 @@ class GlobalActionAutomator(private val mHandler: Handler?, private val serviceP
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     fun longClick(x: Int, y: Int): Boolean {
-        return gesture(0, (ViewConfiguration.getLongPressTimeout() + 200).toLong(), intArrayOf(x, y))
+        return gesture(
+            0,
+            (ViewConfiguration.getLongPressTimeout() + 200).toLong(),
+            intArrayOf(x, y)
+        )
     }
 
     private fun scaleX(x: Int): Int {

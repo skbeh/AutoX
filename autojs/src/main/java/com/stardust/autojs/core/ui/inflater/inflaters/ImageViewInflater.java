@@ -46,7 +46,7 @@ public class ImageViewInflater<V extends ImageView> extends BaseViewInflater<V> 
                 view.setMaxWidth(Dimensions.parseToIntPixel(value, view));
                 break;
             case "path":
-                getDrawables().setupWithImage(view,  wrapAsPath(value));
+                getDrawables().setupWithImage(view, wrapAsPath(value));
                 break;
             case "scaleType":
                 view.setScaleType(parseScaleType(value));
@@ -63,13 +63,14 @@ public class ImageViewInflater<V extends ImageView> extends BaseViewInflater<V> 
                 }
                 break;
             case "url":
-                getDrawables().setupWithImage(view,  wrapAsUrl(value));
+                getDrawables().setupWithImage(view, wrapAsUrl(value));
                 break;
             default:
                 return false;
         }
         return true;
     }
+
     private String wrapAsPath(String value) {
         if (!value.startsWith("file://")) {
             return "file://" + value;

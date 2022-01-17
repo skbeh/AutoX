@@ -10,6 +10,7 @@ abstract class SimpleAction {
 
     @Volatile
     var isValid = true
+
     @Volatile
     var result = false
 

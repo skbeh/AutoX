@@ -1,10 +1,8 @@
 package com.stardust.autojs.execution;
 
 import com.stardust.autojs.engine.ScriptEngine;
-import com.stardust.autojs.runtime.ScriptRuntime;
 import com.stardust.autojs.script.ScriptSource;
 
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -27,7 +25,7 @@ public interface ScriptExecution {
 
     abstract class AbstractScriptExecution implements ScriptExecution {
 
-        private static AtomicInteger sMaxId = new AtomicInteger(0);
+        private static final AtomicInteger sMaxId = new AtomicInteger(0);
 
         protected ScriptExecutionTask mScriptExecutionTask;
         protected int mId;

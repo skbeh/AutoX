@@ -6,10 +6,10 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
-import android.util.Log;
 
 import com.stardust.autojs.annotation.ScriptInterface;
 import com.stardust.util.IntentUtil;
@@ -23,9 +23,9 @@ import java.util.List;
 
 public class AppUtils {
 
-    private Context mContext;
-    private volatile WeakReference<Activity> mCurrentActivity = new WeakReference<>(null);
+    private final Context mContext;
     private final String mFileProviderAuthority;
+    private volatile WeakReference<Activity> mCurrentActivity = new WeakReference<>(null);
 
     public AppUtils(Context context) {
         mContext = context;
@@ -103,6 +103,11 @@ public class AppUtils {
         return mCurrentActivity.get();
     }
 
+    public void setCurrentActivity(Activity currentActivity) {
+        mCurrentActivity = new WeakReference<>(currentActivity);
+        Log.d("App", "setCurrentActivity: " + currentActivity);
+    }
+
     @ScriptInterface
     public void uninstall(String packageName) {
         mContext.startActivity(new Intent(Intent.ACTION_DELETE, Uri.parse("package:" + packageName))
@@ -131,10 +136,5 @@ public class AppUtils {
         mContext.startActivity(new Intent(Intent.ACTION_VIEW)
                 .setData(Uri.parse(url))
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-    }
-
-    public void setCurrentActivity(Activity currentActivity) {
-        mCurrentActivity = new WeakReference<>(currentActivity);
-        Log.d("App", "setCurrentActivity: " + currentActivity);
     }
 }

@@ -1,5 +1,9 @@
 package com.baidu.paddle.lite.demo.ocr;
 
+import static android.graphics.Color.blue;
+import static android.graphics.Color.green;
+import static android.graphics.Color.red;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -17,21 +21,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
-import static android.graphics.Color.*;
-
-import androidx.annotation.NonNull;
-
 
 public class Predictor {
     private static final String TAG = Predictor.class.getSimpleName();
     public boolean isLoaded = false;
-    protected OCRPredictorNative mPaddlePredictorNative;
     public int warmupIterNum = 1;
     public int inferIterNum = 1;
     public int cpuThreadNum = 4;
     public String cpuPowerMode = "LITE_POWER_HIGH";
     public String modelPath = "";
     public String modelName = "";
+    protected OCRPredictorNative mPaddlePredictorNative;
     protected OCRPredictorNative paddlePredictor = null;
     protected float inferenceTime = 0;
     // Only for object detection
@@ -53,7 +53,7 @@ public class Predictor {
 
     public boolean init(Context appCtx) {
         isLoaded = loadLabel(appCtx, "labels/ppocr_keys_v1.txt") && loadModel(appCtx, "models/ocr_v2_for_cpu", 4, "LITE_POWER_HIGH");
-         Log.i(TAG, "isLoaded: " + isLoaded);
+        Log.i(TAG, "isLoaded: " + isLoaded);
         return isLoaded;
     }
 
@@ -82,11 +82,11 @@ public class Predictor {
             return false;
         }
         if (inputMean.length != inputShape[1]) {
-            Log.e(TAG, "Size of input mean should be: " + Long.toString(inputShape[1]));
+            Log.e(TAG, "Size of input mean should be: " + inputShape[1]);
             return false;
         }
         if (inputStd.length != inputShape[1]) {
-            Log.e(TAG, "Size of input std should be: " + Long.toString(inputShape[1]));
+            Log.e(TAG, "Size of input std should be: " + inputShape[1]);
             return false;
         }
         if (inputShape[0] != 1) {
@@ -125,11 +125,11 @@ public class Predictor {
             return false;
         }
         String realPath = modelPath;
-        if (!modelPath.substring(0, 1).equals("/")) {
+        if (modelPath.charAt(0) != '/') {
             // Read model files from custom path if the first character of mode path is '/'
             // otherwise copy model to cache from assets
             realPath = appCtx.getCacheDir() + "/" + modelPath;
-            Log.i(TAG, "realPath.isEmpty() "+realPath);
+            Log.i(TAG, "realPath.isEmpty() " + realPath);
             Utils.copyDirectoryFromAssets(appCtx, modelPath, realPath);
         }
         if (realPath.isEmpty()) {
@@ -151,7 +151,7 @@ public class Predictor {
         this.modelPath = realPath;
         this.modelName = realPath.substring(realPath.lastIndexOf("/") + 1);
         this.mPaddlePredictorNative = new OCRPredictorNative(config);
-        Log.i(TAG, "realPath "+realPath);
+        Log.i(TAG, "realPath " + realPath);
         return true;
     }
 
@@ -312,7 +312,7 @@ public class Predictor {
                 inputData[i] = (gray - inputMean[0]) / inputStd[0];
             }
         } else {
-            Log.i(TAG, "Unsupported channel size " + Integer.toString(channels) + ",  only channel 1 and 3 is " +
+            Log.i(TAG, "Unsupported channel size " + channels + ",  only channel 1 and 3 is " +
                     "supported!");
             return false;
         }
@@ -342,10 +342,10 @@ public class Predictor {
     }
 
     private void drawResults(ArrayList<OcrResultModel> results) {
-        StringBuffer outputResultSb = new StringBuffer("");
+        StringBuffer outputResultSb = new StringBuffer();
         for (int i = 0; i < results.size(); i++) {
             OcrResultModel result = results.get(i);
-            StringBuilder sb = new StringBuilder("");
+            StringBuilder sb = new StringBuilder();
             sb.append(result.getLabel());
             sb.append(" ").append(result.getConfidence());
             sb.append("; Points: ");
@@ -428,7 +428,7 @@ public class Predictor {
                 inputData[i] = (gray - inputMean[0]) / inputStd[0];
             }
         } else {
-            Log.i(TAG, "Unsupported channel size " + Integer.toString(channels) + ",  only channel 1 and 3 is " +
+            Log.i(TAG, "Unsupported channel size " + channels + ",  only channel 1 and 3 is " +
                     "supported!");
             return Collections.emptyList();
         }

@@ -36,14 +36,13 @@ public class AccessibilityActionConverter {
         }
     }
 
-    private StringBuilder mScript = new StringBuilder();
+    private final StringBuilder mScript = new StringBuilder();
     private boolean mFirstAction = true;
+    private boolean mShouldIgnoreFirstAction = false;
 
     public AccessibilityActionConverter(boolean shouldIgnoreFirstAction) {
         mShouldIgnoreFirstAction = shouldIgnoreFirstAction;
     }
-
-    private boolean mShouldIgnoreFirstAction = false;
 
     public void record(AccessibilityService service, AccessibilityEvent event) {
         EventToScriptConverter converter = CONVERTER_MAP.get(event.getEventType());
@@ -89,7 +88,7 @@ public class AccessibilityActionConverter {
 
     private static class DoOnceConverter extends BoundsEventConverter {
 
-        private String mActionFunction;
+        private final String mActionFunction;
 
         DoOnceConverter(String actionFunction) {
             mActionFunction = actionFunction;
@@ -103,7 +102,7 @@ public class AccessibilityActionConverter {
 
     private static class DoUtilSucceedConverter extends BoundsEventConverter {
 
-        private String mActionFunction;
+        private final String mActionFunction;
 
         DoUtilSucceedConverter(String actionFunction) {
             mActionFunction = actionFunction;
@@ -117,6 +116,17 @@ public class AccessibilityActionConverter {
 
     private static class SetTextEventConverter implements EventToScriptConverter {
 
+        private static int findInEditableList(List<UiObject> editableList, AccessibilityNodeInfo editable) {
+            int i = 0;
+            for (UiObject nodeInfo : editableList) {
+                if (AccessibilityNodeInfoHelper.INSTANCE.getBoundsInScreen(nodeInfo).equals(AccessibilityNodeInfoHelper.INSTANCE.getBoundsInScreen(editable))) {
+                    return i;
+                }
+                i++;
+            }
+            return -1;
+        }
+
         @Override
         public void onAccessibilityEvent(AccessibilityService service, AccessibilityEvent event, StringBuilder sb) {
             AccessibilityNodeInfo source = event.getSource();
@@ -127,17 +137,6 @@ public class AccessibilityActionConverter {
             int i = findInEditableList(editableList, source);
             sb.append("while(!input(").append(i).append(", \"").append(source.getText()).append("\"));");
             source.recycle();
-        }
-
-        private static int findInEditableList(List<UiObject> editableList, AccessibilityNodeInfo editable) {
-            int i = 0;
-            for (UiObject nodeInfo : editableList) {
-                if (AccessibilityNodeInfoHelper.INSTANCE.getBoundsInScreen(nodeInfo).equals(AccessibilityNodeInfoHelper.INSTANCE.getBoundsInScreen(editable))) {
-                    return i;
-                }
-                i++;
-            }
-            return -1;
         }
     }
 

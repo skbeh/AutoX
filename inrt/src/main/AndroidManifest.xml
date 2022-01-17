@@ -17,17 +17,13 @@
 
     <application
         android:name=".App"
-        android:allowBackup="true"
-        android:fullBackupOnly="true"
         android:icon="@mipmap/ic_launcher"
         android:label="${appName}"
         android:supportsRtl="true"
-        android:extractNativeLibs="true"
         android:theme="@style/ScriptTheme"
         android:usesCleartextTraffic="true"
-        tools:ignore="GoogleAppIndexingWarning"
-        tools:replace="android:label, android:allowBackup"
-        tools:targetApi="p">
+        android:extractNativeLibs="false"
+        tools:replace="android:label">
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login" />

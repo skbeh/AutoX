@@ -3,9 +3,6 @@ package com.stardust.autojs.core.ui.inflater.inflaters;
 import android.content.res.ColorStateList;
 import android.graphics.PorterDuff;
 import android.os.Build;
-
-import androidx.annotation.Nullable;
-
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,13 +11,14 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.Nullable;
 
 import com.stardust.autojs.core.ui.ViewExtras;
 import com.stardust.autojs.core.ui.attribute.ViewAttributes;
 import com.stardust.autojs.core.ui.inflater.DynamicLayoutInflater;
 import com.stardust.autojs.core.ui.inflater.ResourceParser;
-import com.stardust.autojs.core.ui.inflater.ViewInflater;
 import com.stardust.autojs.core.ui.inflater.ViewCreator;
+import com.stardust.autojs.core.ui.inflater.ViewInflater;
 import com.stardust.autojs.core.ui.inflater.util.Colors;
 import com.stardust.autojs.core.ui.inflater.util.Dimensions;
 import com.stardust.autojs.core.ui.inflater.util.Drawables;
@@ -41,8 +39,6 @@ import java.util.Map;
 
 public class BaseViewInflater<V extends View> implements ViewInflater<V> {
 
-    private static final String LOG_TAG = "BaseViewInflater";
-
     public static final ValueMapper<PorterDuff.Mode> TINT_MODES = new ValueMapper<PorterDuff.Mode>("tintMode")
             .map("add", PorterDuff.Mode.ADD)
             .map("multiply", PorterDuff.Mode.MULTIPLY)
@@ -50,12 +46,10 @@ public class BaseViewInflater<V extends View> implements ViewInflater<V> {
             .map("src_atop", PorterDuff.Mode.SRC_ATOP)
             .map("src_in", PorterDuff.Mode.SRC_IN)
             .map("src_over", PorterDuff.Mode.SRC_OVER);
-
     public static final ValueMapper<Integer> DRAWABLE_CACHE_QUALITIES = new ValueMapper<Integer>("drawingCacheQuality")
             .map("auto", View.DRAWING_CACHE_QUALITY_AUTO)
             .map("high", View.DRAWING_CACHE_QUALITY_HIGH)
             .map("low", View.DRAWING_CACHE_QUALITY_LOW);
-
     public static final ValueMapper<Integer> IMPORTANT_FOR_ACCESSIBILITY = new ValueMapper<Integer>("importantForAccessibility")
             .map("auto", 0) //View.IMPORTANT_FOR_ACCESSIBILITY_AUTO)
             .map("no", 2) //View.IMPORTANT_FOR_ACCESSIBILITY_NO)
@@ -100,7 +94,7 @@ public class BaseViewInflater<V extends View> implements ViewInflater<V> {
             .map("textStart", 2)
             .map("viewEnd", 6)
             .map("viewStart", 5);
-
+    private static final String LOG_TAG = "BaseViewInflater";
     private final ResourceParser mResourceParser;
 
     public BaseViewInflater(ResourceParser resourceParser) {

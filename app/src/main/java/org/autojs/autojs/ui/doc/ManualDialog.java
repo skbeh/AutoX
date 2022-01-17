@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+
 import org.autojs.autojs.R;
 import org.autojs.autojs.ui.widget.EWebView;
 
@@ -31,7 +32,7 @@ public class ManualDialog {
     View mPinToLeft;
 
     Dialog mDialog;
-    private Context mContext;
+    private final Context mContext;
 
     public ManualDialog(Context context) {
         mContext = context;

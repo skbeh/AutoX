@@ -1,18 +1,15 @@
 package org.autojs.autojs.ui.project;
 
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -35,11 +32,6 @@ import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder;
 import org.autojs.autojs.ui.BaseActivity;
 
 import java.util.ArrayList;
-
-import io.reactivex.Observable;
-import io.reactivex.subjects.PublishSubject;
-
-import static com.stardust.app.GlobalAppContext.getString;
 
 @EActivity(R.layout.activity_sign_manage)
 public class SignManageActivity extends BaseActivity {
@@ -100,12 +92,12 @@ public class SignManageActivity extends BaseActivity {
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        private Context mContext;
+        private final Context mContext;
         private ApkKeyStore mItem;
-        private CardView mItemCard;
-        private TextView mPath;
-        private TextView mAlias;
-        private TextView mVerified;
+        private final CardView mItemCard;
+        private final TextView mPath;
+        private final TextView mAlias;
+        private final TextView mVerified;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

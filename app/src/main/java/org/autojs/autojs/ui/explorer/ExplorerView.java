@@ -3,13 +3,6 @@ package org.autojs.autojs.ui.explorer;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
-import androidx.annotation.Nullable;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.core.content.ContextCompat;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +14,14 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.google.android.material.snackbar.Snackbar;
 import com.stardust.pio.PFiles;
 
 import org.autojs.autojs.R;
@@ -36,15 +37,14 @@ import org.autojs.autojs.model.explorer.ExplorerSamplePage;
 import org.autojs.autojs.model.explorer.Explorers;
 import org.autojs.autojs.model.script.ScriptFile;
 import org.autojs.autojs.model.script.Scripts;
+import org.autojs.autojs.theme.widget.ThemeColorSwipeRefreshLayout;
 import org.autojs.autojs.tool.Observers;
-import org.autojs.autojs.ui.project.BuildActivity;
-import org.autojs.autojs.ui.project.BuildActivity_;
 import org.autojs.autojs.ui.common.ScriptLoopDialog;
 import org.autojs.autojs.ui.common.ScriptOperations;
+import org.autojs.autojs.ui.project.BuildActivity;
+import org.autojs.autojs.ui.project.BuildActivity_;
 import org.autojs.autojs.ui.viewmodel.ExplorerItemList;
 import org.autojs.autojs.ui.widget.BindableViewHolder;
-import org.autojs.autojs.theme.widget.ThemeColorSwipeRefreshLayout;
-
 import org.autojs.autojs.workground.WrapContentGridLayoutManger;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -54,10 +54,10 @@ import java.util.Stack;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Function;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.functions.Function;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 /**
  * Created by Stardust on 2017/8/21.
@@ -85,13 +85,13 @@ public class ExplorerView extends ThemeColorSwipeRefreshLayout implements SwipeR
     private ExplorerItemList mExplorerItemList = new ExplorerItemList();
     private RecyclerView mExplorerItemListView;
     private ExplorerProjectToolbar mProjectToolbar;
-    private ExplorerAdapter mExplorerAdapter = new ExplorerAdapter();
+    private final ExplorerAdapter mExplorerAdapter = new ExplorerAdapter();
     protected OnItemClickListener mOnItemClickListener;
     private Function<ExplorerItem, Boolean> mFilter;
     private OnItemOperatedListener mOnItemOperatedListener;
     protected ExplorerItem mSelectedItem;
     private Explorer mExplorer;
-    private Stack<ExplorerPageState> mPageStateHistory = new Stack<>();
+    private final Stack<ExplorerPageState> mPageStateHistory = new Stack<>();
     private ExplorerPageState mCurrentPageState = new ExplorerPageState();
     private boolean mDirSortMenuShowing = false;
     private int mDirectorySpanSize = 2;
@@ -253,7 +253,7 @@ public class ExplorerView extends ThemeColorSwipeRefreshLayout implements SwipeR
                     mCurrentPageState.page = page;
                     return Observable.fromIterable(page);
                 })
-                .filter(f -> mFilter == null ? true : mFilter.apply(f))
+                .filter(f -> mFilter == null || mFilter.apply(f))
                 .collectInto(mExplorerItemList.cloneConfig(), ExplorerItemList::add)
                 .observeOn(Schedulers.computation())
                 .doOnSuccess(ExplorerItemList::sort)

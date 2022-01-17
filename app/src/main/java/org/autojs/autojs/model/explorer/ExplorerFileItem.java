@@ -18,7 +18,7 @@ public class ExplorerFileItem implements ExplorerItem {
             "js", "java", "xml", "json", "txt", "log", "ts"
     ));
 
-    private PFile mFile;
+    private final PFile mFile;
     private final ExplorerPage mParent;
 
     public ExplorerFileItem(PFile file, ExplorerPage parent) {

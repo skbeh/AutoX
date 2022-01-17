@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OcrResultModel {
-    private List<Point> points;
-    private List<Integer> wordIndex;
+    private final List<Point> points;
+    private final List<Integer> wordIndex;
     private String label;
     private float confidence;
 

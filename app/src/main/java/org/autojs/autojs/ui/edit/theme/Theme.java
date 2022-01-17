@@ -20,12 +20,12 @@ public class Theme {
     private int mBackgroundColor = Color.WHITE;
     private int mForegroundColor = Color.BLACK;
     private int mLineNumberColor = Color.GRAY;
-    private SparseIntArray mTokenColors = new SparseIntArray();
+    private final SparseIntArray mTokenColors = new SparseIntArray();
     private int mImeBarBackgroundColor = 0xDDFFFFFF;
     private int mImeBarForegroundColor = Color.WHITE;
-    private EditorTheme mEditorTheme;
+    private final EditorTheme mEditorTheme;
     private int mLineHighlightBackground;
-    private int mBreakpointColor;
+    private final int mBreakpointColor;
     private int mDebuggingLineBackground;
 
     public Theme(EditorTheme theme) {

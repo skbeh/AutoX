@@ -10,8 +10,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MatOfPoint extends org.opencv.core.MatOfPoint implements ResourceMonitor.Resource {
 
     private static final AtomicInteger sResourceId = new AtomicInteger();
-    private volatile boolean mReleased = false;
     private final int mResourceId = sResourceId.incrementAndGet();
+    private volatile boolean mReleased = false;
 
     public MatOfPoint() {
         super();

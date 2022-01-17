@@ -1,6 +1,7 @@
 package org.autojs.autojs.ui.filechooser;
 
 import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
@@ -20,8 +21,8 @@ import java.io.FileFilter;
 import java.util.Collections;
 import java.util.List;
 
-import io.reactivex.Observable;
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.subjects.PublishSubject;
 
 /**
  * Created by Stardust on 2017/10/19.
@@ -37,7 +38,7 @@ public class FileChooserDialogBuilder extends ThemeColorMaterialDialogBuilder {
         void onSelected(List<PFile> files);
     }
 
-    private FileChooseListView mFileChooseListView;
+    private final FileChooseListView mFileChooseListView;
     private MultiChoiceCallback mCallback;
     private FileFilter mFileFilter;
     private String mRootDir;

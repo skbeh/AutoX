@@ -10,26 +10,17 @@ import android.view.WindowManager;
 import com.stardust.autojs.R;
 import com.stardust.autojs.core.ui.inflater.inflaters.Exceptions;
 import com.stardust.autojs.runtime.exception.ScriptInterruptedException;
-import com.stardust.concurrent.VolatileBox;
 import com.stardust.concurrent.VolatileDispose;
 import com.stardust.enhancedfloaty.FloatyService;
 import com.stardust.enhancedfloaty.FloatyWindow;
-import com.stardust.enhancedfloaty.WindowBridge;
 import com.stardust.enhancedfloaty.util.WindowTypeCompat;
 
 public class RawWindow extends FloatyWindow {
 
 
-
-    public interface RawFloaty {
-
-        View inflateWindowView(FloatyService service, ViewGroup parent);
-    }
-
-    private VolatileDispose<RuntimeException> mInflateException = new VolatileDispose<>();
-    private RawFloaty mRawFloaty;
+    private final VolatileDispose<RuntimeException> mInflateException = new VolatileDispose<>();
+    private final RawFloaty mRawFloaty;
     private View mContentView;
-
     public RawWindow(RawFloaty rawFloaty) {
         mRawFloaty = rawFloaty;
     }
@@ -101,6 +92,11 @@ public class RawWindow extends FloatyWindow {
             windowLayoutParams.flags |= WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;
         }
         updateWindowLayoutParams(windowLayoutParams);
+    }
+
+    public interface RawFloaty {
+
+        View inflateWindowView(FloatyService service, ViewGroup parent);
     }
 
 }

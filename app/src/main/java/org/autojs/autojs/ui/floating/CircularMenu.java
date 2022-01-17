@@ -14,6 +14,11 @@ import com.stardust.app.OperationDialogBuilder;
 import com.stardust.autojs.core.record.Recorder;
 import com.stardust.enhancedfloaty.FloatyService;
 import com.stardust.enhancedfloaty.FloatyWindow;
+import com.stardust.util.ClipboardUtil;
+import com.stardust.util.Func1;
+import com.stardust.view.accessibility.AccessibilityService;
+import com.stardust.view.accessibility.LayoutInspector;
+import com.stardust.view.accessibility.NodeInfo;
 
 import org.autojs.autojs.Pref;
 import org.autojs.autojs.R;
@@ -22,21 +27,14 @@ import org.autojs.autojs.autojs.record.GlobalActionRecorder;
 import org.autojs.autojs.model.explorer.ExplorerDirPage;
 import org.autojs.autojs.model.explorer.Explorers;
 import org.autojs.autojs.model.script.Scripts;
+import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder;
 import org.autojs.autojs.tool.AccessibilityServiceTool;
 import org.autojs.autojs.tool.RootTool;
 import org.autojs.autojs.ui.common.NotAskAgainDialog;
+import org.autojs.autojs.ui.explorer.ExplorerView;
 import org.autojs.autojs.ui.floating.layoutinspector.LayoutBoundsFloatyWindow;
 import org.autojs.autojs.ui.floating.layoutinspector.LayoutHierarchyFloatyWindow;
 import org.autojs.autojs.ui.main.MainActivity_;
-import org.autojs.autojs.ui.explorer.ExplorerView;
-import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder;
-
-import com.stardust.util.ClipboardUtil;
-import com.stardust.util.Func1;
-import com.stardust.view.accessibility.AccessibilityService;
-import com.stardust.view.accessibility.LayoutInspector;
-import com.stardust.view.accessibility.NodeInfo;
-
 import org.greenrobot.eventbus.EventBus;
 import org.jdeferred.Deferred;
 import org.jdeferred.impl.DeferredObject;
@@ -53,8 +51,8 @@ public class CircularMenu implements Recorder.OnStateChangedListener, LayoutInsp
 
 
     public static class StateChangeEvent {
-        private int currentState;
-        private int previousState;
+        private final int currentState;
+        private final int previousState;
 
         public StateChangeEvent(int currentState, int previousState) {
             this.currentState = currentState;
@@ -79,8 +77,8 @@ public class CircularMenu implements Recorder.OnStateChangedListener, LayoutInsp
     CircularMenuWindow mWindow;
     private int mState;
     private RoundedImageView mActionViewIcon;
-    private Context mContext;
-    private GlobalActionRecorder mRecorder;
+    private final Context mContext;
+    private final GlobalActionRecorder mRecorder;
     private MaterialDialog mSettingsDialog;
     private MaterialDialog mLayoutInspectDialog;
     private String mRunningPackage, mRunningActivity;

@@ -2,12 +2,8 @@ package com.stardust.util;
 
 import android.app.Activity;
 import android.content.res.Configuration;
-import android.graphics.Point;
 import android.util.DisplayMetrics;
 import android.view.Display;
-import android.view.Surface;
-
-import static java.lang.System.out;
 
 /**
  * Created by Stardust on 2017/4/26.
@@ -20,6 +16,16 @@ public class ScreenMetrics {
     private static boolean initialized = false;
     private static int deviceScreenDensity;
     private static Display display;
+    private int mDesignWidth;
+    private int mDesignHeight;
+
+    public ScreenMetrics(int designWidth, int designHeight) {
+        mDesignWidth = designWidth;
+        mDesignHeight = designHeight;
+    }
+
+    public ScreenMetrics() {
+    }
 
     public static void initIfNeeded(Activity activity) {
         if (initialized)
@@ -83,18 +89,6 @@ public class ScreenMetrics {
         if (height == 0 || !initialized)
             return y;
         return y * height / deviceScreenHeight;
-    }
-
-
-    private int mDesignWidth;
-    private int mDesignHeight;
-
-    public ScreenMetrics(int designWidth, int designHeight) {
-        mDesignWidth = designWidth;
-        mDesignHeight = designHeight;
-    }
-
-    public ScreenMetrics() {
     }
 
     public void setDesignWidth(int designWidth) {

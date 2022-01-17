@@ -2,8 +2,6 @@ package org.autojs.autojs.pluginclient;
 
 import android.annotation.SuppressLint;
 import android.text.TextUtils;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
@@ -28,9 +26,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.HashMap;
 
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 /**
  * Created by Stardust on 2017/5/11.
@@ -39,7 +37,7 @@ import io.reactivex.schedulers.Schedulers;
 public class DevPluginResponseHandler implements Handler {
 
 
-    private Router mRouter = new Router.RootRouter("type")
+    private final Router mRouter = new Router.RootRouter("type")
             .handler("command", new Router("command")
                     .handler("run", data -> {
                         String script = data.get("script").getAsString();
@@ -86,7 +84,7 @@ public class DevPluginResponseHandler implements Handler {
                     }));
 
 
-    private HashMap<String, ScriptExecution> mScriptExecutions = new HashMap<>();
+    private final HashMap<String, ScriptExecution> mScriptExecutions = new HashMap<>();
     private final File mCacheDir;
 
     public DevPluginResponseHandler(File cacheDir) {

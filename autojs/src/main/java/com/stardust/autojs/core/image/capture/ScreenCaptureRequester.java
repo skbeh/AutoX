@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
+
 import androidx.annotation.RequiresApi;
 
 import com.stardust.app.OnActivityResultDelegate;
@@ -17,15 +18,15 @@ public interface ScreenCaptureRequester {
 
     void cancel();
 
+    void request();
+
+    void setOnActivityResultCallback(Callback callback);
+
     interface Callback {
 
         void onRequestResult(int result, Intent data);
 
     }
-
-    void request();
-
-    void setOnActivityResultCallback(Callback callback);
 
     abstract class AbstractScreenCaptureRequester implements ScreenCaptureRequester {
 
@@ -56,8 +57,8 @@ public interface ScreenCaptureRequester {
     class ActivityScreenCaptureRequester extends AbstractScreenCaptureRequester implements ScreenCaptureRequester, OnActivityResultDelegate {
 
         private static final int REQUEST_CODE_MEDIA_PROJECTION = 17777;
-        private OnActivityResultDelegate.Mediator mMediator;
-        private Activity mActivity;
+        private final OnActivityResultDelegate.Mediator mMediator;
+        private final Activity mActivity;
 
         public ActivityScreenCaptureRequester(Mediator mediator, Activity activity) {
             mMediator = mediator;

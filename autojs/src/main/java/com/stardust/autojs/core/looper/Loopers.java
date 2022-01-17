@@ -5,6 +5,8 @@ import android.os.Looper;
 import android.os.MessageQueue;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import com.stardust.autojs.rhino.AutoJsContext;
 import com.stardust.autojs.runtime.ScriptRuntime;
 import com.stardust.autojs.runtime.api.Threads;
@@ -17,8 +19,6 @@ import org.mozilla.javascript.Context;
 import java.util.HashSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import androidx.annotation.Nullable;
-
 /**
  * Created by Stardust on 2017/7/29.
  */
@@ -27,45 +27,38 @@ import androidx.annotation.Nullable;
 public class Loopers implements MessageQueue.IdleHandler {
 
     private static final String LOG_TAG = "Loopers";
-
-    public interface LooperQuitHandler {
-        boolean shouldQuit();
-    }
-
     private static final Runnable EMPTY_RUNNABLE = () -> {
     };
-
-    private volatile ThreadLocal<Boolean> waitWhenIdle = new ThreadLocal<Boolean>() {
+    private final ThreadLocal<Boolean> waitWhenIdle = new ThreadLocal<Boolean>() {
         @Nullable
         @Override
         protected Boolean initialValue() {
             return Looper.myLooper() == Looper.getMainLooper();
         }
     };
-    private volatile ThreadLocal<HashSet<Integer>> waitIds = new ThreadLocal<HashSet<Integer>>() {
+    private final ThreadLocal<HashSet<Integer>> waitIds = new ThreadLocal<HashSet<Integer>>() {
         @Nullable
         @Override
         protected HashSet<Integer> initialValue() {
             return new HashSet<>();
         }
     };
-    private volatile ThreadLocal<Integer> maxWaitId = new ThreadLocal<Integer>() {
+    private final ThreadLocal<Integer> maxWaitId = new ThreadLocal<Integer>() {
         @Nullable
         @Override
         protected Integer initialValue() {
             return 0;
         }
     };
-    private volatile ThreadLocal<CopyOnWriteArrayList<LooperQuitHandler>> looperQuitHandlers = new ThreadLocal<>();
+    private final ThreadLocal<CopyOnWriteArrayList<LooperQuitHandler>> looperQuitHandlers = new ThreadLocal<>();
+    private final Timers mTimers;
+    private final ScriptRuntime mScriptRuntime;
+    private final Handler mMainHandler;
+    private final Looper mMainLooper;
+    private final Threads mThreads;
+    private final MessageQueue mMainMessageQueue;
     private volatile Looper mServantLooper;
-    private Timers mTimers;
-    private ScriptRuntime mScriptRuntime;
     private LooperQuitHandler mMainLooperQuitHandler;
-    private Handler mMainHandler;
-    private Looper mMainLooper;
-    private Threads mThreads;
-    private MessageQueue mMainMessageQueue;
-
     public Loopers(ScriptRuntime runtime) {
         mTimers = runtime.timers;
         mThreads = runtime.threads;
@@ -75,7 +68,6 @@ public class Loopers implements MessageQueue.IdleHandler {
         mMainHandler = new Handler();
         mMainMessageQueue = Looper.myQueue();
     }
-
 
     public Looper getMainLooper() {
         return mMainLooper;
@@ -119,7 +111,6 @@ public class Loopers implements MessageQueue.IdleHandler {
         }
         return true;
     }
-
 
     private void initServantThread() {
         new ThreadCompat(() -> {
@@ -211,5 +202,9 @@ public class Loopers implements MessageQueue.IdleHandler {
         //当子线程退成时，主线程需要检查自身是否退出（主线程在所有子线程执行完成后才能退出，如果主线程已经执行完任务仍然要等待所有子线程），
         //此时通过向主线程发送一个空的Runnable，主线程执行完这个Runnable后会触发IdleHandler，从而检查自身是否退出
         mMainHandler.post(EMPTY_RUNNABLE);
+    }
+
+    public interface LooperQuitHandler {
+        boolean shouldQuit();
     }
 }

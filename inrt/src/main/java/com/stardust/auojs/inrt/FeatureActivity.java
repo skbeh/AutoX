@@ -19,7 +19,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
-
 import androidx.annotation.RequiresApi;
 
 import com.stardust.auojs.inrt.util.MarketJavascriptInterface;
@@ -29,7 +28,7 @@ import java.util.List;
 public class FeatureActivity extends Activity {
 	private WebView webView;
 	private ProgressBar mProgressBar;
-	private String url ="http://mk.autoxjs.com/pages/ykapp/choiseFeature";
+	private final String url ="http://mk.autoxjs.com/pages/ykapp/choiseFeature";
 	MarketJavascriptInterface marketJavascriptInterface;
 
 

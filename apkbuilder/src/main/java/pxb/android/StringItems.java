@@ -1,12 +1,12 @@
 /*
  * Copyright (c) 2009-2013 Panxiaobo
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,6 +18,7 @@ package pxb.android;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,9 +37,9 @@ public class StringItems extends ArrayList<StringItem> {
         int flags = in.getInt();
         int stringDataOffset = in.getInt();
         int stylesOffset = in.getInt();
-        int offsets[] = new int[stringCount];
+        int[] offsets = new int[stringCount];
 
-        String strings[] = new String[stringCount];
+        String[] strings = new String[stringCount];
 
         for (int i = 0; i < stringCount; i++) {
             offsets[i] = in.getInt();
@@ -62,10 +63,10 @@ public class StringItems extends ArrayList<StringItem> {
                 while (in.get(start + blength) != 0) {
                     blength++;
                 }
-                s = new String(in.array(), start, blength, "UTF-8");
+                s = new String(in.array(), start, blength, StandardCharsets.UTF_8);
             } else {
                 int length = u16length(in);
-                s = new String(in.array(), in.position(), length * 2, "UTF-16LE");
+                s = new String(in.array(), in.position(), length * 2, StandardCharsets.UTF_16LE);
             }
             strings[i] = s;
         }
@@ -122,7 +123,7 @@ public class StringItems extends ArrayList<StringItem> {
 
                 if (useUTF8) {
                     int length = stringData.length();
-                    byte[] data = stringData.getBytes("UTF-8");
+                    byte[] data = stringData.getBytes(StandardCharsets.UTF_8);
                     int u8lenght = data.length;
 
                     if (length > 0x7F) {
@@ -142,7 +143,7 @@ public class StringItems extends ArrayList<StringItem> {
                     offset += 3 + u8lenght;
                 } else {
                     int length = stringData.length();
-                    byte[] data = stringData.getBytes("UTF-16LE");
+                    byte[] data = stringData.getBytes(StandardCharsets.UTF_16LE);
 
                     if (length > 0x7FFF) {
                         int x = (length >> 16) | 0x8000;

@@ -19,16 +19,15 @@ import com.stardust.auojs.inrt.BuildConfig;
 import com.stardust.auojs.inrt.Pref;
 import com.stardust.util.MapBuilder;
 
-
 import java.io.File;
 import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.subjects.PublishSubject;
 import okhttp3.OkHttpClient;
 
 /**

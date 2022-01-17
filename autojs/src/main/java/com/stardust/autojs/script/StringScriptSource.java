@@ -11,7 +11,7 @@ import java.io.Reader;
 
 public class StringScriptSource extends JavaScriptSource {
 
-    private String mScript;
+    private final String mScript;
 
     public StringScriptSource(String script) {
         super("Tmp");

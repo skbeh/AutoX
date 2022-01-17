@@ -12,7 +12,7 @@ import android.widget.Toast;
 public class UiHandler extends Handler {
 
 
-    private Context mContext;
+    private final Context mContext;
 
     public UiHandler(Context context) {
         super(Looper.getMainLooper());

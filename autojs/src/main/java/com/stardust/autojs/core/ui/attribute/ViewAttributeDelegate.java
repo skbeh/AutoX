@@ -4,6 +4,12 @@ import android.view.View;
 
 public interface ViewAttributeDelegate {
 
+    boolean has(String name);
+
+    String get(View view, String name, ViewAttributeGetter defaultGetter);
+
+    void set(View view, String name, String value, ViewAttributeSetter defaultSetter);
+
     interface ViewAttributeGetter {
         String get(String name);
     }
@@ -11,11 +17,5 @@ public interface ViewAttributeDelegate {
     interface ViewAttributeSetter {
         void set(String name, String value);
     }
-
-    boolean has(String name);
-
-    String get(View view, String name, ViewAttributeGetter defaultGetter);
-
-    void set(View view, String name, String value, ViewAttributeSetter defaultSetter);
 
 }

@@ -4,19 +4,16 @@ import android.annotation.SuppressLint;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-import org.autojs.autojs.tool.IntentTool;
-import org.autojs.autojs.ui.BaseActivity;
-import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder;
 import com.stardust.util.IntentUtil;
-
-import org.autojs.autojs.BuildConfig;
-import org.autojs.autojs.R;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
+import org.autojs.autojs.BuildConfig;
+import org.autojs.autojs.R;
+import org.autojs.autojs.tool.IntentTool;
+import org.autojs.autojs.ui.BaseActivity;
 
 /**
  * Created by Stardust on 2017/2/2.
@@ -28,7 +25,7 @@ public class AboutActivity extends BaseActivity {
     @ViewById(R.id.version)
     TextView mVersion;
 
-    private int mLolClickCount = 0;
+    private final int mLolClickCount = 0;
 
 
     @AfterViews

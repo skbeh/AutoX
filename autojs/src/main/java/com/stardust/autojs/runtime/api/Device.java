@@ -16,14 +16,13 @@ import android.os.Build;
 import android.os.PowerManager;
 import android.os.Vibrator;
 import android.provider.Settings;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.stardust.autojs.R;
 import com.stardust.autojs.runtime.exception.ScriptException;
@@ -78,6 +77,10 @@ public class Device {
     public static final String baseOS;
 
     public static final String securityPatch;
+    public static final String codename = Build.VERSION.CODENAME;
+    @SuppressLint("HardwareIds")
+    public static final String serial = Build.SERIAL;
+    private static final String FAKE_MAC_ADDRESS = "02:00:00:00:00:00";
 
     static {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
@@ -89,17 +92,43 @@ public class Device {
         }
     }
 
-    public static final String codename = Build.VERSION.CODENAME;
-
-    @SuppressLint("HardwareIds")
-    public static final String serial = Build.SERIAL;
-
-    private Context mContext;
+    private final Context mContext;
     private PowerManager.WakeLock mWakeLock;
     private int mWakeLockFlag;
 
     public Device(Context context) {
         mContext = context;
+    }
+
+    private static String getMacByInterface() throws SocketException {
+        List<NetworkInterface> networkInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+        for (NetworkInterface networkInterface : networkInterfaces) {
+            if (networkInterface.getName().equalsIgnoreCase("wlan0")) {
+                byte[] macBytes = networkInterface.getHardwareAddress();
+                if (macBytes == null) {
+                    return null;
+                }
+
+                StringBuilder mac = new StringBuilder();
+                for (byte b : macBytes) {
+                    mac.append(String.format("%02X:", b));
+                }
+
+                if (mac.length() > 0) {
+                    mac.deleteCharAt(mac.length() - 1);
+                }
+                return mac.toString();
+            }
+        }
+        return null;
+    }
+
+    private static String getMacByFile() throws Exception {
+        try {
+            return PFiles.read("/sys/class/net/wlan0/address");
+        } catch (UncheckedIOException e) {
+            return null;
+        }
     }
 
     @SuppressLint("HardwareIds")
@@ -113,7 +142,6 @@ public class Device {
         }
     }
 
-
     @SuppressLint("HardwareIds")
     public String getAndroidId() {
         return Settings.Secure.getString(mContext.getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -123,13 +151,13 @@ public class Device {
         return Settings.System.getInt(mContext.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS);
     }
 
-    public int getBrightnessMode() throws Settings.SettingNotFoundException {
-        return Settings.System.getInt(mContext.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS_MODE);
-    }
-
     public void setBrightness(int b) throws Settings.SettingNotFoundException {
         checkWriteSettingsPermission();
         Settings.System.putInt(mContext.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS, b);
+    }
+
+    public int getBrightnessMode() throws Settings.SettingNotFoundException {
+        return Settings.System.getInt(mContext.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS_MODE);
     }
 
     public void setBrightnessMode(int b) throws Settings.SettingNotFoundException {
@@ -142,14 +170,32 @@ public class Device {
                 .getStreamVolume(AudioManager.STREAM_MUSIC);
     }
 
+    public void setMusicVolume(int i) {
+        checkWriteSettingsPermission();
+        ((AudioManager) getSystemService(Context.AUDIO_SERVICE))
+                .setStreamVolume(AudioManager.STREAM_MUSIC, i, 0);
+    }
+
     public int getNotificationVolume() {
         return ((AudioManager) getSystemService(Context.AUDIO_SERVICE))
                 .getStreamVolume(AudioManager.STREAM_NOTIFICATION);
     }
 
+    public void setNotificationVolume(int i) {
+        checkWriteSettingsPermission();
+        ((AudioManager) getSystemService(Context.AUDIO_SERVICE))
+                .setStreamVolume(AudioManager.STREAM_NOTIFICATION, i, 0);
+    }
+
     public int getAlarmVolume() {
         return ((AudioManager) getSystemService(Context.AUDIO_SERVICE))
                 .getStreamVolume(AudioManager.STREAM_ALARM);
+    }
+
+    public void setAlarmVolume(int i) {
+        checkWriteSettingsPermission();
+        ((AudioManager) getSystemService(Context.AUDIO_SERVICE))
+                .setStreamVolume(AudioManager.STREAM_ALARM, i, 0);
     }
 
     public int getMusicMaxVolume() {
@@ -165,24 +211,6 @@ public class Device {
     public int getAlarmMaxVolume() {
         return ((AudioManager) getSystemService(Context.AUDIO_SERVICE))
                 .getStreamMaxVolume(AudioManager.STREAM_ALARM);
-    }
-
-    public void setMusicVolume(int i) {
-        checkWriteSettingsPermission();
-        ((AudioManager) getSystemService(Context.AUDIO_SERVICE))
-                .setStreamVolume(AudioManager.STREAM_MUSIC, i, 0);
-    }
-
-    public void setAlarmVolume(int i) {
-        checkWriteSettingsPermission();
-        ((AudioManager) getSystemService(Context.AUDIO_SERVICE))
-                .setStreamVolume(AudioManager.STREAM_ALARM, i, 0);
-    }
-
-    public void setNotificationVolume(int i) {
-        checkWriteSettingsPermission();
-        ((AudioManager) getSystemService(Context.AUDIO_SERVICE))
-                .setStreamVolume(AudioManager.STREAM_NOTIFICATION, i, 0);
     }
 
     public float getBattery() {
@@ -286,7 +314,6 @@ public class Device {
         ((Vibrator) getSystemService(Context.VIBRATOR_SERVICE)).cancel();
     }
 
-
     private void checkWriteSettingsPermission() {
         if (SettingsCompat.canWriteSettings(mContext)) {
             return;
@@ -294,7 +321,6 @@ public class Device {
         SettingsCompat.manageWriteSettings(mContext);
         throw new SecurityException(mContext.getString(R.string.no_write_settings_permissin));
     }
-
 
     private void checkReadPhoneStatePermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -304,7 +330,6 @@ public class Device {
             }
         }
     }
-
 
     // just to avoid warning of null pointer to make android studio happy..
     @NonNull
@@ -316,8 +341,6 @@ public class Device {
         }
         return (T) systemService;
     }
-
-    private static final String FAKE_MAC_ADDRESS = "02:00:00:00:00:00";
 
     @SuppressLint("HardwareIds")
     public String getMacAddress() throws Exception {
@@ -343,40 +366,9 @@ public class Device {
         return mac;
     }
 
-    private static String getMacByInterface() throws SocketException {
-        List<NetworkInterface> networkInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
-        for (NetworkInterface networkInterface : networkInterfaces) {
-            if (networkInterface.getName().equalsIgnoreCase("wlan0")) {
-                byte[] macBytes = networkInterface.getHardwareAddress();
-                if (macBytes == null) {
-                    return null;
-                }
-
-                StringBuilder mac = new StringBuilder();
-                for (byte b : macBytes) {
-                    mac.append(String.format("%02X:", b));
-                }
-
-                if (mac.length() > 0) {
-                    mac.deleteCharAt(mac.length() - 1);
-                }
-                return mac.toString();
-            }
-        }
-        return null;
-    }
-
-    private static String getMacByFile() throws Exception {
-        try {
-            return PFiles.read("/sys/class/net/wlan0/address");
-        } catch (UncheckedIOException e) {
-            return null;
-        }
-    }
-
-
     /**
      * 获取是否存在NavigationBar
+     *
      * @return
      */
     public boolean checkDeviceHasNavigationBar() {
@@ -399,8 +391,10 @@ public class Device {
         }
         return hasNavigationBar;
     }
+
     /**
      * 获取虚拟功能键高度
+     *
      * @return
      */
     public int getVirtualBarHeigh() {

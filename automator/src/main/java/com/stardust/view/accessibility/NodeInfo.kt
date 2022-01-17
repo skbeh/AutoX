@@ -4,13 +4,10 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Rect
-import androidx.annotation.Keep
 import android.view.accessibility.AccessibilityNodeInfo
-
+import androidx.annotation.Keep
 import com.stardust.automator.UiObject
-
-import java.util.ArrayList
-import java.util.HashMap
+import java.util.*
 
 /**
  * Created by Stardust on 2017/3/10.
@@ -150,7 +147,12 @@ class NodeInfo(resources: Resources?, node: UiObject, var parent: NodeInfo?) {
         }
 
 
-        internal fun capture(resourcesCache: HashMap<String, Resources>, context: Context, uiObject: UiObject, parent: NodeInfo?): NodeInfo {
+        internal fun capture(
+            resourcesCache: HashMap<String, Resources>,
+            context: Context,
+            uiObject: UiObject,
+            parent: NodeInfo?
+        ): NodeInfo {
             val pkg = uiObject.packageName()
             var resources: Resources? = null
             if (pkg != null) {

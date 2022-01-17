@@ -5,17 +5,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Environment;
 import android.os.Looper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import com.google.android.material.snackbar.Snackbar;
 import android.text.Editable;
 import android.text.InputType;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.android.material.snackbar.Snackbar;
 import com.stardust.app.DialogUtils;
 import com.stardust.app.GlobalAppContext;
 import com.stardust.pio.PFiles;
@@ -29,27 +30,26 @@ import org.autojs.autojs.model.explorer.ExplorerDirPage;
 import org.autojs.autojs.model.explorer.ExplorerFileItem;
 import org.autojs.autojs.model.explorer.ExplorerPage;
 import org.autojs.autojs.model.explorer.Explorers;
-import org.autojs.autojs.storage.file.TmpScriptFiles;
 import org.autojs.autojs.model.sample.SampleFile;
 import org.autojs.autojs.model.script.ScriptFile;
 import org.autojs.autojs.model.script.Scripts;
 import org.autojs.autojs.network.download.DownloadManager;
+import org.autojs.autojs.storage.file.TmpScriptFiles;
+import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder;
 import org.autojs.autojs.ui.filechooser.FileChooserDialogBuilder;
 import org.autojs.autojs.ui.shortcut.ShortcutCreateActivity;
 import org.autojs.autojs.ui.timing.TimedTaskSettingActivity_;
-import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder;
-
 import org.reactivestreams.Publisher;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.internal.functions.ObjectHelper;
-import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+import io.reactivex.rxjava3.subjects.PublishSubject;
 
 
 /**
@@ -61,10 +61,10 @@ public class ScriptOperations {
 
     private static final String LOG_TAG = "ScriptOperations";
     private final ExplorerPage mExplorerPage;
-    private Context mContext;
-    private View mView;
-    private ScriptFile mCurrentDirectory;
-    private Explorer mExplorer;
+    private final Context mContext;
+    private final View mView;
+    private final ScriptFile mCurrentDirectory;
+    private final Explorer mExplorer;
 
     public ScriptOperations(Context context, View view, ScriptFile currentDirectory) {
         mContext = context;
@@ -264,12 +264,30 @@ public class ScriptOperations {
         }
     }
 
+    private static boolean equal(final Object a, final Object b) {
+        if (a == b) {
+            return true;
+        }
+
+        if (a == null || b == null) {
+            return false;
+        }
+
+        if (a.getClass().isArray() && b.getClass().isArray()) {
+            // uses array based equals
+            return Objects.deepEquals(a, b);
+        } else {
+            // use regular equals
+            return a.equals(b);
+        }
+    }
+
     public Observable<ExplorerFileItem> rename(final ExplorerFileItem item) {
         String originalName = item.getName();
         return showNameInputDialog(originalName, new InputCallback(null, originalName))
                 .map(newName -> {
                     ExplorerFileItem newItem = item.rename(newName);
-                    if (ObjectHelper.equals(newItem.toScriptFile(), item.toScriptFile())) {
+                    if (equal(newItem.toScriptFile(), item.toScriptFile())) {
                         showMessage(R.string.error_cannot_rename);
                         throw new IOException();
                     }
@@ -374,9 +392,9 @@ public class ScriptOperations {
 
     private class InputCallback implements MaterialDialog.InputCallback {
 
-        private String mExcluded;
+        private final String mExcluded;
         private boolean mIsFirstTextChanged = true;
-        private String mExtension;
+        private final String mExtension;
 
         InputCallback(@Nullable String ext, String excluded) {
             mExtension = ext == null ? null : "." + ext;

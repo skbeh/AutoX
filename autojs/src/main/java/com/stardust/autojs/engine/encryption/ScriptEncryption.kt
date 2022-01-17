@@ -8,7 +8,11 @@ object ScriptEncryption {
     private var mInitVector = ""
 
     fun decrypt(bytes: ByteArray, start: Int = 0, end: Int = bytes.size): ByteArray {
-        return AdvancedEncryptionStandard(mKey.toByteArray(), mInitVector).decrypt(bytes, start, end)
+        return AdvancedEncryptionStandard(mKey.toByteArray(), mInitVector).decrypt(
+            bytes,
+            start,
+            end
+        )
     }
 
 }

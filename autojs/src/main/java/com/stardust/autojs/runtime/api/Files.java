@@ -21,6 +21,10 @@ public class Files {
         mRuntime = runtime;
     }
 
+    public static String join(String parent, String... child) {
+        return PFiles.join(parent, child);
+    }
+
     // FIXME: 2018/10/16 is not correct in sub-directory?
     public String path(String relativePath) {
         String cwd = cwd();
@@ -84,7 +88,6 @@ public class Files {
     public String read(String path, String encoding) {
         return PFiles.read(path(path), encoding);
     }
-
 
     public String read(String path) {
         return PFiles.read(path(path));
@@ -188,10 +191,6 @@ public class Files {
 
     public boolean isEmptyDir(String path) {
         return PFiles.isEmptyDir(path(path));
-    }
-
-    public static String join(String parent, String... child) {
-        return PFiles.join(parent, child);
     }
 
     public String getHumanReadableSize(long bytes) {

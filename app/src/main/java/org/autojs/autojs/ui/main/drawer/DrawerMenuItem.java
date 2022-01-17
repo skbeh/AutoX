@@ -10,12 +10,12 @@ public class DrawerMenuItem {
         void onClick(DrawerMenuItemViewHolder holder);
     }
 
-    private int mIcon;
-    private int mTitle;
+    private final int mIcon;
+    private final int mTitle;
     private boolean mAntiShake;
     private boolean mSwitchEnabled;
     private int mPrefKey;
-    private Action mAction;
+    private final Action mAction;
     private boolean mSwitchChecked;
     private boolean mOnProgress;
     private int mNotificationCount;

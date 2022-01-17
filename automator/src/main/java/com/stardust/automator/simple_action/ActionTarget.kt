@@ -30,7 +30,11 @@ interface ActionTarget {
     class EditableActionTarget(private val mIndex: Int) : ActionTarget {
 
         override fun createAction(action: Int, vararg params: Any): SimpleAction {
-            return ActionFactory.createActionWithEditableFilter(action, mIndex, params[0].toString())
+            return ActionFactory.createActionWithEditableFilter(
+                action,
+                mIndex,
+                params[0].toString()
+            )
         }
     }
 

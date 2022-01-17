@@ -13,7 +13,7 @@ public class AssetsCache {
 
     private static final long PERSIST_TIME = 5 * 60 * 1000;
 
-    private static SimpleCache<String> cache = new SimpleCache<>(PERSIST_TIME, 5, 30 * 1000);
+    private static final SimpleCache<String> cache = new SimpleCache<>(PERSIST_TIME, 5, 30 * 1000);
 
     public static String get(final AssetManager assetManager, final String path) {
         return cache.get(path, new SimpleCache.Supplier<String>() {

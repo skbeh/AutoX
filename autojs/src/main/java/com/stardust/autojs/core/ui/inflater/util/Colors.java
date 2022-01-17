@@ -22,7 +22,7 @@ public class Colors {
         return Color.parseColor(color);
     }
 
-    public static int parse(View view, String color){
+    public static int parse(View view, String color) {
         return parse(view.getContext(), color);
     }
 }

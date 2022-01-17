@@ -1,19 +1,19 @@
 package org.autojs.autojs.network;
 
-import com.jakewharton.retrofit2.adapter.rxjava2.HttpException;
+import retrofit2.HttpException;
+import com.stardust.util.Objects;
+
 import org.autojs.autojs.network.api.UserApi;
 import org.autojs.autojs.network.entity.notification.Notification;
 import org.autojs.autojs.network.entity.notification.NotificationResponse;
 import org.autojs.autojs.network.entity.user.User;
-import com.stardust.util.Objects;
-
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
-import io.reactivex.Observable;
-import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+import io.reactivex.rxjava3.subjects.PublishSubject;
 import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
 
@@ -37,7 +37,7 @@ public class UserService {
 
     private static final UserService sInstance = new UserService();
     private final Retrofit mRetrofit;
-    private UserApi mUserApi;
+    private final UserApi mUserApi;
     private volatile User mUser;
 
     UserService() {

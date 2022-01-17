@@ -30,7 +30,7 @@ import com.stardust.auojs.inrt.util.UpdateUtil;
 import java.security.SecureRandom;
 import java.util.Random;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 
 public class LoginActivity extends AppCompatActivity {
     TextView infoTv;

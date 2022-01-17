@@ -9,9 +9,9 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
 import android.content.pm.Signature;
-import androidx.annotation.Nullable;
 import android.util.Base64;
-import android.util.Log;
+
+import androidx.annotation.Nullable;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -69,11 +69,11 @@ public class DeveloperUtils {
      * 此方法仅防止那些不会改源码直接用apk编辑器修改应用内字符串(QQ群号)等的恶意用户行为。
      * 为了开源社区的发展，请善用源码:-)
      */
-    public static boolean checkSignature(Context context,String signal) {
-        return checkSignature(context, context.getPackageName(),signal);
+    public static boolean checkSignature(Context context, String signal) {
+        return checkSignature(context, context.getPackageName(), signal);
     }
 
-    public static boolean checkSignature(Context context, String packageName,String signal) {
+    public static boolean checkSignature(Context context, String packageName, String signal) {
         String sha = getSignatureSHA(context, packageName);
         if (sha == null)
             return false;
@@ -150,7 +150,7 @@ public class DeveloperUtils {
         }
     }
 
-    public static void verifyApk(Activity activity,final String signal,final int crcRes) {
+    public static void verifyApk(Activity activity, final String signal, final int crcRes) {
         final WeakReference<Activity> activityWeakReference = new WeakReference<>(activity);
 
         sExecutor.execute(new Runnable() {
@@ -159,7 +159,7 @@ public class DeveloperUtils {
                 Activity a = activityWeakReference.get();
                 if (a == null)
                     return;
-                if (!checkSignature(a,signal)) {
+                if (!checkSignature(a, signal)) {
                     a.finish();
                     return;
                 }

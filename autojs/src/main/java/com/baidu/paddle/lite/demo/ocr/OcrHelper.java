@@ -12,10 +12,6 @@ public class OcrHelper {
         mOcrInstance = new PaddleOcrInstance();
     }
 
-    private static class Holder {
-        private static final OcrHelper INSTANCE = new OcrHelper();
-    }
-
     public static OcrHelper getInstance() {
         return Holder.INSTANCE;
     }
@@ -55,8 +51,11 @@ public class OcrHelper {
         mOcrInstance.end();
     }
 
-
     public interface InitializeCallback {
         void onInitFinish();
+    }
+
+    private static class Holder {
+        private static final OcrHelper INSTANCE = new OcrHelper();
     }
 }

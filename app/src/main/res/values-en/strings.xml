@@ -104,7 +104,6 @@
     <string name="text_version_too_old">Version too old</string>
     <string name="warning_version_too_old">This version is deprecated</string>
     <string name="text_release_notes">Release Notes</string>
-
     <string name="text_update">Update</string>
     <string name="text_processing">Processing</string>
     <string name="text_pre_execute_script">Pre-execute script</string>
@@ -135,7 +134,7 @@
     <string name="air_dialog_description_failed_unknown">Unknown error</string>
     <string name="air_label_use_email">Send by email</string>
     <string name="text_import_fail">Import failed</string>
-    <string name="text_no_brower">No brower installed.</string>
+    <string name="text_no_browser">No browser installed.</string>
     <string name="text_please_choose_a_script">Choose a script</string>
     <string name="text_edit_prepare_script">Edit pre-execute script</string>
     <string name="text_clear_pre_execute_script">Clear pre-execute script</string>
@@ -149,13 +148,13 @@
     <string name="text_code_beautify">Beautify code</string>
     <string name="text_guard_mode">Protection mode</string>
     <string name="summary_guard_mode">Prevent automation of scripts when Auto.js in the front</string>
-    <string name="text_layout_inspector_is_dumping">Inspecting layout...</string>
+    <string name="text_layout_inspector_is_dumping">Inspecting layout…</string>
     <string name="text_force_stop">Force stop</string>
-    <string name="text_execution_finished">\\n------------\\n[%s]Finished，spent %f seconds.</string>
+    <string name="text_execution_finished" formatted="false">\n------------\n[%s]Finished，spent %f seconds.</string>
     <string name="text_about_me_and_repo">About app and developer</string>
     <string name="text_attribute">Attribute</string>
     <string name="text_value">Value</string>
-    <string name="text_show_widget_infomation">View info</string>
+    <string name="text_show_widget_information">View info</string>
     <string name="text_show_layout_hierarchy">View in layout bounds\' view</string>
     <string name="default_value_script_dir_path">/Scripts/</string>
 

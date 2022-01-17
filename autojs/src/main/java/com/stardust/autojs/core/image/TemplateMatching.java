@@ -2,14 +2,12 @@ package com.stardust.autojs.core.image;
 
 import android.util.TimingLogger;
 
+import com.stardust.autojs.core.opencv.Mat;
 import com.stardust.autojs.core.opencv.OpenCVHelper;
 import com.stardust.util.Nath;
 
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
-
-import com.stardust.autojs.core.opencv.Mat;
-
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
@@ -28,28 +26,9 @@ import java.util.List;
 
 public class TemplateMatching {
 
-    public static class Match {
-        public final Point point;
-        public final double similarity;
-
-        public Match(Point point, double similarity) {
-            this.point = point;
-            this.similarity = similarity;
-        }
-
-        @Override
-        public String toString() {
-            return "Match{" +
-                    "point=" + point +
-                    ", similarity=" + similarity +
-                    '}';
-        }
-    }
-
-    private static final String LOG_TAG = "TemplateMatching";
-
     public static final int MAX_LEVEL_AUTO = -1;
     public static final int MATCHING_METHOD_DEFAULT = Imgproc.TM_CCOEFF_NORMED;
+    private static final String LOG_TAG = "TemplateMatching";
 
     public static Point fastTemplateMatching(Mat img, Mat template, int matchMethod, float weakThreshold, float strictThreshold, int maxLevel) {
         List<Match> result = fastTemplateMatching(img, template, matchMethod, weakThreshold, strictThreshold, maxLevel, 1);
@@ -138,7 +117,6 @@ public class TemplateMatching {
         return finalMatchResult;
     }
 
-
     private static Mat getPyramidDownAtLevel(Mat m, int level) {
         if (level == 0) {
             return m;
@@ -198,7 +176,6 @@ public class TemplateMatching {
         return Math.min(6, maxLevel);
     }
 
-
     private static Mat matchTemplate(Mat img, Mat temp, int match_method) {
         int result_cols = img.cols() - temp.cols() + 1;
         int result_rows = img.rows() - temp.rows() + 1;
@@ -244,6 +221,24 @@ public class TemplateMatching {
         }
         logger.addSplit("value:" + value);
         return new Match(pos, value);
+    }
+
+    public static class Match {
+        public final Point point;
+        public final double similarity;
+
+        public Match(Point point, double similarity) {
+            this.point = point;
+            this.similarity = similarity;
+        }
+
+        @Override
+        public String toString() {
+            return "Match{" +
+                    "point=" + point +
+                    ", similarity=" + similarity +
+                    '}';
+        }
     }
 
 

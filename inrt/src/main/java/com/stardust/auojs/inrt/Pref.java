@@ -2,15 +2,15 @@ package com.stardust.auojs.inrt;
 
 import android.content.SharedPreferences;
 import android.os.Environment;
-import androidx.preference.PreferenceManager;
 
+import androidx.preference.PreferenceManager;
 
 import com.stardust.app.GlobalAppContext;
 
 import java.io.File;
 
 public class Pref {
-    private static String KEY_FIRST_USING = "key_first_using";
+    private static final String KEY_FIRST_USING = "key_first_using";
 
     private static SharedPreferences def() {
         return PreferenceManager.getDefaultSharedPreferences(GlobalAppContext.get());

@@ -16,12 +16,12 @@ public class Timer {
 
     private static final String LOG_TAG = "Timer";
 
-    private SparseArray<Runnable> mHandlerCallbacks = new SparseArray<>();
-    private int mCallbackMaxId = 0;
-    private ScriptRuntime mRuntime;
-    private Handler mHandler;
-    private long mMaxCallbackUptimeMillis = 0;
+    private final SparseArray<Runnable> mHandlerCallbacks = new SparseArray<>();
+    private final ScriptRuntime mRuntime;
+    private final Handler mHandler;
     private final VolatileBox<Long> mMaxCallbackMillisForAllThread;
+    private int mCallbackMaxId = 0;
+    private long mMaxCallbackUptimeMillis = 0;
 
     public Timer(ScriptRuntime runtime, VolatileBox<Long> maxCallbackMillisForAllThread) {
         mRuntime = runtime;
@@ -48,13 +48,13 @@ public class Timer {
     }
 
     private void callFunction(Object callback, Object thiz, Object[] args) {
-        if(Looper.myLooper() == Looper.getMainLooper()){
+        if (Looper.myLooper() == Looper.getMainLooper()) {
             try {
                 mRuntime.bridges.callFunction(callback, thiz, args);
-            }catch (Exception e){
+            } catch (Exception e) {
                 mRuntime.exit(e);
             }
-        }else {
+        } else {
             mRuntime.bridges.callFunction(callback, thiz, args);
         }
     }

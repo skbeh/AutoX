@@ -9,6 +9,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class OCRPredictorNative {
 
     private static final AtomicBoolean isSOLoaded = new AtomicBoolean();
+    private final Config config;
+    private long nativePointer = 0;
+
+    public OCRPredictorNative(Config config) {
+        this.config = config;
+        loadLibrary();
+        nativePointer = init(config.detModelFilename, config.recModelFilename, config.clsModelFilename,
+                config.cpuThreadNum, config.cpuPower);
+        Log.i("OCRPredictorNative", "load success " + nativePointer);
+
+    }
 
     public static void loadLibrary() throws RuntimeException {
         if (!isSOLoaded.get() && isSOLoaded.compareAndSet(false, true)) {
@@ -22,20 +33,6 @@ public class OCRPredictorNative {
         }
     }
 
-    private Config config;
-
-    private long nativePointer = 0;
-
-    public OCRPredictorNative(Config config) {
-        this.config = config;
-        loadLibrary();
-        nativePointer = init(config.detModelFilename, config.recModelFilename,config.clsModelFilename,
-                config.cpuThreadNum, config.cpuPower);
-        Log.i("OCRPredictorNative", "load success " + nativePointer);
-
-    }
-
-
     public ArrayList<OcrResultModel> runImage(float[] inputData, int width, int height, int channels, Bitmap originalImage) {
         Log.i("OCRPredictorNative", "begin to run image " + inputData.length + " " + width + " " + height);
         float[] dims = new float[]{1, channels, height, width};
@@ -44,23 +41,14 @@ public class OCRPredictorNative {
         return results;
     }
 
-    public static class Config {
-        public int cpuThreadNum;
-        public String cpuPower;
-        public String detModelFilename;
-        public String recModelFilename;
-        public String clsModelFilename;
-
-    }
-
-    public void destory(){
+    public void destory() {
         if (nativePointer > 0) {
             release(nativePointer);
             nativePointer = 0;
         }
     }
 
-    protected native long init(String detModelPath, String recModelPath,String clsModelPath, int threadNum, String cpuMode);
+    protected native long init(String detModelPath, String recModelPath, String clsModelPath, int threadNum, String cpuMode);
 
     protected native float[] forward(long pointer, float[] buf, float[] ddims, Bitmap originalImage);
 
@@ -96,6 +84,15 @@ public class OCRPredictorNative {
         }
         Log.i("OCRPredictorNative", "word finished " + wordNum);
         return model;
+    }
+
+    public static class Config {
+        public int cpuThreadNum;
+        public String cpuPower;
+        public String detModelFilename;
+        public String recModelFilename;
+        public String clsModelFilename;
+
     }
 
 

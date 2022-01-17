@@ -1,8 +1,8 @@
 package com.stardust.autojs.core.inputevent;
 
-import androidx.annotation.NonNull;
-
 import static com.stardust.autojs.core.record.inputevent.InputEventRecorder.parseDeviceNumber;
+
+import androidx.annotation.NonNull;
 
 
 /**
@@ -12,15 +12,10 @@ import static com.stardust.autojs.core.record.inputevent.InputEventRecorder.pars
 public class TouchObserver implements InputEventObserver.InputEventListener {
 
 
-    public interface OnTouchEventListener {
-        void onTouch(int x, int y);
-    }
-
+    private final InputEventObserver mInputEventObserver;
     private int mTouchX, mTouchY;
     private OnTouchEventListener mOnTouchEventListener;
     private int mLastTouchX = -1, mLastTouchY = -1;
-    private InputEventObserver mInputEventObserver;
-
     public TouchObserver(InputEventObserver observer) {
         mInputEventObserver = observer;
     }
@@ -44,7 +39,6 @@ public class TouchObserver implements InputEventObserver.InputEventListener {
             mOnTouchEventListener.onTouch(x, y);
         }
     }
-
 
     @Override
     public void onInputEvent(@NonNull InputEventObserver.InputEvent event) {
@@ -84,6 +78,10 @@ public class TouchObserver implements InputEventObserver.InputEventListener {
             return;
         }
         mLastTouchY = value;
+    }
+
+    public interface OnTouchEventListener {
+        void onTouch(int x, int y);
     }
 
 }

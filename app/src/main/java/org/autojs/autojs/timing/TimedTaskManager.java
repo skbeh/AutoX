@@ -15,8 +15,8 @@ import org.autojs.autojs.tool.Observers;
 
 import java.util.List;
 
-import io.reactivex.Flowable;
-import io.reactivex.Observable;
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.Observable;
 
 /**
  * Created by Stardust on 2017/11/27.
@@ -25,9 +25,9 @@ import io.reactivex.Observable;
 public class TimedTaskManager {
 
     private static TimedTaskManager sInstance;
-    private Context mContext;
-    private TimedTaskDatabase mTimedTaskDatabase;
-    private IntentTaskDatabase mIntentTaskDatabase;
+    private final Context mContext;
+    private final TimedTaskDatabase mTimedTaskDatabase;
+    private final IntentTaskDatabase mIntentTaskDatabase;
 
     public static TimedTaskManager getInstance() {
         if (sInstance == null) {

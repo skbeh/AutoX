@@ -17,29 +17,11 @@ import java.util.Set;
 
 public class AccessibilityActionRecorder extends Recorder.AbstractRecorder implements AccessibilityDelegate {
 
-    public static class AccessibilityActionRecordEvent {
-
-        private final AccessibilityEvent mAccessibilityEvent;
-
-        public AccessibilityActionRecordEvent(AccessibilityEvent event) {
-            mAccessibilityEvent = event;
-        }
-
-        public AccessibilityEvent getAccessibilityEvent() {
-            return mAccessibilityEvent;
-        }
-    }
-
     private static final Set<Integer> EVENT_TYPES = new HashSet<>(Arrays.asList(AccessibilityEvent.TYPE_VIEW_CLICKED, AccessibilityEvent.TYPE_VIEW_LONG_CLICKED, AccessibilityEvent.TYPE_VIEW_SCROLLED, AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED));
-
     private static final long RECORD_TIME_OUT = 10 * 60 * 1000;
-
     private boolean mShouldIgnoreFirstAction = false;
-
-
     private AccessibilityActionConverter mConverter;
     private long mRecordStartMillis;
-
     public AccessibilityActionRecorder() {
         super(true);
     }
@@ -87,6 +69,19 @@ public class AccessibilityActionRecorder extends Recorder.AbstractRecorder imple
 
     public void setShouldIgnoreFirstAction(boolean shouldIgnoreFirstAction) {
         mShouldIgnoreFirstAction = shouldIgnoreFirstAction;
+    }
+
+    public static class AccessibilityActionRecordEvent {
+
+        private final AccessibilityEvent mAccessibilityEvent;
+
+        public AccessibilityActionRecordEvent(AccessibilityEvent event) {
+            mAccessibilityEvent = event;
+        }
+
+        public AccessibilityEvent getAccessibilityEvent() {
+            return mAccessibilityEvent;
+        }
     }
 
 }

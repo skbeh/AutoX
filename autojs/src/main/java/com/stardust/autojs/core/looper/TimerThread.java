@@ -2,6 +2,7 @@ package com.stardust.autojs.core.looper;
 
 import android.os.Handler;
 import android.os.Looper;
+
 import androidx.annotation.CallSuper;
 
 import com.stardust.autojs.engine.RhinoJavaScriptEngine;
@@ -18,20 +19,27 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class TimerThread extends ThreadCompat {
 
-    private static ConcurrentHashMap<Thread, Timer> sTimerMap = new ConcurrentHashMap<>();
-
-    private Timer mTimer;
+    private static final ConcurrentHashMap<Thread, Timer> sTimerMap = new ConcurrentHashMap<>();
     private final VolatileBox<Long> mMaxCallbackUptimeMillisForAllThreads;
     private final ScriptRuntime mRuntime;
-    private Runnable mTarget;
-    private boolean mRunning = false;
+    private final Runnable mTarget;
     private final Object mRunningLock = new Object();
+    private Timer mTimer;
+    private boolean mRunning = false;
 
     public TimerThread(ScriptRuntime runtime, VolatileBox<Long> maxCallbackUptimeMillisForAllThreads, Runnable target) {
         super(target);
         mRuntime = runtime;
         mTarget = target;
         mMaxCallbackUptimeMillisForAllThreads = maxCallbackUptimeMillisForAllThreads;
+    }
+
+    public static Timer getTimerForThread(Thread thread) {
+        return sTimerMap.get(thread);
+    }
+
+    public static Timer getTimerForCurrentThread() {
+        return getTimerForThread(Thread.currentThread());
     }
 
     @Override
@@ -72,14 +80,6 @@ public class TimerThread extends ThreadCompat {
     @CallSuper
     protected void onExit() {
         mRuntime.loopers.notifyThreadExit(this);
-    }
-
-    public static Timer getTimerForThread(Thread thread) {
-        return sTimerMap.get(thread);
-    }
-
-    public static Timer getTimerForCurrentThread() {
-        return getTimerForThread(Thread.currentThread());
     }
 
     public int setTimeout(Object callback, long delay, Object... args) {

@@ -9,7 +9,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class ItemTouchHelperSimpleCallback extends ItemTouchHelper.SimpleCallback {
 
-    private boolean mLongPressDragEnabled, mItemViewSwipeEnabled;
+    private final boolean mLongPressDragEnabled;
+    private final boolean mItemViewSwipeEnabled;
 
     public ItemTouchHelperSimpleCallback(int dragDirs, int swipeDirs) {
         super(dragDirs, swipeDirs);

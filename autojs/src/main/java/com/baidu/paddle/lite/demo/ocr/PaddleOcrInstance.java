@@ -13,7 +13,7 @@ import java.util.List;
 
 public class PaddleOcrInstance implements IOcrInstance<Predictor> {
 
-    private Predictor mPredictor;
+    private final Predictor mPredictor;
 
     public PaddleOcrInstance() {
         this.mPredictor = new Predictor();
@@ -28,7 +28,7 @@ public class PaddleOcrInstance implements IOcrInstance<Predictor> {
     public void init() {
         if (mPredictor != null) {
             mPredictor.init(GlobalAppContext.get());
-        }else{
+        } else {
             Log.e("mPredictor.init", "mPredictor == null");
         }
     }
@@ -38,7 +38,7 @@ public class PaddleOcrInstance implements IOcrInstance<Predictor> {
         OcrResult ocrResult;
         if (mPredictor != null && bitmap != null && !bitmap.isRecycled()) {
             mPredictor.setInputImage(bitmap);
-            List<OcrResultModel> OcrResultModelList = mPredictor.ocrImage(bitmap,cpuThreadNum);
+            List<OcrResultModel> OcrResultModelList = mPredictor.ocrImage(bitmap, cpuThreadNum);
             ocrResult = transformData(OcrResultModelList);
             ocrResult.timeRequired = mPredictor.inferenceTime();
         } else {

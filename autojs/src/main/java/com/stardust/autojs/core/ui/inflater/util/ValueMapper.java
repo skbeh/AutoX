@@ -10,8 +10,8 @@ import java.util.HashMap;
 
 public class ValueMapper<V> {
 
-    private HashMap<String, V> mHashMap = new HashMap<>();
-    private String mAttrName;
+    private final HashMap<String, V> mHashMap = new HashMap<>();
+    private final String mAttrName;
 
     public ValueMapper(String attrName) {
         mAttrName = attrName;
@@ -50,9 +50,9 @@ public class ValueMapper<V> {
         return v;
     }
 
-    public int split(String str){
+    public int split(String str) {
         int r = 0;
-        for(String s : str.split("\\|")){
+        for (String s : str.split("\\|")) {
             r |= (Integer) get(s);
         }
         return r;

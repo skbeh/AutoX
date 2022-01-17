@@ -15,7 +15,11 @@ class AutoJsContext(factory: ContextFactory?) : Context(factory) {
         return continuationPending
     }
 
-    override fun resumeContinuation(continuation: Any, scope: Scriptable?, functionResult: Any?): Any {
+    override fun resumeContinuation(
+        continuation: Any,
+        scope: Scriptable?,
+        functionResult: Any?
+    ): Any {
         mContinuations.remove(continuation)
         return super.resumeContinuation(continuation, scope, functionResult)
     }

@@ -11,7 +11,7 @@ import java.io.File;
 public class AutoFileSource extends ScriptSource {
 
     public static final String ENGINE = AutoFileSource.class.getName() + ".Engine";
-    private File mFile;
+    private final File mFile;
 
     public AutoFileSource(File file) {
         super(PFiles.getNameWithoutExtension(file.getAbsolutePath()));

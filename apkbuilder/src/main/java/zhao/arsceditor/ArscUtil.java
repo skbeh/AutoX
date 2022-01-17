@@ -14,27 +14,26 @@ import zhao.arsceditor.ResDecoder.ARSCCallBack;
 import zhao.arsceditor.ResDecoder.data.ResTable;
 
 public class ArscUtil {
+    // 资源类型常量
+    public static final int ARSC = 0, AXML = 1, DEX = 2;
+    // 存储资源Configs的集合
+    public static List<String> Configs;
+    // 存储资源种类的集合
+    public static List<String> Types;
+    // 存储资源的集合
+    private final List<Map<String, String>> RESOURCES = new ArrayList<Map<String, String>>();
     // 存储字符串的集合
     public List<String> txtOriginal = new ArrayList<String>();
     // 存储修改后的字符串的集合
     public List<String> txtTranslated = new ArrayList<String>();
     // 存储字符串在资源中对应的键
     public List<String> txtTranslated_Key = new ArrayList<String>();
-    // 存储资源Configs的集合
-    public static List<String> Configs;
-    // 存储资源种类的集合
-    public static List<String> Types;
-    // 存储资源的集合
-    private List<Map<String, String>> RESOURCES = new ArrayList<Map<String, String>>();
-    // ARSC解析器
-    private AndrolibResources mAndRes;
     // 字符串是否修改
     public boolean isChanged = false;
+    // ARSC解析器
+    private AndrolibResources mAndRes;
     // 资源类型
     private int ResType;
-    // 资源类型常量
-    public static final int ARSC = 0, AXML = 1, DEX = 2;
-
 
     private void open(String resFile) throws IOException {
         if (resFile.endsWith(".arsc")) {
@@ -92,14 +91,6 @@ public class ArscUtil {
     // 获取ARSC文件的ResTable的方法
     public ResTable getResTable(InputStream ARSCStream) throws IOException {
         return mAndRes.getResTable(ARSCStream);
-    }
-
-    // 一个储存键的类
-    static class MyObj {
-        public final static String NAME = "name";
-        public final static String VALUE = "value";
-        public final static String TYPE = "type";
-        public final static String CONFIG = "config";
     }
 
     public void openArsc(String file_name) {
@@ -196,5 +187,13 @@ public class ArscUtil {
         txtTranslated.remove(position);
         // 向当前位置添加新的内容，以此实现文本的更新
         txtTranslated.add(position, value);
+    }
+
+    // 一个储存键的类
+    static class MyObj {
+        public final static String NAME = "name";
+        public final static String VALUE = "value";
+        public final static String TYPE = "type";
+        public final static String CONFIG = "config";
     }
 }

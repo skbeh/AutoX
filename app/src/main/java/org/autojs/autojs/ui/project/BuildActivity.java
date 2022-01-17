@@ -3,15 +3,8 @@ package org.autojs.autojs.ui.project;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.cardview.widget.CardView;
-
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -22,16 +15,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
+
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.textfield.TextInputLayout;
 import com.stardust.app.DialogUtils;
-import com.stardust.autojs.core.image.Colors;
 import com.stardust.autojs.project.ProjectConfig;
 import com.stardust.autojs.project.SigningConfig;
-import com.stardust.pio.PFile;
 import com.stardust.pio.PFiles;
 import com.stardust.util.IntentUtil;
 
@@ -45,7 +40,6 @@ import org.autojs.autojs.autojs.build.ApkBuilder;
 import org.autojs.autojs.build.ApkBuilderPluginHelper;
 import org.autojs.autojs.build.ApkKeyStore;
 import org.autojs.autojs.build.ApkSigner;
-import org.autojs.autojs.build.apksigner.KeyStoreFileManager;
 import org.autojs.autojs.external.fileprovider.AppFileProvider;
 import org.autojs.autojs.model.explorer.ExplorerFileItem;
 import org.autojs.autojs.model.explorer.Explorers;
@@ -53,9 +47,8 @@ import org.autojs.autojs.model.script.ScriptFile;
 import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder;
 import org.autojs.autojs.tool.BitmapTool;
 import org.autojs.autojs.ui.BaseActivity;
-import org.autojs.autojs.ui.project.SignManageActivity;
-import org.autojs.autojs.ui.project.SignManageActivity_;
 import org.autojs.autojs.ui.filechooser.FileChooserDialogBuilder;
+import org.autojs.autojs.ui.project.SignManageActivity_;
 import org.autojs.autojs.ui.shortcut.ShortcutIconSelectActivity;
 import org.autojs.autojs.ui.shortcut.ShortcutIconSelectActivity_;
 import org.autojs.autojs.ui.widget.CheckBoxCompat;
@@ -68,13 +61,11 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.regex.Pattern;
 
-import butterknife.BindView;
 import butterknife.OnCheckedChanged;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+import io.reactivex.rxjava3.subjects.PublishSubject;
 
 /**
  * Created by Stardust on 2017/10/22.

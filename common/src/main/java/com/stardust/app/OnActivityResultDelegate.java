@@ -1,8 +1,9 @@
 package com.stardust.app;
 
 import android.content.Intent;
-import androidx.annotation.NonNull;
 import android.util.SparseArray;
+
+import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +23,8 @@ public interface OnActivityResultDelegate {
 
     class Mediator implements OnActivityResultDelegate {
 
-        private SparseArray<OnActivityResultDelegate> mSpecialDelegate = new SparseArray<>();
-        private List<OnActivityResultDelegate> mDelegates = new ArrayList<>();
+        private final SparseArray<OnActivityResultDelegate> mSpecialDelegate = new SparseArray<>();
+        private final List<OnActivityResultDelegate> mDelegates = new ArrayList<>();
 
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
             OnActivityResultDelegate delegate = mSpecialDelegate.get(requestCode);

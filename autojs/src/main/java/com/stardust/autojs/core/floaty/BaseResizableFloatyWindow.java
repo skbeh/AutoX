@@ -1,13 +1,12 @@
 package com.stardust.autojs.core.floaty;
 
 import android.content.Context;
-
-import androidx.annotation.Nullable;
-
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+
+import androidx.annotation.Nullable;
 
 import com.stardust.autojs.R;
 import com.stardust.autojs.core.ui.inflater.inflaters.Exceptions;
@@ -17,8 +16,6 @@ import com.stardust.enhancedfloaty.FloatyService;
 import com.stardust.enhancedfloaty.ResizableFloaty;
 import com.stardust.enhancedfloaty.ResizableFloatyWindow;
 import com.stardust.enhancedfloaty.WindowBridge;
-import com.stardust.enhancedfloaty.gesture.DragGesture;
-import com.stardust.enhancedfloaty.gesture.ResizeGesture;
 
 /**
  * Created by Stardust on 2017/12/5.
@@ -26,21 +23,14 @@ import com.stardust.enhancedfloaty.gesture.ResizeGesture;
 
 public class BaseResizableFloatyWindow extends ResizableFloatyWindow {
 
-    public interface ViewSupplier {
-
-        View inflate(Context context, ViewGroup parent);
-
-    }
-
-    private VolatileDispose<RuntimeException> mInflateException = new VolatileDispose<>();
+    private final VolatileDispose<RuntimeException> mInflateException = new VolatileDispose<>();
     private View mCloseButton;
     private int mOffset;
-
-
     public BaseResizableFloatyWindow(Context context, ViewSupplier viewSupplier) {
         this(new MyFloaty(context, viewSupplier));
         mOffset = context.getResources().getDimensionPixelSize(R.dimen.floaty_window_offset);
     }
+
 
     private BaseResizableFloatyWindow(MyFloaty floaty) {
         super(floaty);
@@ -85,6 +75,10 @@ public class BaseResizableFloatyWindow extends ResizableFloatyWindow {
         mCloseButton.setOnClickListener(listener);
     }
 
+    public boolean isAdjustEnabled() {
+        return getMoveCursor().getVisibility() == View.VISIBLE;
+    }
+
     public void setAdjustEnabled(boolean enabled) {
         if (!enabled) {
             getMoveCursor().setVisibility(View.GONE);
@@ -95,10 +89,6 @@ public class BaseResizableFloatyWindow extends ResizableFloatyWindow {
             getResizer().setVisibility(View.VISIBLE);
             mCloseButton.setVisibility(View.VISIBLE);
         }
-    }
-
-    public boolean isAdjustEnabled() {
-        return getMoveCursor().getVisibility() == View.VISIBLE;
     }
 
     @Override
@@ -120,12 +110,18 @@ public class BaseResizableFloatyWindow extends ResizableFloatyWindow {
         getWindowView().requestLayout();
     }
 
+    public interface ViewSupplier {
+
+        View inflate(Context context, ViewGroup parent);
+
+    }
+
     private static class MyFloaty implements ResizableFloaty {
 
 
-        private ViewSupplier mContentViewSupplier;
+        private final ViewSupplier mContentViewSupplier;
+        private final Context mContext;
         private View mRootView;
-        private Context mContext;
 
 
         public MyFloaty(Context context, ViewSupplier supplier) {

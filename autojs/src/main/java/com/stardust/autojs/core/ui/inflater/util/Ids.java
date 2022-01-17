@@ -9,8 +9,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Ids {
 
-    private static AtomicInteger maxId = new AtomicInteger(20161209);
-    private static HashMap<String, Integer> ids = new HashMap<>();
+    private static final AtomicInteger maxId = new AtomicInteger(20161209);
+    private static final HashMap<String, Integer> ids = new HashMap<>();
 
     public static String parseIdName(String idName) {
         if (idName.startsWith("@+id/")) {

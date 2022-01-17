@@ -5,7 +5,6 @@ import androidx.annotation.CallSuper;
 import com.stardust.autojs.execution.ScriptExecution;
 import com.stardust.autojs.script.ScriptSource;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -48,9 +47,9 @@ public interface ScriptEngine<S extends ScriptSource> {
 
     Throwable getUncaughtException();
 
-    void setId(int id);
-
     int getId();
+
+    void setId(int id);
 
     /**
      * @hide
@@ -69,11 +68,11 @@ public interface ScriptEngine<S extends ScriptSource> {
     abstract class AbstractScriptEngine<S extends ScriptSource> implements ScriptEngine<S> {
 
 
-        private Map<String, Object> mTags = new ConcurrentHashMap<>();
+        private final Map<String, Object> mTags = new ConcurrentHashMap<>();
+        private final AtomicInteger mId = new AtomicInteger(ScriptExecution.NO_ID);
         private OnDestroyListener mOnDestroyListener;
         private volatile boolean mDestroyed = false;
         private Throwable mUncaughtException;
-        private volatile AtomicInteger mId = new AtomicInteger(ScriptExecution.NO_ID);
 
         @Override
         public void setTag(String key, Object value) {
@@ -125,13 +124,13 @@ public interface ScriptEngine<S extends ScriptSource> {
         }
 
         @Override
-        public void setId(int id) {
-            mId.compareAndSet(ScriptExecution.NO_ID, id);
+        public int getId() {
+            return mId.get();
         }
 
         @Override
-        public int getId() {
-            return mId.get();
+        public void setId(int id) {
+            mId.compareAndSet(ScriptExecution.NO_ID, id);
         }
     }
 }

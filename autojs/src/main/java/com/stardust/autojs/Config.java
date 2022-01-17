@@ -11,7 +11,7 @@ import android.preference.PreferenceManager;
 public class Config {
 
     private static Config sInstance;
-    private SharedPreferences mSharedPreferences;
+    private final SharedPreferences mSharedPreferences;
     private final Context mContext;
 
     public Config(Context context) {
@@ -19,14 +19,14 @@ public class Config {
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
+    public static Config getInstance() {
+        return sInstance;
+    }
+
     public static void setInstance(Config instance) {
         if (sInstance != null)
             throw new IllegalStateException();
         sInstance = instance;
-    }
-
-    public static Config getInstance() {
-        return sInstance;
     }
 
     public boolean isPrintJavaStackTraceEnabled() {

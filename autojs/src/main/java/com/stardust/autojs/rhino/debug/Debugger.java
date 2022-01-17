@@ -2,8 +2,9 @@ package com.stardust.autojs.rhino.debug;
 
 import android.os.Handler;
 import android.os.Looper;
-import androidx.annotation.Nullable;
 import android.util.Log;
+
+import androidx.annotation.Nullable;
 
 import com.stardust.autojs.ScriptEngineService;
 import com.stardust.autojs.engine.RhinoJavaScriptEngine;
@@ -42,7 +43,7 @@ public class Debugger implements DebugCallbackInternal {
     }
 
     public void attach(ScriptExecution execution) {
-        if(isAttached()){
+        if (isAttached()) {
             detach();
         }
         mScriptExecution = execution;
@@ -57,11 +58,11 @@ public class Debugger implements DebugCallbackInternal {
             return;
         }
         mCurrentSourceInfo = sourceInfo;
-        if(mDebugCallback != null){
+        if (mDebugCallback != null) {
             mDebugCallback.updateSourceText(sourceInfo);
         }
         DebugCallback callback = mWeakDebugCallback == null ? null : mWeakDebugCallback.get();
-        if(callback != null){
+        if (callback != null) {
             callback.updateSourceText(sourceInfo);
         }
     }
@@ -76,11 +77,11 @@ public class Debugger implements DebugCallbackInternal {
         }
         mSkipOtherFileBreakpoint = false;
         mCurrentSourceInfo = lastFrame.sourceInfo();
-        if(mDebugCallback != null){
+        if (mDebugCallback != null) {
             mDebugCallback.enterInterrupt(lastFrame, threadTitle, alertMessage);
         }
         DebugCallback callback = mWeakDebugCallback == null ? null : mWeakDebugCallback.get();
-        if(callback != null){
+        if (callback != null) {
             callback.enterInterrupt(lastFrame, threadTitle, alertMessage);
         }
     }

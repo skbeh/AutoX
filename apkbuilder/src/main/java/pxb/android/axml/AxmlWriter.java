@@ -1,12 +1,12 @@
 /*
  * Copyright (c) 2009-2013 Panxiaobo
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -74,13 +74,13 @@ public class AxmlWriter extends AxmlVisitor {
             return x;
         }
     };
+    private final Map<String, Ns> nses = new HashMap<String, Ns>();
+    private final Map<String, StringItem> resourceId2Str = new HashMap<String, StringItem>();
+    private final List<Integer> resourceIds = new ArrayList<Integer>();
+    private final StringItems stringItems = new StringItems();
     protected List<NodeImpl> firsts = new ArrayList<NodeImpl>(3);
-    private Map<String, Ns> nses = new HashMap<String, Ns>();
     private List<StringItem> otherString = new ArrayList<StringItem>();
-    private Map<String, StringItem> resourceId2Str = new HashMap<String, StringItem>();
-    private List<Integer> resourceIds = new ArrayList<Integer>();
     private List<StringItem> resourceString = new ArrayList<StringItem>();
-    private StringItems stringItems = new StringItems();
 
     @Override
     public NodeVisitor child(String ns, String name) {
@@ -266,11 +266,11 @@ public class AxmlWriter extends AxmlVisitor {
     }
 
     protected static class NodeImpl extends NodeVisitor {
+        private final Set<Attr> attrs = new TreeSet<Attr>(ATTR_CMP);
+        protected List<NodeImpl> children = new ArrayList<NodeImpl>();
         Attr id;
         Attr style;
-        private Set<Attr> attrs = new TreeSet<Attr>(ATTR_CMP);
         Attr clz;
-        protected List<NodeImpl> children = new ArrayList<NodeImpl>();
         private int line;
         private StringItem name;
         private StringItem ns;

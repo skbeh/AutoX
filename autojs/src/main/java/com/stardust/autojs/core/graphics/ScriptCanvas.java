@@ -178,10 +178,6 @@ public class ScriptCanvas {
         mCanvas.concat(matrix);
     }
 
-    public void setMatrix(@Nullable Matrix matrix) {
-        mCanvas.setMatrix(matrix);
-    }
-
     @Deprecated
     public void getMatrix(@NonNull Matrix ctm) {
         mCanvas.getMatrix(ctm);
@@ -190,6 +186,10 @@ public class ScriptCanvas {
     @Deprecated
     public Matrix getMatrix() {
         return mCanvas.getMatrix();
+    }
+
+    public void setMatrix(@Nullable Matrix matrix) {
+        mCanvas.setMatrix(matrix);
     }
 
     public boolean clipRect(@NonNull RectF rect, @NonNull Region.Op op) {

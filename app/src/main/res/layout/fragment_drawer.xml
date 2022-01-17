@@ -50,8 +50,7 @@
             android:layout_alignParentBottom="true"
             android:layout_toRightOf="@+id/avatar"
             android:alpha="0.08"
-            android:src="@drawable/android_eating_half"
-            app:tint="#000000" />
+            android:src="@drawable/android_eating_half"/>
 
     </RelativeLayout>
 
@@ -93,8 +92,7 @@
                     android:layout_height="20dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginRight="12dp"
-                    android:src="@drawable/ic_ali_settings"
-                    app:tint="#666666" />
+                    android:src="@drawable/ic_ali_settings"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -120,8 +118,7 @@
                     android:layout_height="20dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginRight="12dp"
-                    android:src="@drawable/ic_ali_exit"
-                    app:tint="#666666" />
+                    android:src="@drawable/ic_ali_exit"/>
 
                 <TextView
                     android:layout_width="wrap_content"

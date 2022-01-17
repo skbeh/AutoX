@@ -20,6 +20,15 @@ public abstract class InputEventRecorder extends Recorder.AbstractRecorder imple
 
     protected boolean mRecording = false;
 
+    public static int parseDeviceNumber(String device) {
+        Matcher matcher = LAST_INT_PATTERN.matcher(device);
+        if (matcher.find()) {
+            String someNumberStr = matcher.group(1);
+            return Integer.parseInt(someNumberStr);
+        }
+        return -1;
+    }
+
     protected void startImpl() {
         mRecording = true;
     }
@@ -37,16 +46,6 @@ public abstract class InputEventRecorder extends Recorder.AbstractRecorder imple
     }
 
     public abstract String getCode();
-
-    public static int parseDeviceNumber(String device) {
-        Matcher matcher = LAST_INT_PATTERN.matcher(device);
-        if (matcher.find()) {
-            String someNumberStr = matcher.group(1);
-            return Integer.parseInt(someNumberStr);
-        }
-        return -1;
-    }
-
 
     @Override
     public void onInputEvent(@NonNull InputEventObserver.InputEvent e) {

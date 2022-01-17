@@ -1,5 +1,7 @@
 package org.autojs.autojs.ui.main.market;
 
+import static android.content.Context.TELEPHONY_SERVICE;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Handler;
@@ -7,7 +9,6 @@ import android.os.Message;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.Toast;
 
 import com.stardust.autojs.execution.ScriptExecution;
@@ -15,11 +16,9 @@ import com.stardust.autojs.script.StringScriptSource;
 
 import org.autojs.autojs.model.script.Scripts;
 
-import static android.content.Context.TELEPHONY_SERVICE;
-
 public class MarketJavascriptInterface {
 
-    private Context context;
+    private final Context context;
     private ScriptExecution execution;
 
     @android.webkit.JavascriptInterface
@@ -40,7 +39,7 @@ public class MarketJavascriptInterface {
         handler.sendEmptyMessageDelayed(2,1000*60*tryTime);
     }
 
-    private Handler handler = new Handler() {
+    private final Handler handler = new Handler() {
 
         @Override
         public void handleMessage(Message msg) {

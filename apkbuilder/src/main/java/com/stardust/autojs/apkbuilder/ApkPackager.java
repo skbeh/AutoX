@@ -21,8 +21,8 @@ import pxb.android.tinysign.TinySign;
 
 public class ApkPackager {
 
-    private InputStream mApkInputStream;
-    private String mWorkspacePath;
+    private final InputStream mApkInputStream;
+    private final String mWorkspacePath;
 
     public ApkPackager(InputStream apkInputStream, String workspacePath) {
         mApkInputStream = apkInputStream;

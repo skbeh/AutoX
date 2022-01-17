@@ -2,7 +2,6 @@ package com.stardust.autojs.rhino;
 
 import androidx.annotation.VisibleForTesting;
 
-
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.SecurityController;
@@ -45,6 +44,15 @@ public class RhinoAndroidHelper {
     }
 
     /**
+     * @return a context prepared for android
+     * @deprecated use {@link #enterContext()} instead
+     */
+    @Deprecated
+    public static Context prepareContext() {
+        return new RhinoAndroidHelper().enterContext();
+    }
+
+    /**
      * call this instead of {@link Context#enter()}
      *
      * @return a context prepared for android
@@ -80,14 +88,5 @@ public class RhinoAndroidHelper {
      */
     public void loadClassJar(File jar) throws IOException {
         ((AndroidClassLoader) getContextFactory().getApplicationClassLoader()).loadJar(jar);
-    }
-
-    /**
-     * @return a context prepared for android
-     * @deprecated use {@link #enterContext()} instead
-     */
-    @Deprecated
-    public static Context prepareContext() {
-        return new RhinoAndroidHelper().enterContext();
     }
 }

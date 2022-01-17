@@ -1,5 +1,7 @@
 package org.autojs.autojs.ui.error;
 
+import static android.util.Patterns.EMAIL_ADDRESS;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -7,14 +9,6 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringDef;
-import androidx.annotation.StringRes;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.textfield.TextInputLayout;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -26,9 +20,17 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringDef;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.Toolbar;
+
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.aakira.expandablelayout.ExpandableRelativeLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.TextInputLayout;
 import com.heinrichreimersoftware.androidissuereporter.R;
 import com.heinrichreimersoftware.androidissuereporter.model.DeviceInfo;
 import com.heinrichreimersoftware.androidissuereporter.model.Report;
@@ -50,8 +52,6 @@ import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
-
-import static android.util.Patterns.EMAIL_ADDRESS;
 
 /**
  * Created by Stardust on 2017/4/3.
@@ -94,7 +94,7 @@ public abstract class AbstractIssueReporterActivity extends BaseActivity {
     private ExpandableRelativeLayout layoutLogin;
     private FloatingActionButton buttonSend;
 
-    private Drawable optionUseAccountButtonDrawable = null;
+    private final Drawable optionUseAccountButtonDrawable = null;
 
     private String token;
 
@@ -525,7 +525,7 @@ public abstract class AbstractIssueReporterActivity extends BaseActivity {
     }
 
     private static abstract class DialogAsyncTask<Pa, Pr, Re> extends AsyncTask<Pa, Pr, Re> {
-        private WeakReference<Context> contextWeakReference;
+        private final WeakReference<Context> contextWeakReference;
         private WeakReference<Dialog> dialogWeakReference;
 
         private boolean supposedToBeDismissed;

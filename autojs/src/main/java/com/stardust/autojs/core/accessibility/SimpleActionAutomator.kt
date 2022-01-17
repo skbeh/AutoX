@@ -22,7 +22,10 @@ import com.stardust.util.ScreenMetrics
  * Created by Stardust on 2017/4/2.
  */
 
-class SimpleActionAutomator(private val mAccessibilityBridge: AccessibilityBridge, private val mScriptRuntime: ScriptRuntime) {
+class SimpleActionAutomator(
+    private val mAccessibilityBridge: AccessibilityBridge,
+    private val mScriptRuntime: ScriptRuntime
+) {
 
     private lateinit var mGlobalActionAutomator: GlobalActionAutomator
 
@@ -75,12 +78,22 @@ class SimpleActionAutomator(private val mAccessibilityBridge: AccessibilityBridg
 
     @ScriptInterface
     fun scrollBackward(i: Int): Boolean {
-        return performAction(ActionFactory.createScrollAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD, i))
+        return performAction(
+            ActionFactory.createScrollAction(
+                AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD,
+                i
+            )
+        )
     }
 
     @ScriptInterface
     fun scrollForward(i: Int): Boolean {
-        return performAction(ActionFactory.createScrollAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD, i))
+        return performAction(
+            ActionFactory.createScrollAction(
+                AccessibilityNodeInfo.ACTION_SCROLL_FORWARD,
+                i
+            )
+        )
     }
 
     @ScriptInterface
@@ -186,10 +199,11 @@ class SimpleActionAutomator(private val mAccessibilityBridge: AccessibilityBridg
     private fun prepareForGesture() {
         ScriptRuntime.requiresApi(24)
         if (!::mGlobalActionAutomator.isInitialized) {
-            mGlobalActionAutomator = GlobalActionAutomator(Handler(mScriptRuntime.loopers.servantLooper)) {
-                ensureAccessibilityServiceEnabled()
-                return@GlobalActionAutomator mAccessibilityBridge.service!!
-            }
+            mGlobalActionAutomator =
+                GlobalActionAutomator(Handler(mScriptRuntime.loopers.servantLooper)) {
+                    ensureAccessibilityServiceEnabled()
+                    return@GlobalActionAutomator mAccessibilityBridge.service!!
+                }
         }
         mGlobalActionAutomator.setScreenMetrics(mScreenMetrics)
     }

@@ -7,7 +7,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 
 public class ScriptExecutionObserver implements ScriptExecutionListener {
-    private CopyOnWriteArraySet<ScriptExecutionListener> mScriptExecutionListeners = new CopyOnWriteArraySet<>();
+    private final CopyOnWriteArraySet<ScriptExecutionListener> mScriptExecutionListeners = new CopyOnWriteArraySet<>();
 
     @Override
     public void onStart(ScriptExecution execution) {

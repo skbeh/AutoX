@@ -9,8 +9,8 @@ import android.text.TextWatcher;
 
 public class AutoIndent implements TextWatcher {
 
-    private String mIndent = "    ";
-    private CodeEditText mEditText;
+    private final String mIndent = "    ";
+    private final CodeEditText mEditText;
     private boolean mInsertingIndent = false;
     private boolean mExtraIndent = false;
     private boolean mAutoIndent = false;

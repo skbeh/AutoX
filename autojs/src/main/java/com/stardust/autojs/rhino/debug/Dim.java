@@ -11,14 +11,35 @@ import com.stardust.autojs.engine.RhinoJavaScriptEngine;
 import com.stardust.autojs.engine.ScriptEngine;
 import com.stardust.autojs.engine.ScriptEngineManager;
 
-import org.mozilla.javascript.*;
-import org.mozilla.javascript.debug.*;
-import org.mozilla.javascript.tools.debugger.*;
+import org.mozilla.javascript.Callable;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.ContextAction;
+import org.mozilla.javascript.ContextFactory;
+import org.mozilla.javascript.ImporterTopLevel;
+import org.mozilla.javascript.Kit;
+import org.mozilla.javascript.NativeCall;
+import org.mozilla.javascript.ObjArray;
+import org.mozilla.javascript.ScriptRuntime;
+import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.SecurityUtilities;
+import org.mozilla.javascript.Undefined;
+import org.mozilla.javascript.debug.DebugFrame;
+import org.mozilla.javascript.debug.DebuggableObject;
+import org.mozilla.javascript.debug.DebuggableScript;
 import org.mozilla.javascript.debug.Debugger;
+import org.mozilla.javascript.tools.debugger.ScopeProvider;
+import org.mozilla.javascript.tools.debugger.SourceProvider;
 
-import java.util.*;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Dim or Debugger Implementation for Rhino.
@@ -44,121 +65,156 @@ public class Dim {
     private static final int IPROXY_OBJECT_TO_STRING = 5;
     private static final int IPROXY_OBJECT_PROPERTY = 6;
     private static final int IPROXY_OBJECT_IDS = 7;
-
-    /**
-     * Interface to the debugger GUI.
-     */
-    private DebugCallbackInternal callback;
-
-    /**
-     * Whether the debugger should break.
-     */
-    private boolean breakFlag;
-
-    /**
-     * The ScopeProvider object that provides the scope in which to
-     * evaluate script.
-     */
-    private ScopeProvider scopeProvider;
-
-    /**
-     * The SourceProvider object that provides the source of evaluated scripts.
-     */
-    private SourceProvider sourceProvider;
-
-    /**
-     * The index of the current stack frame.
-     */
-    private int frameIndex = -1;
-
-    /**
-     * Information about the current stack at the point of interruption.
-     */
-    private volatile ContextData interruptedContextData;
-
-    /**
-     * The ContextFactory to listen to for debugging information.
-     */
-    private volatile ContextFactory contextFactory;
-
-    private ScriptEngineService scriptEngineService;
-
     /**
      * Synchronization object used to allow script evaluations to
      * happen when a thread is resumed.
      */
-    private Object monitor = new Object();
-
+    private final Object monitor = new Object();
     /**
      * Synchronization object used to wait for valid
      * {@link #interruptedContextData}.
      */
-    private Object eventThreadMonitor = new Object();
-
-    /**
-     * The action to perform to end the interruption loop.
-     */
-    private volatile int returnValue = -1;
-
-    /**
-     * Whether the debugger is inside the interruption loop.
-     */
-    private boolean insideInterruptLoop;
-
-    /**
-     * The requested script string to be evaluated when the thread
-     * has been resumed.
-     */
-    private String evalRequest;
-
-    /**
-     * The stack frame in which to evaluate {@link #evalRequest}.
-     */
-    private StackFrame evalFrame;
-
-    /**
-     * The result of evaluating {@link #evalRequest}.
-     */
-    private String evalResult;
-
-    /**
-     * Whether the debugger should break when a script exception is thrown.
-     */
-    private boolean breakOnExceptions;
-
-    /**
-     * Whether the debugger should break when a script function is entered.
-     */
-    private boolean breakOnEnter;
-
-    /**
-     * Whether the debugger should break when a script function is returned
-     * from.
-     */
-    private boolean breakOnReturn;
-
+    private final Object eventThreadMonitor = new Object();
     /**
      * Table mapping URLs to information about the script source.
      */
     private final Map<String, SourceInfo> urlToSourceInfo =
             Collections.synchronizedMap(new HashMap<String, SourceInfo>());
-
     /**
      * Table mapping function names to information about the function.
      */
     private final Map<String, FunctionSource> functionNames =
             Collections.synchronizedMap(new HashMap<String, FunctionSource>());
-
     /**
      * Table mapping functions to information about the function.
      */
     private final Map<DebuggableScript, FunctionSource> functionToSource =
             Collections.synchronizedMap(new HashMap<DebuggableScript, FunctionSource>());
-
+    /**
+     * Interface to the debugger GUI.
+     */
+    private DebugCallbackInternal callback;
+    /**
+     * Whether the debugger should break.
+     */
+    private boolean breakFlag;
+    /**
+     * The ScopeProvider object that provides the scope in which to
+     * evaluate script.
+     */
+    private ScopeProvider scopeProvider;
+    /**
+     * The SourceProvider object that provides the source of evaluated scripts.
+     */
+    private SourceProvider sourceProvider;
+    /**
+     * The index of the current stack frame.
+     */
+    private int frameIndex = -1;
+    /**
+     * Information about the current stack at the point of interruption.
+     */
+    private volatile ContextData interruptedContextData;
+    /**
+     * The ContextFactory to listen to for debugging information.
+     */
+    private volatile ContextFactory contextFactory;
+    private ScriptEngineService scriptEngineService;
+    /**
+     * The action to perform to end the interruption loop.
+     */
+    private volatile int returnValue = -1;
+    /**
+     * Whether the debugger is inside the interruption loop.
+     */
+    private boolean insideInterruptLoop;
+    /**
+     * The requested script string to be evaluated when the thread
+     * has been resumed.
+     */
+    private String evalRequest;
+    /**
+     * The stack frame in which to evaluate {@link #evalRequest}.
+     */
+    private StackFrame evalFrame;
+    /**
+     * The result of evaluating {@link #evalRequest}.
+     */
+    private String evalResult;
+    /**
+     * Whether the debugger should break when a script exception is thrown.
+     */
+    private boolean breakOnExceptions;
+    /**
+     * Whether the debugger should break when a script function is entered.
+     */
+    private boolean breakOnEnter;
+    /**
+     * Whether the debugger should break when a script function is returned
+     * from.
+     */
+    private boolean breakOnReturn;
     /**
      * ContextFactory.Listener instance attached to {@link #contextFactory}.
      */
     private DimIProxy listener;
+
+    /**
+     * Returns an array of all functions in the given script.
+     */
+    private static DebuggableScript[] getAllFunctions
+    (DebuggableScript function) {
+        ObjArray functions = new ObjArray();
+        collectFunctions_r(function, functions);
+        DebuggableScript[] result = new DebuggableScript[functions.size()];
+        functions.toArray(result);
+        return result;
+    }
+
+    /**
+     * Helper function for {@link #getAllFunctions(DebuggableScript)}.
+     */
+    private static void collectFunctions_r(DebuggableScript function,
+                                           ObjArray array) {
+        array.add(function);
+        for (int i = 0; i != function.getFunctionCount(); ++i) {
+            collectFunctions_r(function.getFunction(i), array);
+        }
+    }
+
+    /**
+     * Evaluates script in the given stack frame.
+     */
+    private static String do_eval(Context cx, StackFrame frame, String expr) {
+        String resultString;
+        Debugger saved_debugger = cx.getDebugger();
+        Object saved_data = cx.getDebuggerContextData();
+        int saved_level = cx.getOptimizationLevel();
+
+        cx.setDebugger(null, null);
+        cx.setOptimizationLevel(-1);
+        cx.setGeneratingDebug(false);
+        try {
+            Callable script = (Callable) cx.compileString(expr, "", 0, null);
+            Object result = script.call(cx, frame.scope, frame.thisObj,
+                    ScriptRuntime.emptyArgs);
+            if (result == Undefined.instance) {
+                resultString = "";
+            } else {
+                resultString = ScriptRuntime.toString(result);
+            }
+        } catch (Exception exc) {
+            resultString = exc.getMessage();
+        } finally {
+            cx.setGeneratingDebug(true);
+            cx.setOptimizationLevel(saved_level);
+            cx.setDebugger(saved_debugger, saved_data);
+        }
+        if (resultString == null) {
+            resultString = "null";
+        }
+        return resultString;
+    }
 
     /**
      * Sets the GuiCallback object to use.
@@ -462,29 +518,6 @@ public class Dim {
             }
         }
         return url;
-    }
-
-    /**
-     * Returns an array of all functions in the given script.
-     */
-    private static DebuggableScript[] getAllFunctions
-    (DebuggableScript function) {
-        ObjArray functions = new ObjArray();
-        collectFunctions_r(function, functions);
-        DebuggableScript[] result = new DebuggableScript[functions.size()];
-        functions.toArray(result);
-        return result;
-    }
-
-    /**
-     * Helper function for {@link #getAllFunctions(DebuggableScript)}.
-     */
-    private static void collectFunctions_r(DebuggableScript function,
-                                           ObjArray array) {
-        array.add(function);
-        for (int i = 0; i != function.getFunctionCount(); ++i) {
-            collectFunctions_r(function.getFunction(i), array);
-        }
     }
 
     /**
@@ -859,214 +892,6 @@ public class Dim {
     }
 
     /**
-     * Evaluates script in the given stack frame.
-     */
-    private static String do_eval(Context cx, StackFrame frame, String expr) {
-        String resultString;
-        Debugger saved_debugger = cx.getDebugger();
-        Object saved_data = cx.getDebuggerContextData();
-        int saved_level = cx.getOptimizationLevel();
-
-        cx.setDebugger(null, null);
-        cx.setOptimizationLevel(-1);
-        cx.setGeneratingDebug(false);
-        try {
-            Callable script = (Callable) cx.compileString(expr, "", 0, null);
-            Object result = script.call(cx, frame.scope, frame.thisObj,
-                    ScriptRuntime.emptyArgs);
-            if (result == Undefined.instance) {
-                resultString = "";
-            } else {
-                resultString = ScriptRuntime.toString(result);
-            }
-        } catch (Exception exc) {
-            resultString = exc.getMessage();
-        } finally {
-            cx.setGeneratingDebug(true);
-            cx.setOptimizationLevel(saved_level);
-            cx.setDebugger(saved_debugger, saved_data);
-        }
-        if (resultString == null) {
-            resultString = "null";
-        }
-        return resultString;
-    }
-
-    /**
-     * Proxy class to implement debug interfaces without bloat of class
-     * files.
-     */
-    private class DimIProxy
-            implements ContextAction, ScriptEngineManager.EngineLifecycleCallback, Debugger {
-
-        /**
-         * The interface implementation type.  One of the IPROXY_* constants
-         * defined in {@link Dim}.
-         */
-        private int type;
-
-        /**
-         * The URL origin of the script to compile or evaluate.
-         */
-        private String url;
-
-        /**
-         * The text of the script to compile, evaluate or test for compilation.
-         */
-        private String text;
-
-        /**
-         * The object to convert, get a property from or enumerate.
-         */
-        private Object object;
-
-        /**
-         * The property to look up in {@link #object}.
-         */
-        private Object id;
-
-        /**
-         * The boolean result of the action.
-         */
-        private boolean booleanResult;
-
-        /**
-         * The String result of the action.
-         */
-        private String stringResult;
-
-        /**
-         * The Object result of the action.
-         */
-        private Object objectResult;
-
-        /**
-         * The Object[] result of the action.
-         */
-        private Object[] objectArrayResult;
-
-        /**
-         * Creates a new DimIProxy.
-         */
-        private DimIProxy(int type) {
-            this.type = type;
-        }
-
-        // ContextAction
-
-        /**
-         * Performs the action given by {@link #type}.
-         */
-        public Object run(Context cx) {
-            switch (type) {
-                case IPROXY_COMPILE_SCRIPT:
-                    cx.compileString(text, url, 1, null);
-                    break;
-
-                case IPROXY_EVAL_SCRIPT: {
-                    Scriptable scope = null;
-                    if (scopeProvider != null) {
-                        scope = scopeProvider.getScope();
-                    }
-                    if (scope == null) {
-                        scope = new ImporterTopLevel(cx);
-                    }
-                    cx.evaluateString(scope, text, url, 1, null);
-                }
-                break;
-
-                case IPROXY_STRING_IS_COMPILABLE:
-                    booleanResult = cx.stringIsCompilableUnit(text);
-                    break;
-
-                case IPROXY_OBJECT_TO_STRING:
-                    if (object == Undefined.instance) {
-                        stringResult = "undefined";
-                    } else if (object == null) {
-                        stringResult = "null";
-                    } else if (object instanceof NativeCall) {
-                        stringResult = "[object Call]";
-                    } else {
-                        stringResult = Context.toString(object);
-                    }
-                    break;
-
-                case IPROXY_OBJECT_PROPERTY:
-                    objectResult = getObjectPropertyImpl(cx, object, id);
-                    break;
-
-                case IPROXY_OBJECT_IDS:
-                    objectArrayResult = getObjectIdsImpl(cx, object);
-                    break;
-
-                default:
-                    throw Kit.codeBug();
-            }
-            return null;
-        }
-
-        /**
-         * Performs the action given by {@link #type} with the attached
-         * {@link ContextFactory}.
-         */
-        private void withContext() {
-            contextFactory.call(this);
-        }
-
-        @Override
-        public void onEngineCreate(ScriptEngine engine) {
-            if (type != IPROXY_LISTEN) Kit.codeBug();
-            if (!(engine instanceof RhinoJavaScriptEngine) ||
-                    !callback.shouldAttachDebugger((RhinoJavaScriptEngine) engine)) {
-                return;
-            }
-
-            Context cx = ((RhinoJavaScriptEngine) engine).getContext();
-            ContextData contextData = new ContextData();
-            Debugger debugger = new DimIProxy(IPROXY_DEBUG);
-            cx.setDebugger(debugger, contextData);
-            cx.setGeneratingDebug(true);
-            cx.setOptimizationLevel(-1);
-            engine.setTag(TAG, Dim.this);
-        }
-
-        @Override
-        public void onEngineRemove(ScriptEngine engine) {
-            if (type != IPROXY_LISTEN) Kit.codeBug();
-        }
-
-        // Debugger
-
-        /**
-         * Returns a StackFrame for the given function or script.
-         */
-        public DebugFrame getFrame(Context cx, DebuggableScript fnOrScript) {
-            if (type != IPROXY_DEBUG) Kit.codeBug();
-
-            FunctionSource item = getFunctionSource(fnOrScript);
-            if (item == null) {
-                // Can not debug if source is not available
-                return null;
-            }
-            return new StackFrame(cx, Dim.this, item);
-        }
-
-        /**
-         * Called when compilation is finished.
-         */
-        public void handleCompilationDone(Context cx,
-                                          DebuggableScript fnOrScript,
-                                          String source) {
-            if (type != IPROXY_DEBUG) Kit.codeBug();
-
-            if (!fnOrScript.isTopLevel()) {
-                return;
-            }
-            registerTopScript(fnOrScript, source);
-        }
-    }
-
-    /**
      * Class to store information about a stack.
      */
     public static class ContextData {
@@ -1074,7 +899,7 @@ public class Dim {
         /**
          * The stack frames.
          */
-        private ObjArray frameStack = new ObjArray();
+        private final ObjArray frameStack = new ObjArray();
 
         /**
          * Whether the debugger should break at the next line in this context.
@@ -1142,33 +967,28 @@ public class Dim {
         /**
          * The debugger.
          */
-        private Dim dim;
+        private final Dim dim;
 
         /**
          * The ContextData for the Context being debugged.
          */
-        private ContextData contextData;
-
+        private final ContextData contextData;
+        /**
+         * Information about the function.
+         */
+        private final FunctionSource fsource;
+        /**
+         * Array of breakpoint state for each source line.
+         */
+        private final boolean[] breakpoints;
         /**
          * The scope.
          */
         private Scriptable scope;
-
         /**
          * The 'this' object.
          */
         private Scriptable thisObj;
-
-        /**
-         * Information about the function.
-         */
-        private FunctionSource fsource;
-
-        /**
-         * Array of breakpoint state for each source line.
-         */
-        private boolean[] breakpoints;
-
         /**
          * Current line number.
          */
@@ -1303,17 +1123,17 @@ public class Dim {
         /**
          * Information about the source of the function.
          */
-        private SourceInfo sourceInfo;
+        private final SourceInfo sourceInfo;
 
         /**
          * Line number of the first line of the function.
          */
-        private int firstLine;
+        private final int firstLine;
 
         /**
          * The function name.
          */
-        private String name;
+        private final String name;
 
         /**
          * Creates a new FunctionSource.
@@ -1362,27 +1182,27 @@ public class Dim {
         /**
          * The script.
          */
-        private String source;
+        private final String source;
 
         /**
          * The URL of the script.
          */
-        private String url;
+        private final String url;
 
         /**
          * Array indicating which lines can have breakpoints set.
          */
-        private boolean[] breakableLines;
+        private final boolean[] breakableLines;
 
         /**
          * Array indicating whether a breakpoint is set on the line.
          */
-        private boolean[] breakpoints;
+        private final boolean[] breakpoints;
 
         /**
          * Array of FunctionSource objects for the functions in the script.
          */
-        private FunctionSource[] functionSources;
+        private final FunctionSource[] functionSources;
 
         /**
          * Creates a new SourceInfo object.
@@ -1554,6 +1374,180 @@ public class Dim {
                     breakpoints[line] = false;
                 }
             }
+        }
+    }
+
+    /**
+     * Proxy class to implement debug interfaces without bloat of class
+     * files.
+     */
+    private class DimIProxy
+            implements ContextAction, ScriptEngineManager.EngineLifecycleCallback, Debugger {
+
+        /**
+         * The interface implementation type.  One of the IPROXY_* constants
+         * defined in {@link Dim}.
+         */
+        private final int type;
+
+        /**
+         * The URL origin of the script to compile or evaluate.
+         */
+        private String url;
+
+        /**
+         * The text of the script to compile, evaluate or test for compilation.
+         */
+        private String text;
+
+        /**
+         * The object to convert, get a property from or enumerate.
+         */
+        private Object object;
+
+        /**
+         * The property to look up in {@link #object}.
+         */
+        private Object id;
+
+        /**
+         * The boolean result of the action.
+         */
+        private boolean booleanResult;
+
+        /**
+         * The String result of the action.
+         */
+        private String stringResult;
+
+        /**
+         * The Object result of the action.
+         */
+        private Object objectResult;
+
+        /**
+         * The Object[] result of the action.
+         */
+        private Object[] objectArrayResult;
+
+        /**
+         * Creates a new DimIProxy.
+         */
+        private DimIProxy(int type) {
+            this.type = type;
+        }
+
+        // ContextAction
+
+        /**
+         * Performs the action given by {@link #type}.
+         */
+        public Object run(Context cx) {
+            switch (type) {
+                case IPROXY_COMPILE_SCRIPT:
+                    cx.compileString(text, url, 1, null);
+                    break;
+
+                case IPROXY_EVAL_SCRIPT: {
+                    Scriptable scope = null;
+                    if (scopeProvider != null) {
+                        scope = scopeProvider.getScope();
+                    }
+                    if (scope == null) {
+                        scope = new ImporterTopLevel(cx);
+                    }
+                    cx.evaluateString(scope, text, url, 1, null);
+                }
+                break;
+
+                case IPROXY_STRING_IS_COMPILABLE:
+                    booleanResult = cx.stringIsCompilableUnit(text);
+                    break;
+
+                case IPROXY_OBJECT_TO_STRING:
+                    if (object == Undefined.instance) {
+                        stringResult = "undefined";
+                    } else if (object == null) {
+                        stringResult = "null";
+                    } else if (object instanceof NativeCall) {
+                        stringResult = "[object Call]";
+                    } else {
+                        stringResult = Context.toString(object);
+                    }
+                    break;
+
+                case IPROXY_OBJECT_PROPERTY:
+                    objectResult = getObjectPropertyImpl(cx, object, id);
+                    break;
+
+                case IPROXY_OBJECT_IDS:
+                    objectArrayResult = getObjectIdsImpl(cx, object);
+                    break;
+
+                default:
+                    throw Kit.codeBug();
+            }
+            return null;
+        }
+
+        /**
+         * Performs the action given by {@link #type} with the attached
+         * {@link ContextFactory}.
+         */
+        private void withContext() {
+            contextFactory.call(this);
+        }
+
+        @Override
+        public void onEngineCreate(ScriptEngine engine) {
+            if (type != IPROXY_LISTEN) Kit.codeBug();
+            if (!(engine instanceof RhinoJavaScriptEngine) ||
+                    !callback.shouldAttachDebugger((RhinoJavaScriptEngine) engine)) {
+                return;
+            }
+
+            Context cx = ((RhinoJavaScriptEngine) engine).getContext();
+            ContextData contextData = new ContextData();
+            Debugger debugger = new DimIProxy(IPROXY_DEBUG);
+            cx.setDebugger(debugger, contextData);
+            cx.setGeneratingDebug(true);
+            cx.setOptimizationLevel(-1);
+            engine.setTag(TAG, Dim.this);
+        }
+
+        @Override
+        public void onEngineRemove(ScriptEngine engine) {
+            if (type != IPROXY_LISTEN) Kit.codeBug();
+        }
+
+        // Debugger
+
+        /**
+         * Returns a StackFrame for the given function or script.
+         */
+        public DebugFrame getFrame(Context cx, DebuggableScript fnOrScript) {
+            if (type != IPROXY_DEBUG) Kit.codeBug();
+
+            FunctionSource item = getFunctionSource(fnOrScript);
+            if (item == null) {
+                // Can not debug if source is not available
+                return null;
+            }
+            return new StackFrame(cx, Dim.this, item);
+        }
+
+        /**
+         * Called when compilation is finished.
+         */
+        public void handleCompilationDone(Context cx,
+                                          DebuggableScript fnOrScript,
+                                          String source) {
+            if (type != IPROXY_DEBUG) Kit.codeBug();
+
+            if (!fnOrScript.isTopLevel()) {
+                return;
+            }
+            registerTopScript(fnOrScript, source);
         }
     }
 }

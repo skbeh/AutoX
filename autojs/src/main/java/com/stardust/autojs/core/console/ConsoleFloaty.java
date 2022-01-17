@@ -2,9 +2,6 @@ package com.stardust.autojs.core.console;
 
 import android.content.Context;
 import android.content.ContextWrapper;
-
-import androidx.annotation.Nullable;
-
 import android.content.res.ColorStateList;
 import android.os.Build;
 import android.text.TextUtils;
@@ -17,13 +14,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+
 import com.stardust.app.GlobalAppContext;
+import com.stardust.autojs.R;
 import com.stardust.enhancedfloaty.FloatyService;
 import com.stardust.enhancedfloaty.ResizableExpandableFloaty;
 import com.stardust.enhancedfloaty.ResizableExpandableFloatyWindow;
 import com.stardust.util.ScreenMetrics;
 import com.stardust.util.ViewUtil;
-import com.stardust.autojs.R;
 import com.stardust.util.ViewUtils;
 
 /**
@@ -32,11 +31,11 @@ import com.stardust.util.ViewUtils;
 
 public class ConsoleFloaty extends ResizableExpandableFloaty.AbstractResizableExpandableFloaty {
 
+    private final ConsoleImpl mConsole;
     private ContextWrapper mContextWrapper;
     private View mResizer, mMoveCursor;
     private TextView mTitleView;
     private ImageView mCloaseView, mMinimizeView, mResizeView;
-    private ConsoleImpl mConsole;
     private CharSequence mTitle;
     private int mContentSize = -1;
     private int mTitleColor = 0xfe14efb1;
@@ -50,6 +49,15 @@ public class ConsoleFloaty extends ResizableExpandableFloaty.AbstractResizableEx
         setInitialX(100);
         setInitialY(1000);
         setCollapsedViewUnpressedAlpha(1.0f);
+    }
+
+    private static ColorStateList createColorStateList(int color) {
+        int[] colors = new int[]{color, color};
+        int[][] states = new int[2][];
+        states[0] = new int[]{android.R.attr.state_checked};
+        states[1] = new int[]{-android.R.attr.state_checked};
+        ColorStateList colorList = new ColorStateList(states, colors);
+        return colorList;
     }
 
     @Override
@@ -134,8 +142,6 @@ public class ConsoleFloaty extends ResizableExpandableFloaty.AbstractResizableEx
         view.findViewById(R.id.minimize).setOnClickListener(v -> window.collapse());
     }
 
-
-
     @Nullable
     @Override
     public View getResizerView(View expandedView) {
@@ -150,14 +156,13 @@ public class ConsoleFloaty extends ResizableExpandableFloaty.AbstractResizableEx
         return mMoveCursor;
     }
 
-
     public void setTitle(final CharSequence title, int color, int size) {
         mTitle = title;
         mTitleColor = color;
         mContentSize = ViewUtils.dpToPx(GlobalAppContext.get(), size);
         mTitleColor = color;
         if (mTitleView != null) {
-            if(!TextUtils.isEmpty(title)){
+            if (!TextUtils.isEmpty(title)) {
                 mTitleView.post(() -> mTitleView.setText(title));
             }
             resetTiteText();
@@ -197,15 +202,6 @@ public class ConsoleFloaty extends ResizableExpandableFloaty.AbstractResizableEx
             view.setImageTintList(createColorStateList(mTitleColor));
         }
 
-    }
-
-    private static ColorStateList createColorStateList(int color) {
-        int[] colors = new int[]{color, color};
-        int[][] states = new int[2][];
-        states[0] = new int[]{android.R.attr.state_checked};
-        states[1] = new int[]{-android.R.attr.state_checked};
-        ColorStateList colorList = new ColorStateList(states, colors);
-        return colorList;
     }
 
     private double getBorderContentScale() {

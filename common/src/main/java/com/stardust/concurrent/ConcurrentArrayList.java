@@ -10,9 +10,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ConcurrentArrayList<T> {
 
     private final Class<T> mTClass;
-    private volatile T[] mArray;
     private final AtomicInteger mSize = new AtomicInteger();
     private final Object mArrayResizeLock = mSize;
+    private volatile T[] mArray;
 
     public ConcurrentArrayList(Class<T> tClass) {
         mTClass = tClass;

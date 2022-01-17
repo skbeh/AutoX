@@ -19,7 +19,6 @@ import com.linsh.utilseverywhere.IntentUtils
 import com.stardust.app.GlobalAppContext
 import com.stardust.auojs.inrt.autojs.AutoJs
 import com.stardust.auojs.inrt.launch.GlobalProjectLauncher
-import com.stardust.auojs.inrt.util.UpdateUtil
 import com.stardust.autojs.project.ProjectConfig
 import com.stardust.util.IntentUtil
 import ezy.assist.compat.SettingsCompat
@@ -30,8 +29,8 @@ import java.util.*
  */
 
 class SplashActivity : AppCompatActivity() {
-    var TAG = "SplashActivity";
-    var step = 1; //打开悬浮权限，而打开权限，请求权限
+    var TAG = "SplashActivity"
+    var step = 1 //打开悬浮权限，而打开权限，请求权限
 
     override fun onCreate(@Nullable savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,10 +40,10 @@ class SplashActivity : AppCompatActivity() {
         if(Pref.getHost("d")=="d"){ //非第一次运行
             Pref.setHost("112.74.161.35")
             val mProjectConfig: ProjectConfig = ProjectConfig.fromAssets(this, ProjectConfig.configFileOfDir("project"))
-            Pref.setHideLogs(mProjectConfig.getLaunchConfig().shouldHideLogs())
-            Pref.setStableMode(mProjectConfig.getLaunchConfig().isStableMode())
-            Pref.setStopAllScriptsWhenVolumeUp(mProjectConfig.getLaunchConfig().isVolumeUpcontrol())
-            Pref.setDisplaySplash(mProjectConfig.getLaunchConfig().isDisplaySplash())
+            Pref.setHideLogs(mProjectConfig.launchConfig.shouldHideLogs())
+            Pref.setStableMode(mProjectConfig.launchConfig.isStableMode)
+            Pref.setStopAllScriptsWhenVolumeUp(mProjectConfig.launchConfig.isVolumeUpcontrol)
+            Pref.setDisplaySplash(mProjectConfig.launchConfig.isDisplaySplash)
         }
         if (!BuildConfig.isMarket) {
             if(Pref.istDisplaySplash()){
@@ -62,7 +61,7 @@ class SplashActivity : AppCompatActivity() {
     private fun main() {
         if(checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.READ_PHONE_STATE)){
-            runScript();
+            runScript()
         }else{
             GlobalAppContext.toast("请开启权限后，再运行!")
         }
@@ -72,44 +71,44 @@ class SplashActivity : AppCompatActivity() {
         var dialog = MaterialDialog.Builder(this).title("提示").content("请打开所有的权限，\r\n 省电策略选【不限制】")//内容
                 .positiveText("确定") //肯定按键
                 .onPositive { _, _ ->
-                    SettingsCompat.manageDrawOverlays(this);
+                    SettingsCompat.manageDrawOverlays(this)
                 }.canceledOnTouchOutside(false)
-                .build();
-        dialog.show();
+                .build()
+        dialog.show()
     }
 
     private fun manageWriteSettings() {
         var dialog = MaterialDialog.Builder(this).title("继续进入权限设置").content("请打开所有权限!\r\n 请打开所有权限 \r\n 请打开所有权限")//内容
                 .positiveText("确定") //肯定按键
                 .onPositive { _, _ ->
-                    IntentUtil.goToAppDetailSettings(this);
+                    IntentUtil.goToAppDetailSettings(this)
                 }.canceledOnTouchOutside(false)
-                .build();
-        dialog.show();
+                .build()
+        dialog.show()
     }
 
     private fun AccessibilitySetting() {
         var dialog = MaterialDialog.Builder(this).title("提示").content("请打开无障碍服务")//内容
                 .positiveText("确定") //肯定按键
                 .onPositive { dialog, which ->
-                    IntentUtils.gotoAccessibilitySetting();
+                    IntentUtils.gotoAccessibilitySetting()
                 }.canceledOnTouchOutside(false)
-                .build();
-        dialog.show();
+                .build()
+        dialog.show()
     }
 
     private fun runScript() {
         if (BuildConfig.isMarket) {
-            var intent: Intent = Intent(this@SplashActivity, LoginActivity::class.java);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_NEW_TASK);
+            var intent: Intent = Intent(this@SplashActivity, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(intent)
-            this@SplashActivity.finish();
+            this@SplashActivity.finish()
             return
         }
         Thread {
             try {
                 GlobalProjectLauncher.launch(this)
-                this.finish();
+                this.finish()
             } catch (e: Exception) {
                 e.printStackTrace()
                 runOnUiThread {
@@ -122,7 +121,7 @@ class SplashActivity : AppCompatActivity() {
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, @NonNull permissions: Array<String>, @NonNull grantResults: IntArray) {
-        Log.d(TAG, "onRequestPermissionsResult: " + requestCode);
+        Log.d(TAG, "onRequestPermissionsResult: " + requestCode)
     }
 
     private fun checkPermission(vararg permissions: String): Boolean {
@@ -130,12 +129,12 @@ class SplashActivity : AppCompatActivity() {
             val requestPermissions = getRequestPermissions(permissions)
             if (requestPermissions.isNotEmpty()) {
                 requestPermissions(requestPermissions, PERMISSION_REQUEST_CODE)
-                return false;
+                return false
             } else {
-              return true;
+              return true
             }
         } else {
-            return true;
+            return true
         }
     }
 
@@ -161,19 +160,19 @@ class SplashActivity : AppCompatActivity() {
         if (BuildConfig.isMarket) {
             if (Pref.isFirstUsing()) { //已经不是第一次了
                 if (step == 1) {
-                    manageDrawOverlays();
+                    manageDrawOverlays()
                 }
                 if (step == 2) {
-                    manageWriteSettings();
+                    manageWriteSettings()
                 }
                 if (step == 3) {
-                    AccessibilitySetting();
+                    AccessibilitySetting()
                 }
                 if (step == 4) {
                     Pref.setNotFirstUsingEnd()
-                    main();
+                    main()
                 }
-                step++;
+                step++
             }
         }
         super.onResume()

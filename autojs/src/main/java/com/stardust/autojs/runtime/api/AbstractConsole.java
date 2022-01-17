@@ -1,7 +1,8 @@
 package com.stardust.autojs.runtime.api;
 
-import androidx.annotation.Nullable;
 import android.util.Log;
+
+import androidx.annotation.Nullable;
 
 import com.stardust.autojs.runtime.exception.ScriptException;
 
@@ -11,7 +12,7 @@ import com.stardust.autojs.runtime.exception.ScriptException;
 
 public abstract class AbstractConsole implements Console {
 
-    private boolean isAutoHide =false;
+    private boolean isAutoHide = false;
 
     @Override
     public boolean isAutoHide() {

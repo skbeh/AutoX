@@ -7,7 +7,8 @@ import com.stardust.automator.UiObject
  * Created by Stardust on 2017/1/27.
  */
 
-class SearchUpTargetAction(action: Int, filter: FilterAction.Filter) : SearchTargetAction(action, filter) {
+class SearchUpTargetAction(action: Int, filter: FilterAction.Filter) :
+    SearchTargetAction(action, filter) {
     private val mAble: Able = Able.ABLE_MAP.get(action)
 
     override fun searchTarget(n: UiObject?): UiObject? {
@@ -32,7 +33,7 @@ class SearchUpTargetAction(action: Int, filter: FilterAction.Filter) : SearchTar
 
     companion object {
 
-        private val TAG = SearchUpTargetAction::class.java!!.getSimpleName()
+        private val TAG = SearchUpTargetAction::class.java.simpleName
         private val LOOP_MAX = 20
     }
 }

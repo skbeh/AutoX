@@ -1,7 +1,6 @@
 package org.autojs.autojs.build;
 
 import android.os.Build;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -16,8 +15,6 @@ import org.autojs.autojs.build.apksigner.ZipSigner;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.X509Certificate;

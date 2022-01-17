@@ -1,13 +1,12 @@
 package com.stardust.auojs.inrt.util;
 
+import static android.content.Context.TELEPHONY_SERVICE;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Handler;
-import android.os.Message;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
-import android.widget.Toast;
 
 import com.stardust.auojs.inrt.Pref;
 import com.stardust.auojs.inrt.autojs.AutoJs;
@@ -15,12 +14,9 @@ import com.stardust.autojs.execution.ExecutionConfig;
 import com.stardust.autojs.execution.ScriptExecution;
 import com.stardust.autojs.script.StringScriptSource;
 
-
-import static android.content.Context.TELEPHONY_SERVICE;
-
 public class MarketJavascriptInterface {
 
-    private Context context;
+    private final Context context;
     private ScriptExecution execution;
 
     @android.webkit.JavascriptInterface

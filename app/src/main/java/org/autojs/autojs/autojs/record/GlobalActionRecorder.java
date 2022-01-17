@@ -12,12 +12,12 @@ import com.stardust.autojs.core.record.inputevent.InputEventRecorder;
 import com.stardust.autojs.core.record.inputevent.InputEventToAutoFileRecorder;
 import com.stardust.autojs.core.record.inputevent.InputEventToRootAutomatorRecorder;
 import com.stardust.autojs.core.record.inputevent.TouchRecorder;
-import org.autojs.autojs.Pref;
-import org.autojs.autojs.R;
-import org.autojs.autojs.ui.common.ScriptOperations;
-import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder;
 import com.stardust.util.ClipboardUtil;
 
+import org.autojs.autojs.Pref;
+import org.autojs.autojs.R;
+import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder;
+import org.autojs.autojs.ui.common.ScriptOperations;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -28,9 +28,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class GlobalActionRecorder implements Recorder.OnStateChangedListener {
 
     private static GlobalActionRecorder sSingleton;
-    private CopyOnWriteArrayList<Recorder.OnStateChangedListener> mOnStateChangedListeners = new CopyOnWriteArrayList<>();
+    private final CopyOnWriteArrayList<Recorder.OnStateChangedListener> mOnStateChangedListeners = new CopyOnWriteArrayList<>();
     private TouchRecorder mTouchRecorder;
-    private Context mContext;
+    private final Context mContext;
     private boolean mDiscard = false;
 
     public static GlobalActionRecorder getSingleton(Context context) {

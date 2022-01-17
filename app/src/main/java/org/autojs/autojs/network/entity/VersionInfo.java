@@ -1,13 +1,6 @@
 package org.autojs.autojs.network.entity;
 
-import android.text.TextUtils;
-
-
 import org.autojs.autojs.BuildConfig;
-
-import org.json.JSONObject;
-
-import java.util.List;
 
 /**
  * Created by Stardust on 2017/9/20.

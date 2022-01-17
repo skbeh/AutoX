@@ -41,9 +41,9 @@ public final class ZioEntry implements Cloneable {
 	private int compressedSize;
 	private int size;
 	private String filename;
-	private byte[] extraData;
+	private final byte[] extraData;
 	private short numAlignBytes = 0;
-	private String fileComment;
+	private final String fileComment;
 	private short diskNumberStart;
 	private short internalAttributes;
 	private int externalAttributes;
@@ -53,7 +53,7 @@ public final class ZioEntry implements Cloneable {
 	private byte[] data = null;
 	private ZioEntryOutputStream entryOut = null;
 
-	private static byte[] alignBytes = new byte[4];
+	private static final byte[] alignBytes = new byte[4];
 
 	public ZioEntry(ZipInput input) throws IOException {
 		this.zipInput = input;

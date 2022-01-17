@@ -1,15 +1,11 @@
 package com.stardust.automator.simple_action
 
 import android.view.accessibility.AccessibilityNodeInfo
-
 import com.stardust.automator.UiObject
 import com.stardust.automator.test.TestUiObject
-
-import org.junit.Test
-
-import java.util.ArrayList
-
 import org.junit.Assert.*
+import org.junit.Test
+import java.util.*
 
 /**
  * Created by Stardust on 2017/5/5.

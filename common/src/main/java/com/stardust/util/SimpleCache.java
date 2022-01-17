@@ -11,15 +11,10 @@ import java.util.TimerTask;
 
 public class SimpleCache<T> {
 
-    public interface Supplier<T> {
-        T get(String key);
-    }
-
-    private long mPersistTime;
-    private LimitedHashMap<String, Item<T>> mCache;
-    private Timer mCacheCheckTimer;
-    private Supplier<T> mSupplier;
-
+    private final long mPersistTime;
+    private final LimitedHashMap<String, Item<T>> mCache;
+    private final Timer mCacheCheckTimer;
+    private final Supplier<T> mSupplier;
     public SimpleCache(long persistTime, int cacheSize, long checkInterval, Supplier<T> supplier) {
         mPersistTime = persistTime;
         mCache = new LimitedHashMap<>(cacheSize);
@@ -79,7 +74,6 @@ public class SimpleCache<T> {
         }, 0, checkInterval);
     }
 
-
     private synchronized void checkCache() {
         Iterator<Map.Entry<String, Item<T>>> iterator = mCache.entrySet().iterator();
         while (iterator.hasNext()) {
@@ -89,10 +83,23 @@ public class SimpleCache<T> {
         }
     }
 
+
+    public interface Supplier<T> {
+        T get(String key);
+    }
+
+    private static class NullSupplier<T> implements Supplier<T> {
+
+        @Override
+        public T get(String key) {
+            return null;
+        }
+    }
+
     private class Item<T> {
 
+        private final long mSaveMillis;
         T value;
-        private long mSaveMillis;
 
 
         Item(T value) {
@@ -104,14 +111,6 @@ public class SimpleCache<T> {
             return System.currentTimeMillis() - mSaveMillis <= mPersistTime;
         }
 
-    }
-
-    private static class NullSupplier<T> implements Supplier<T> {
-
-        @Override
-        public T get(String key) {
-            return null;
-        }
     }
 
 

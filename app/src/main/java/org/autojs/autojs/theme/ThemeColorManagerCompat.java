@@ -3,15 +3,15 @@ package org.autojs.autojs.theme;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import androidx.core.content.ContextCompat;
+
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.content.ContextCompat;
 
 import com.stardust.app.GlobalAppContext;
-
-import org.autojs.autojs.R;
-
 import com.stardust.theme.ThemeColor;
 import com.stardust.theme.ThemeColorManager;
+
+import org.autojs.autojs.R;
 
 /**
  * Created by Stardust on 2017/3/12.
@@ -21,7 +21,7 @@ public class ThemeColorManagerCompat {
 
     private static SharedPreferences sSharedPreferences;
     private static Context sContext;
-    private static SharedPreferences.OnSharedPreferenceChangeListener sPreferenceChangeListener = (sharedPreferences, key) -> {
+    private static final SharedPreferences.OnSharedPreferenceChangeListener sPreferenceChangeListener = (sharedPreferences, key) -> {
         if (key.equals(sContext.getString(R.string.key_night_mode))) {
             setNightModeEnabled(sharedPreferences.getBoolean(key, false));
         }

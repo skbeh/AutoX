@@ -1,5 +1,10 @@
 package org.autojs.autojs.ui.edit;
 
+import static org.autojs.autojs.ui.edit.EditorView.EXTRA_CONTENT;
+import static org.autojs.autojs.ui.edit.EditorView.EXTRA_NAME;
+import static org.autojs.autojs.ui.edit.EditorView.EXTRA_PATH;
+import static org.autojs.autojs.ui.edit.EditorView.EXTRA_READ_ONLY;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -7,14 +12,13 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.stardust.app.OnActivityResultDelegate;
 import com.stardust.autojs.core.permission.OnRequestPermissionsResultCallback;
@@ -23,28 +27,22 @@ import com.stardust.autojs.core.permission.RequestPermissionCallbacks;
 import com.stardust.autojs.execution.ScriptExecution;
 import com.stardust.pio.PFiles;
 
-import org.autojs.autojs.R;
-import org.autojs.autojs.storage.file.TmpScriptFiles;
-import org.autojs.autojs.tool.Observers;
-import org.autojs.autojs.ui.BaseActivity;
-import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder;
-
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
+import org.autojs.autojs.R;
+import org.autojs.autojs.storage.file.TmpScriptFiles;
+import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder;
+import org.autojs.autojs.tool.Observers;
+import org.autojs.autojs.ui.BaseActivity;
 import org.autojs.autojs.ui.main.MainActivity_;
 
 import java.io.File;
 import java.io.IOException;
 
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
-
-import static org.autojs.autojs.ui.edit.EditorView.EXTRA_CONTENT;
-import static org.autojs.autojs.ui.edit.EditorView.EXTRA_NAME;
-import static org.autojs.autojs.ui.edit.EditorView.EXTRA_PATH;
-import static org.autojs.autojs.ui.edit.EditorView.EXTRA_READ_ONLY;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 /**
  * Created by Stardust on 2017/1/29.
@@ -52,14 +50,14 @@ import static org.autojs.autojs.ui.edit.EditorView.EXTRA_READ_ONLY;
 @EActivity(R.layout.activity_edit)
 public class EditActivity extends BaseActivity implements OnActivityResultDelegate.DelegateHost, PermissionRequestProxyActivity {
 
-    private OnActivityResultDelegate.Mediator mMediator = new OnActivityResultDelegate.Mediator();
+    private final OnActivityResultDelegate.Mediator mMediator = new OnActivityResultDelegate.Mediator();
     private static final String LOG_TAG = "EditActivity";
 
     @ViewById(R.id.editor_view)
     EditorView mEditorView;
 
     private EditorMenu mEditorMenu;
-    private RequestPermissionCallbacks mRequestPermissionCallbacks = new RequestPermissionCallbacks();
+    private final RequestPermissionCallbacks mRequestPermissionCallbacks = new RequestPermissionCallbacks();
     private boolean mNewTask;
 
     public static void editFile(Context context, String path, boolean newTask) {
@@ -154,7 +152,7 @@ public class EditActivity extends BaseActivity implements OnActivityResultDelega
         forceStopItem.setEnabled(isScriptRunning);
         return super.onPrepareOptionsMenu(menu);
     }
-
+/*
     @Override
     public void onActionModeStarted(ActionMode mode) {
         Log.d(LOG_TAG, "onActionModeStarted: " + mode);
@@ -164,7 +162,7 @@ public class EditActivity extends BaseActivity implements OnActivityResultDelega
         menu.add(item.getGroupId(), R.id.action_copy_line, 20000, R.string.text_copy_line);
         super.onActionModeStarted(mode);
     }
-
+*/
     @Override
     public void onSupportActionModeStarted(@NonNull androidx.appcompat.view.ActionMode mode) {
         Log.d(LOG_TAG, "onSupportActionModeStarted: mode = " + mode);

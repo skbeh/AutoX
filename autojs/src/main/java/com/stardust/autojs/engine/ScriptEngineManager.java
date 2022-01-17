@@ -1,6 +1,7 @@
 package com.stardust.autojs.engine;
 
 import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -19,27 +20,18 @@ import java.util.Set;
 
 public class ScriptEngineManager {
 
-    public interface EngineLifecycleCallback {
-
-        void onEngineCreate(ScriptEngine engine);
-
-        void onEngineRemove(ScriptEngine engine);
-    }
-
     private static final String TAG = "ScriptEngineManager";
-
     private final Set<ScriptEngine> mEngines = new HashSet<>();
+    private final Map<String, Supplier<ScriptEngine>> mEngineSuppliers = new HashMap<>();
+    private final Map<String, Object> mGlobalVariableMap = new HashMap<>();
+    private final android.content.Context mAndroidContext;
     private EngineLifecycleCallback mEngineLifecycleCallback;
-    private Map<String, Supplier<ScriptEngine>> mEngineSuppliers = new HashMap<>();
-    private Map<String, Object> mGlobalVariableMap = new HashMap<>();
-    private android.content.Context mAndroidContext;
-    private ScriptEngine.OnDestroyListener mOnEngineDestroyListener = new ScriptEngine.OnDestroyListener() {
+    private final ScriptEngine.OnDestroyListener mOnEngineDestroyListener = new ScriptEngine.OnDestroyListener() {
         @Override
         public void onDestroy(ScriptEngine engine) {
             removeEngine(engine);
         }
     };
-
     public ScriptEngineManager(Context androidContext) {
         mAndroidContext = androidContext;
     }
@@ -84,7 +76,6 @@ public class ScriptEngineManager {
         }
     }
 
-
     public void putGlobal(String varName, Object value) {
         mGlobalVariableMap.put(varName, value);
     }
@@ -94,7 +85,6 @@ public class ScriptEngineManager {
             engine.put(variable.getKey(), variable.getValue());
         }
     }
-
 
     @Nullable
     public ScriptEngine createEngine(String name, int id) {
@@ -124,7 +114,7 @@ public class ScriptEngineManager {
 
     @NonNull
     public ScriptEngine createEngineOfSourceOrThrow(ScriptSource source) {
-       return createEngineOfSourceOrThrow(source, ScriptExecution.NO_ID);
+        return createEngineOfSourceOrThrow(source, ScriptExecution.NO_ID);
     }
 
     public void registerEngine(String name, Supplier<ScriptEngine> supplier) {
@@ -133,6 +123,13 @@ public class ScriptEngineManager {
 
     public void unregisterEngine(String name) {
         mEngineSuppliers.remove(name);
+    }
+
+    public interface EngineLifecycleCallback {
+
+        void onEngineCreate(ScriptEngine engine);
+
+        void onEngineRemove(ScriptEngine engine);
     }
 
 }

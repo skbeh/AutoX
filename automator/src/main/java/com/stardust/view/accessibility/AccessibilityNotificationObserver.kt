@@ -1,21 +1,18 @@
 package com.stardust.view.accessibility
 
-import android.accessibilityservice.*
 import android.content.Context
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
-
 import com.stardust.notification.Notification
-
-import java.util.ArrayList
-import java.util.Collections
+import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * Created by Stardust on 2017/11/3.
  */
 
-class AccessibilityNotificationObserver(private val mContext: Context) : NotificationListener, AccessibilityDelegate {
+class AccessibilityNotificationObserver(private val mContext: Context) : NotificationListener,
+    AccessibilityDelegate {
     private val mNotificationListeners = CopyOnWriteArrayList<NotificationListener>()
     private val mToastListeners = CopyOnWriteArrayList<ToastListener>()
 
@@ -69,7 +66,10 @@ class AccessibilityNotificationObserver(private val mContext: Context) : Notific
         return mToastListeners.remove(listener)
     }
 
-    override fun onAccessibilityEvent(service: android.accessibilityservice.AccessibilityService, event: AccessibilityEvent): Boolean {
+    override fun onAccessibilityEvent(
+        service: android.accessibilityservice.AccessibilityService,
+        event: AccessibilityEvent
+    ): Boolean {
         if (event.parcelableData is Notification) {
             val notification = event.parcelableData as android.app.Notification
             Log.d(TAG, "onNotification: $notification; $event")

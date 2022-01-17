@@ -27,22 +27,14 @@ import java.util.concurrent.Executors;
 public class JsBeautifier {
 
 
-    public interface Callback {
-
-        void onSuccess(String beautifiedCode);
-
-        void onException(Exception e);
-    }
-
-    private ExecutorService mExecutor = Executors.newSingleThreadExecutor();
-    private Context mContext;
+    private final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
+    private final Context mContext;
+    private final String mBeautifyJsPath;
+    private final String mBeautifyJsDir;
     private Function mJsBeautifyFunction;
     private org.mozilla.javascript.Context mScriptContext;
     private Scriptable mScriptable;
-    private final String mBeautifyJsPath;
-    private final String mBeautifyJsDir;
     private View mView;
-
     public JsBeautifier(View view, String beautifyJsDirPath) {
         mContext = view.getContext();
         mView = view;
@@ -103,7 +95,6 @@ public class JsBeautifier {
         });
     }
 
-
     private void prepareIfNeeded() {
         if (mJsBeautifyFunction != null)
             return;
@@ -121,9 +112,16 @@ public class JsBeautifier {
         }
     }
 
-    public void shutdown(){
+    public void shutdown() {
         mExecutor.shutdownNow();
         mView = null;
+    }
+
+    public interface Callback {
+
+        void onSuccess(String beautifiedCode);
+
+        void onException(Exception e);
     }
 
 }

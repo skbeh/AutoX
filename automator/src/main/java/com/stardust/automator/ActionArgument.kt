@@ -17,7 +17,8 @@ abstract class ActionArgument private constructor(protected val mKey: String) {
         }
     }
 
-    class CharSequenceActionArgument(name: String, private val mCharSequence: CharSequence) : ActionArgument(name) {
+    class CharSequenceActionArgument(name: String, private val mCharSequence: CharSequence) :
+        ActionArgument(name) {
 
         override fun putIn(bundle: Bundle) {
             bundle.putCharSequence(mKey, mCharSequence)

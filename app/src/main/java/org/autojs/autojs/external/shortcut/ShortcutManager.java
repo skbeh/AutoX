@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.content.pm.ShortcutInfo;
 import android.graphics.drawable.Icon;
 import android.os.Build;
-import androidx.annotation.Nullable;
+
 import androidx.annotation.RequiresApi;
 
 import java.util.Collections;
@@ -21,8 +21,8 @@ public class ShortcutManager {
 
 
     private static ShortcutManager sInstance;
-    private Context mContext;
-    private android.content.pm.ShortcutManager mShortcutManager;
+    private final Context mContext;
+    private final android.content.pm.ShortcutManager mShortcutManager;
 
 
     public ShortcutManager(Context context) {

@@ -4,12 +4,11 @@ import android.content.Context;
 import android.util.Log;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory;
 import com.stardust.concurrent.VolatileBox;
 import com.stardust.pio.PFiles;
 
 import org.autojs.autojs.R;
-import org.autojs.autojs.model.script.ScriptFile;
 import org.autojs.autojs.network.NodeBB;
 import org.autojs.autojs.network.api.DownloadApi;
 import org.autojs.autojs.tool.SimpleObserver;
@@ -18,14 +17,13 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.SocketTimeoutException;
 import java.net.URLDecoder;
 import java.util.concurrent.ConcurrentHashMap;
 
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+import io.reactivex.rxjava3.subjects.PublishSubject;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -42,14 +40,14 @@ public class DownloadManager {
     private static DownloadManager sInstance;
 
     private static final int RETRY_COUNT = 3;
-    private Retrofit mRetrofit;
-    private DownloadApi mDownloadApi;
-    private ConcurrentHashMap<String, VolatileBox<Boolean>> mDownloadStatuses = new ConcurrentHashMap<>();
+    private final Retrofit mRetrofit;
+    private final DownloadApi mDownloadApi;
+    private final ConcurrentHashMap<String, VolatileBox<Boolean>> mDownloadStatuses = new ConcurrentHashMap<>();
 
     public DownloadManager() {
         mRetrofit = new Retrofit.Builder()
                 .baseUrl(NodeBB.BASE_URL)
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
                 .client(new OkHttpClient.Builder()
                         .addInterceptor(chain -> {
                             Request request = chain.request();
@@ -139,12 +137,12 @@ public class DownloadManager {
 
     private class DownloadTask {
 
-        private String mUrl;
-        private String mPath;
-        private VolatileBox<Boolean> mStatus;
+        private final String mUrl;
+        private final String mPath;
+        private final VolatileBox<Boolean> mStatus;
         private InputStream mInputStream;
         private FileOutputStream mFileOutputStream;
-        private PublishSubject<Integer> mProgress;
+        private final PublishSubject<Integer> mProgress;
 
         public DownloadTask(String url, String path) {
             mUrl = url;

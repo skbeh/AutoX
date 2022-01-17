@@ -8,17 +8,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class KeyEventDispatcher {
 
-    public interface OnKeyListener {
-        void onVolumeUp();
-
-        void onVolumeDown();
-
-        void onCamera();
-    }
-
-    private static KeyEventDispatcher sSingleton = new KeyEventDispatcher();
-
-    private CopyOnWriteArrayList<OnKeyListener> mOnKeyListeners = new CopyOnWriteArrayList<>();
+    private static final KeyEventDispatcher sSingleton = new KeyEventDispatcher();
+    private final CopyOnWriteArrayList<OnKeyListener> mOnKeyListeners = new CopyOnWriteArrayList<>();
 
     public static KeyEventDispatcher getSingleton() {
         return sSingleton;
@@ -48,6 +39,14 @@ public class KeyEventDispatcher {
         for (OnKeyListener listener : mOnKeyListeners) {
             listener.onCamera();
         }
+    }
+
+    public interface OnKeyListener {
+        void onVolumeUp();
+
+        void onVolumeDown();
+
+        void onCamera();
     }
 
 

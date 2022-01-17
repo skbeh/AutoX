@@ -19,7 +19,7 @@ public class ManifestEditor {
 
 
     private static final String NS_ANDROID = "http://schemas.android.com/apk/res/android";
-    private InputStream mManifestInputStream;
+    private final InputStream mManifestInputStream;
     private int mVersionCode = -1;
     private String mVersionName;
     private String mAppName;
@@ -90,6 +90,13 @@ public class ManifestEditor {
 
 
     private class MutableAxmlWriter extends AxmlWriter {
+        @Override
+        public NodeVisitor child(String ns, String name) {
+            NodeImpl first = new MutableNodeImpl(ns, name);
+            this.firsts.add(first);
+            return first;
+        }
+
         private class MutableNodeImpl extends AxmlWriter.NodeImpl {
 
             MutableNodeImpl(String ns, String name) {
@@ -110,13 +117,6 @@ public class ManifestEditor {
                 return child;
             }
 
-        }
-
-        @Override
-        public NodeVisitor child(String ns, String name) {
-            NodeImpl first = new MutableNodeImpl(ns, name);
-            this.firsts.add(first);
-            return first;
         }
     }
 

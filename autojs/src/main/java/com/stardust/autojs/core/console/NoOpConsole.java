@@ -81,7 +81,7 @@ public class NoOpConsole implements Console {
     }
 
     @Override
-    public void setTitle(CharSequence title,String color,int size) {
+    public void setTitle(CharSequence title, String color, int size) {
 
     }
 

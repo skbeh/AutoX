@@ -8,9 +8,9 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.View;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 
 /**
@@ -22,8 +22,8 @@ import android.view.View;
 public class GridDividerDecoration extends RecyclerView.ItemDecoration {
 
 
-    private Drawable mDivider;
-    private int mInsets;
+    private final Drawable mDivider;
+    private final int mInsets;
 
     public GridDividerDecoration(Context context, Drawable divider) {
         mDivider = divider;

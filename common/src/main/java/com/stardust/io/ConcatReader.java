@@ -18,9 +18,9 @@ package com.stardust.io;
  * See COPYING.TXT for details.
  */
 
-import java.io.*;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * A reader which reads sequentially from multiple sources.
@@ -33,19 +33,17 @@ import java.util.Arrays;
 public class ConcatReader extends Reader {
 
     /**
+     * Queue of readers that have yet to be read from.
+     *
+     * @since ostermillerutils 1.04.01
+     */
+    private final ArrayList<Reader> readerQueue = new ArrayList<>();
+    /**
      * Current index to readerQueue
      *
      * @since ostermillerutils 1.04.01
      */
     private int readerQueueIndex = 0;
-
-    /**
-     * Queue of readers that have yet to be read from.
-     *
-     * @since ostermillerutils 1.04.01
-     */
-    private ArrayList<Reader> readerQueue = new ArrayList<>();
-
     /**
      * A cache of the current reader from the readerQueue
      * to avoid unneeded access to the queue which must
@@ -61,7 +59,77 @@ public class ConcatReader extends Reader {
      * @since ostermillerutils 1.04.01
      */
     private boolean doneAddingReaders = false;
+    /**
+     * True iff this the close() method has been called on this stream.
+     *
+     * @since ostermillerutils 1.04.00
+     */
+    private boolean closed = false;
 
+    /**
+     * Create a new reader that can dynamically accept new sources.
+     * <p>
+     * New sources should be added using the addReader() method.
+     * When all sources have been added the lastReaderAdded() should
+     * be called so that read methods can return -1 (end of stream).
+     * <p>
+     * Adding new sources may by interleaved with read calls.
+     *
+     * @since ostermillerutils 1.04.01
+     */
+    public ConcatReader() {
+        // Empty Constructor
+    }
+
+    /**
+     * Create a new reader with one source.
+     * <p>
+     * When using this constructor, more readers cannot
+     * be added later, and calling addReader() will
+     * throw an illegal state Exception.
+     *
+     * @param in reader to use as a source.
+     * @throws NullPointerException if in is null
+     * @since ostermillerutils 1.04.00
+     */
+    public ConcatReader(Reader in) {
+        addReader(in);
+        lastReaderAdded();
+    }
+
+    /**
+     * Create a new reader with two sources.
+     * <p>
+     * When using this constructor, more readers cannot
+     * be added later, and calling addReader() will
+     * throw an illegal state Exception.
+     *
+     * @param in1 first reader to use as a source.
+     * @param in2 second reader to use as a source.
+     * @throws NullPointerException if either source is null.
+     * @since ostermillerutils 1.04.00
+     */
+    public ConcatReader(Reader in1, Reader in2) {
+        addReader(in1);
+        addReader(in2);
+        lastReaderAdded();
+    }
+
+    /**
+     * Create a new reader with an arbitrary number of sources.
+     * <p>
+     * When using this constructor, more readers cannot
+     * be added later, and calling addReader() will
+     * throw an illegal state Exception.
+     *
+     * @param in readers to use as a sources.
+     * @throws NullPointerException if the input array on any element is null.
+     * @since ostermillerutils 1.04.00
+     */
+    public ConcatReader(Reader[] in) {
+        addReaders(in);
+        lastReaderAdded();
+    }
 
     /**
      * Causes the addReader method to throw IllegalStateException
@@ -136,78 +204,6 @@ public class ConcatReader extends Reader {
     private void advanceToNextReader() {
         currentReader = null;
         readerQueueIndex++;
-    }
-
-    /**
-     * True iff this the close() method has been called on this stream.
-     *
-     * @since ostermillerutils 1.04.00
-     */
-    private boolean closed = false;
-
-    /**
-     * Create a new reader that can dynamically accept new sources.
-     * <p>
-     * New sources should be added using the addReader() method.
-     * When all sources have been added the lastReaderAdded() should
-     * be called so that read methods can return -1 (end of stream).
-     * <p>
-     * Adding new sources may by interleaved with read calls.
-     *
-     * @since ostermillerutils 1.04.01
-     */
-    public ConcatReader() {
-        // Empty Constructor
-    }
-
-    /**
-     * Create a new reader with one source.
-     * <p>
-     * When using this constructor, more readers cannot
-     * be added later, and calling addReader() will
-     * throw an illegal state Exception.
-     *
-     * @param in reader to use as a source.
-     * @throws NullPointerException if in is null
-     * @since ostermillerutils 1.04.00
-     */
-    public ConcatReader(Reader in) {
-        addReader(in);
-        lastReaderAdded();
-    }
-
-    /**
-     * Create a new reader with two sources.
-     * <p>
-     * When using this constructor, more readers cannot
-     * be added later, and calling addReader() will
-     * throw an illegal state Exception.
-     *
-     * @param in1 first reader to use as a source.
-     * @param in2 second reader to use as a source.
-     * @throws NullPointerException if either source is null.
-     * @since ostermillerutils 1.04.00
-     */
-    public ConcatReader(Reader in1, Reader in2) {
-        addReader(in1);
-        addReader(in2);
-        lastReaderAdded();
-    }
-
-    /**
-     * Create a new reader with an arbitrary number of sources.
-     * <p>
-     * When using this constructor, more readers cannot
-     * be added later, and calling addReader() will
-     * throw an illegal state Exception.
-     *
-     * @param in readers to use as a sources.
-     * @throws NullPointerException if the input array on any element is null.
-     * @since ostermillerutils 1.04.00
-     */
-    public ConcatReader(Reader[] in) {
-        addReaders(in);
-        lastReaderAdded();
     }
 
     /**

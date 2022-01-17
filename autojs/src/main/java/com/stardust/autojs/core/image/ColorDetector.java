@@ -123,11 +123,6 @@ public interface ColorDetector {
             mThreshold = threshold;
         }
 
-        @Override
-        public boolean detectsColor(int R, int G, int B) {
-            return Math.abs(mH - getH(R, G, B)) <= mThreshold;
-        }
-
         private static int getH(int R, int G, int B) {
             int max, min, H;
             if (R > G) {
@@ -147,6 +142,11 @@ public interface ColorDetector {
             if (H < 0) H = H + 360;
             return H;
         }
+
+        @Override
+        public boolean detectsColor(int R, int G, int B) {
+            return Math.abs(mH - getH(R, G, B)) <= mThreshold;
+        }
     }
 
     class HSDistanceDetector extends AbstractColorDetector {
@@ -164,14 +164,6 @@ public interface ColorDetector {
 
         public HSDistanceDetector(int color, float similarity) {
             this(color, (int) (1.0f - similarity) * 255);
-        }
-
-        @Override
-        public boolean detectsColor(int R, int G, int B) {
-            long hs = getHS(R, G, B);
-            int dH = (int) (hs & 0xffffffffL) - mH;
-            int dS = (int) ((hs >> 32) & 0xffffffffL) - mS;
-            return dH * dH + dS * dS <= mThreshold;
         }
 
         private static long getHS(int R, int G, int B) {
@@ -193,6 +185,14 @@ public interface ColorDetector {
             if (H < 0) H = H + 360;
             int S = (max - min) * 100 / max;
             return H & ((long) S << 32);
+        }
+
+        @Override
+        public boolean detectsColor(int R, int G, int B) {
+            long hs = getHS(R, G, B);
+            int dH = (int) (hs & 0xffffffffL) - mH;
+            int dS = (int) ((hs >> 32) & 0xffffffffL) - mS;
+            return dH * dH + dS * dS <= mThreshold;
         }
     }
 

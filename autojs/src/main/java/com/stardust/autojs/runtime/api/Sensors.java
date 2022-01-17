@@ -5,6 +5,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+
 import androidx.annotation.NonNull;
 
 import com.stardust.autojs.core.eventloop.EventEmitter;
@@ -25,40 +26,6 @@ import java.util.Set;
 public class Sensors extends EventEmitter implements Loopers.LooperQuitHandler {
 
 
-    public class SensorEventEmitter extends EventEmitter implements SensorEventListener {
-
-        public SensorEventEmitter(ScriptBridges bridges) {
-            super(bridges);
-        }
-
-        @Override
-        public void onSensorChanged(SensorEvent event) {
-            Object[] args = new Object[event.values.length + 1];
-            args[0] = event;
-            for (int i = 1; i < args.length; i++) {
-                args[i] = event.values[i - 1];
-            }
-            emit("change", args);
-        }
-
-        @Override
-        public void onAccuracyChanged(Sensor sensor, int accuracy) {
-            emit("accuracy_change", accuracy);
-        }
-
-        public void unregister() {
-            Sensors.this.unregister(this);
-        }
-    }
-
-    public static class Delay {
-        public static final int normal = SensorManager.SENSOR_DELAY_NORMAL;
-        public static final int ui = SensorManager.SENSOR_DELAY_UI;
-        public static final int game = SensorManager.SENSOR_DELAY_GAME;
-        public static final int fastest = SensorManager.SENSOR_DELAY_FASTEST;
-    }
-
-
     private static final Map<String, Integer> SENSORS = new MapBuilder<String, Integer>()
             .put("ACCELEROMETER", Sensor.TYPE_ACCELEROMETER)
             .put("MAGNETIC_FIELD", Sensor.TYPE_MAGNETIC_FIELD)
@@ -74,17 +41,13 @@ public class Sensors extends EventEmitter implements Loopers.LooperQuitHandler {
             .put("RELATIVE_HUMIDITY", Sensor.TYPE_RELATIVE_HUMIDITY)
             .put("AMBIENT_TEMPERATURE", Sensor.TYPE_AMBIENT_TEMPERATURE)
             .build();
-
-    public boolean ignoresUnsupportedSensor = false;
     public final Delay delay = new Delay();
-
     private final Set<SensorEventEmitter> mSensorEventEmitters = new HashSet<>();
     private final SensorManager mSensorManager;
     private final ScriptBridges mScriptBridges;
     private final SensorEventEmitter mNoOpSensorEventEmitter;
     private final ScriptRuntime mScriptRuntime;
-
-
+    public boolean ignoresUnsupportedSensor = false;
     public Sensors(Context context, ScriptRuntime runtime) {
         super(runtime.bridges);
         mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
@@ -122,13 +85,9 @@ public class Sensors extends EventEmitter implements Loopers.LooperQuitHandler {
         return emitter;
     }
 
-
     @Override
     public boolean shouldQuit() {
-        if (mSensorEventEmitters.isEmpty()) {
-            return true;
-        }
-        return false;
+        return mSensorEventEmitters.isEmpty();
     }
 
     public Sensor getSensor(String sensorName) {
@@ -167,5 +126,38 @@ public class Sensors extends EventEmitter implements Loopers.LooperQuitHandler {
             mSensorEventEmitters.clear();
         }
         mScriptRuntime.loopers.removeLooperQuitHandler(this);
+    }
+
+    public static class Delay {
+        public static final int normal = SensorManager.SENSOR_DELAY_NORMAL;
+        public static final int ui = SensorManager.SENSOR_DELAY_UI;
+        public static final int game = SensorManager.SENSOR_DELAY_GAME;
+        public static final int fastest = SensorManager.SENSOR_DELAY_FASTEST;
+    }
+
+    public class SensorEventEmitter extends EventEmitter implements SensorEventListener {
+
+        public SensorEventEmitter(ScriptBridges bridges) {
+            super(bridges);
+        }
+
+        @Override
+        public void onSensorChanged(SensorEvent event) {
+            Object[] args = new Object[event.values.length + 1];
+            args[0] = event;
+            for (int i = 1; i < args.length; i++) {
+                args[i] = event.values[i - 1];
+            }
+            emit("change", args);
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+            emit("accuracy_change", accuracy);
+        }
+
+        public void unregister() {
+            Sensors.this.unregister(this);
+        }
     }
 }

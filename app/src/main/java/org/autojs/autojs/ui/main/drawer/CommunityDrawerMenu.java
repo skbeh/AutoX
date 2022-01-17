@@ -4,20 +4,16 @@ import android.annotation.SuppressLint;
 
 import org.autojs.autojs.R;
 import org.autojs.autojs.network.UserService;
-import org.autojs.autojs.network.entity.notification.Notification;
 import org.autojs.autojs.ui.main.community.CommunityFragment;
-
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Function;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 /**
  * Created by Stardust on 2017/12/10.
@@ -25,11 +21,11 @@ import io.reactivex.schedulers.Schedulers;
 @SuppressLint("CheckResult")
 public class CommunityDrawerMenu {
 
-    private DrawerMenuItem mUnreadItem = new DrawerMenuItem(R.drawable.community_inbox, R.string.text_community_unread, this::showUnread);
-    private DrawerMenuItem mLogoutItem = new DrawerMenuItem(R.drawable.ic_exit_to_app_black_24dp, R.string.text_logout, this::logout);
-    private DrawerMenuItem mNotificationItem = new DrawerMenuItem(R.drawable.ic_ali_notification, R.string.text_notification, this::showNotifications);
+    private final DrawerMenuItem mUnreadItem = new DrawerMenuItem(R.drawable.community_inbox, R.string.text_community_unread, this::showUnread);
+    private final DrawerMenuItem mLogoutItem = new DrawerMenuItem(R.drawable.ic_exit_to_app_black_24dp, R.string.text_logout, this::logout);
+    private final DrawerMenuItem mNotificationItem = new DrawerMenuItem(R.drawable.ic_ali_notification, R.string.text_notification, this::showNotifications);
 
-    private List<DrawerMenuItem> mDrawerMenuItems = new ArrayList<>(Arrays.asList(
+    private final List<DrawerMenuItem> mDrawerMenuItems = new ArrayList<>(Arrays.asList(
             new DrawerMenuGroup(R.string.text_community),
             mNotificationItem,
             new DrawerMenuItem(R.drawable.community_list, R.string.text_community_category, this::showCategories),

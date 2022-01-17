@@ -1,9 +1,9 @@
 package org.autojs.autojs.build.apksigner;
 
+import org.spongycastle.util.encoders.Base64Encoder;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
-import org.spongycastle.util.encoders.Base64Encoder;
 
 /** Base64 encoding handling in a portable way across Android and JSE. */
 public class Base64 {
@@ -15,7 +15,7 @@ public class Base64 {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		return new String(baos.toByteArray());
+		return baos.toString();
 	}
 
 }

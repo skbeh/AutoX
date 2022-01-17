@@ -10,8 +10,14 @@ import com.stardust.autojs.R;
 import com.stardust.autojs.ScriptEngineService;
 import com.stardust.autojs.annotation.ScriptVariable;
 import com.stardust.autojs.core.accessibility.AccessibilityBridge;
+import com.stardust.autojs.core.accessibility.SimpleActionAutomator;
+import com.stardust.autojs.core.accessibility.UiSelector;
+import com.stardust.autojs.core.activity.ActivityInfoProvider;
 import com.stardust.autojs.core.image.Colors;
+import com.stardust.autojs.core.image.capture.ScreenCaptureRequester;
+import com.stardust.autojs.core.looper.Loopers;
 import com.stardust.autojs.core.permission.Permissions;
+import com.stardust.autojs.core.util.ProcessShell;
 import com.stardust.autojs.rhino.AndroidClassLoader;
 import com.stardust.autojs.rhino.TopLevelScope;
 import com.stardust.autojs.rhino.continuation.Continuation;
@@ -19,11 +25,12 @@ import com.stardust.autojs.runtime.api.AbstractShell;
 import com.stardust.autojs.runtime.api.AppUtils;
 import com.stardust.autojs.runtime.api.Console;
 import com.stardust.autojs.runtime.api.Device;
+import com.stardust.autojs.runtime.api.Dialogs;
 import com.stardust.autojs.runtime.api.Engines;
 import com.stardust.autojs.runtime.api.Events;
 import com.stardust.autojs.runtime.api.Files;
 import com.stardust.autojs.runtime.api.Floaty;
-import com.stardust.autojs.core.looper.Loopers;
+import com.stardust.autojs.runtime.api.Images;
 import com.stardust.autojs.runtime.api.Media;
 import com.stardust.autojs.runtime.api.Paddle;
 import com.stardust.autojs.runtime.api.Plugins;
@@ -31,25 +38,18 @@ import com.stardust.autojs.runtime.api.Sensors;
 import com.stardust.autojs.runtime.api.SevenZip;
 import com.stardust.autojs.runtime.api.Threads;
 import com.stardust.autojs.runtime.api.Timers;
-import com.stardust.autojs.core.accessibility.UiSelector;
-import com.stardust.autojs.runtime.api.Images;
-import com.stardust.autojs.core.image.capture.ScreenCaptureRequester;
-import com.stardust.autojs.runtime.api.Dialogs;
+import com.stardust.autojs.runtime.api.UI;
 import com.stardust.autojs.runtime.exception.ScriptEnvironmentException;
 import com.stardust.autojs.runtime.exception.ScriptException;
 import com.stardust.autojs.runtime.exception.ScriptInterruptedException;
-import com.stardust.autojs.core.accessibility.SimpleActionAutomator;
-import com.stardust.autojs.runtime.api.UI;
 import com.stardust.concurrent.VolatileDispose;
 import com.stardust.lang.ThreadCompat;
 import com.stardust.pio.UncheckedIOException;
 import com.stardust.util.ClipboardUtil;
-import com.stardust.autojs.core.util.ProcessShell;
 import com.stardust.util.ScreenMetrics;
 import com.stardust.util.SdkVersionUtil;
 import com.stardust.util.Supplier;
 import com.stardust.util.UiHandler;
-import com.stardust.autojs.core.activity.ActivityInfoProvider;
 
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.RhinoException;
@@ -74,64 +74,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ScriptRuntime {
 
     private static final String TAG = "ScriptRuntime";
-
-
-    public static class Builder {
-        private UiHandler mUiHandler;
-        private Console mConsole;
-        private AccessibilityBridge mAccessibilityBridge;
-        private Supplier<AbstractShell> mShellSupplier;
-        private ScreenCaptureRequester mScreenCaptureRequester;
-        private AppUtils mAppUtils;
-        private ScriptEngineService mEngineService;
-
-        public Builder() {
-
-        }
-
-        public Builder setUiHandler(UiHandler uiHandler) {
-            mUiHandler = uiHandler;
-            return this;
-        }
-
-        public Builder setConsole(Console console) {
-            mConsole = console;
-            return this;
-        }
-
-        public Builder setAccessibilityBridge(AccessibilityBridge accessibilityBridge) {
-            mAccessibilityBridge = accessibilityBridge;
-            return this;
-        }
-
-        public Builder setShellSupplier(Supplier<AbstractShell> shellSupplier) {
-            mShellSupplier = shellSupplier;
-            return this;
-        }
-
-        public Builder setScreenCaptureRequester(ScreenCaptureRequester requester) {
-            mScreenCaptureRequester = requester;
-            return this;
-        }
-
-        public Builder setAppUtils(AppUtils appUtils) {
-            mAppUtils = appUtils;
-            return this;
-        }
-
-        public Builder setEngineService(ScriptEngineService service) {
-            mEngineService = service;
-            return this;
-        }
-
-
-        public ScriptRuntime build() {
-            return new ScriptRuntime(this);
-        }
-
-    }
-
-
+    private static WeakReference<Context> applicationContext;
     @ScriptVariable
     public final AppUtils app;
 
@@ -149,69 +92,47 @@ public class ScriptRuntime {
 
     @ScriptVariable
     public final Dialogs dialogs;
-
-    @ScriptVariable
-    public Events events;
-
     @ScriptVariable
     public final ScriptBridges bridges = new ScriptBridges();
-
-    @ScriptVariable
-    public Loopers loopers;
-
-    @ScriptVariable
-    public Timers timers;
-
-    @ScriptVariable
-    public Device device;
-
     @ScriptVariable
     public final AccessibilityBridge accessibilityBridge;
-
     @ScriptVariable
     public final Engines engines;
-
-    @ScriptVariable
-    public Threads threads;
-
     @ScriptVariable
     public final Floaty floaty;
-
-    @ScriptVariable
-    public UiHandler uiHandler;
-
     @ScriptVariable
     public final Colors colors = new Colors();
-
     @ScriptVariable
     public final Files files;
-
-    @ScriptVariable
-    public SevenZip zips;
-
-    @ScriptVariable
-    public Sensors sensors;
-
     @ScriptVariable
     public final Media media;
-
     @ScriptVariable
     public final Plugins plugins;
-
     @ScriptVariable
     public final Paddle paddle;
-
+    private final Map<String, Object> mProperties = new ConcurrentHashMap<>();
+    private final ScreenMetrics mScreenMetrics = new ScreenMetrics();
+    @ScriptVariable
+    public Events events;
+    @ScriptVariable
+    public Loopers loopers;
+    @ScriptVariable
+    public Timers timers;
+    @ScriptVariable
+    public Device device;
+    @ScriptVariable
+    public Threads threads;
+    @ScriptVariable
+    public UiHandler uiHandler;
+    @ScriptVariable
+    public SevenZip zips;
+    @ScriptVariable
+    public Sensors sensors;
     private Images images;
-
-    private static WeakReference<Context> applicationContext;
-    private Map<String, Object> mProperties = new ConcurrentHashMap<>();
     private AbstractShell mRootShell;
     private Supplier<AbstractShell> mShellSupplier;
-    private ScreenMetrics mScreenMetrics = new ScreenMetrics();
     private Thread mThread;
     private TopLevelScope mTopLevelScope;
-
-
     protected ScriptRuntime(Builder builder) {
         uiHandler = builder.mUiHandler;
         Context context = uiHandler.getContext();
@@ -237,6 +158,56 @@ public class ScriptRuntime {
         paddle = new Paddle();
     }
 
+    public static Context getApplicationContext() {
+        if (applicationContext == null || applicationContext.get() == null) {
+            throw new ScriptEnvironmentException("No application context");
+        }
+        return applicationContext.get();
+    }
+
+    public static void setApplicationContext(Context context) {
+        applicationContext = new WeakReference<>(context);
+    }
+
+    public static void requiresApi(int i) {
+        if (Build.VERSION.SDK_INT < i) {
+            throw new ScriptException(GlobalAppContext.getString(R.string.text_requires_sdk_version_to_run_the_script) + SdkVersionUtil.sdkIntToString(i));
+        }
+    }
+
+    public static String getStackTrace(Throwable e, boolean printJavaStackTrace) {
+        String message = e.getMessage();
+        StringBuilder scriptTrace = new StringBuilder(message == null ? "" : message + "\n");
+        if (e instanceof RhinoException) {
+            RhinoException rhinoException = (RhinoException) e;
+            scriptTrace.append(rhinoException.details()).append("\n");
+            for (ScriptStackElement element : rhinoException.getScriptStack()) {
+                element.renderV8Style(scriptTrace);
+                scriptTrace.append("\n");
+            }
+            if (printJavaStackTrace) {
+                scriptTrace.append("- - - - - - - - - - -\n");
+            } else {
+                return scriptTrace.toString();
+            }
+        }
+        try {
+            StringWriter stringWriter = new StringWriter();
+            PrintWriter writer = new PrintWriter(stringWriter);
+            e.printStackTrace(writer);
+            writer.close();
+            BufferedReader bufferedReader = new BufferedReader(new StringReader(stringWriter.toString()));
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                scriptTrace.append("\n").append(line);
+            }
+            return scriptTrace.toString();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+            return message;
+        }
+    }
+
     public void init() {
         if (loopers != null)
             throw new IllegalStateException("already initialized");
@@ -259,17 +230,6 @@ public class ScriptRuntime {
         mTopLevelScope = topLevelScope;
     }
 
-    public static void setApplicationContext(Context context) {
-        applicationContext = new WeakReference<>(context);
-    }
-
-    public static Context getApplicationContext() {
-        if (applicationContext == null || applicationContext.get() == null) {
-            throw new ScriptEnvironmentException("No application context");
-        }
-        return applicationContext.get();
-    }
-
     public UiHandler getUiHandler() {
         return uiHandler;
     }
@@ -290,6 +250,15 @@ public class ScriptRuntime {
         }
     }
 
+    public String getClip() {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            return ClipboardUtil.getClipOrEmpty(uiHandler.getContext()).toString();
+        }
+        final VolatileDispose<String> clip = new VolatileDispose<>();
+        uiHandler.post(() -> clip.setAndNotify(ClipboardUtil.getClipOrEmpty(uiHandler.getContext()).toString()));
+        return clip.blockedGetOrThrow(ScriptInterruptedException.class);
+    }
+
     public void setClip(final String text) {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             ClipboardUtil.setClip(uiHandler.getContext(), text);
@@ -301,15 +270,6 @@ public class ScriptRuntime {
             dispose.setAndNotify(text);
         });
         dispose.blockedGet();
-    }
-
-    public String getClip() {
-        if (Looper.myLooper() == Looper.getMainLooper()) {
-            return ClipboardUtil.getClipOrEmpty(uiHandler.getContext()).toString();
-        }
-        final VolatileDispose<String> clip = new VolatileDispose<>();
-        uiHandler.post(() -> clip.setAndNotify(ClipboardUtil.getClipOrEmpty(uiHandler.getContext()).toString()));
-        return clip.blockedGetOrThrow(ScriptInterruptedException.class);
     }
 
     public AbstractShell getRootShell() {
@@ -335,12 +295,6 @@ public class ScriptRuntime {
 
     public boolean isStopped() {
         return Thread.currentThread().isInterrupted();
-    }
-
-    public static void requiresApi(int i) {
-        if (Build.VERSION.SDK_INT < i) {
-            throw new ScriptException(GlobalAppContext.getString(R.string.text_requires_sdk_version_to_run_the_script) + SdkVersionUtil.sdkIntToString(i));
-        }
     }
 
     public void requestPermissions(String[] permissions) {
@@ -413,14 +367,13 @@ public class ScriptRuntime {
         try {
 
             events.emit("exit");
-            if(console.isAutoHide()){
+            if (console.isAutoHide()) {
                 console.log("系统消息：任务结束,3秒后该窗口关闭");
-                uiHandler.postDelayed( console::hide,4000);
+                uiHandler.postDelayed(console::hide, 4000);
             }
         } catch (Throwable e) {
             console.error("exception on exit: ", e);
         }
-       ;
         ignoresException(threads::shutDownAll);
         ignoresException(events::recycle);
         ignoresException(media::recycle);
@@ -470,38 +423,59 @@ public class ScriptRuntime {
         return Continuation.Companion.create(this, scope);
     }
 
+    public static class Builder {
+        private UiHandler mUiHandler;
+        private Console mConsole;
+        private AccessibilityBridge mAccessibilityBridge;
+        private Supplier<AbstractShell> mShellSupplier;
+        private ScreenCaptureRequester mScreenCaptureRequester;
+        private AppUtils mAppUtils;
+        private ScriptEngineService mEngineService;
 
-    public static String getStackTrace(Throwable e, boolean printJavaStackTrace) {
-        String message = e.getMessage();
-        StringBuilder scriptTrace = new StringBuilder(message == null ? "" : message + "\n");
-        if (e instanceof RhinoException) {
-            RhinoException rhinoException = (RhinoException) e;
-            scriptTrace.append(rhinoException.details()).append("\n");
-            for (ScriptStackElement element : rhinoException.getScriptStack()) {
-                element.renderV8Style(scriptTrace);
-                scriptTrace.append("\n");
-            }
-            if (printJavaStackTrace) {
-                scriptTrace.append("- - - - - - - - - - -\n");
-            } else {
-                return scriptTrace.toString();
-            }
+        public Builder() {
+
         }
-        try {
-            StringWriter stringWriter = new StringWriter();
-            PrintWriter writer = new PrintWriter(stringWriter);
-            e.printStackTrace(writer);
-            writer.close();
-            BufferedReader bufferedReader = new BufferedReader(new StringReader(stringWriter.toString()));
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                scriptTrace.append("\n").append(line);
-            }
-            return scriptTrace.toString();
-        } catch (IOException e1) {
-            e1.printStackTrace();
-            return message;
+
+        public Builder setUiHandler(UiHandler uiHandler) {
+            mUiHandler = uiHandler;
+            return this;
         }
+
+        public Builder setConsole(Console console) {
+            mConsole = console;
+            return this;
+        }
+
+        public Builder setAccessibilityBridge(AccessibilityBridge accessibilityBridge) {
+            mAccessibilityBridge = accessibilityBridge;
+            return this;
+        }
+
+        public Builder setShellSupplier(Supplier<AbstractShell> shellSupplier) {
+            mShellSupplier = shellSupplier;
+            return this;
+        }
+
+        public Builder setScreenCaptureRequester(ScreenCaptureRequester requester) {
+            mScreenCaptureRequester = requester;
+            return this;
+        }
+
+        public Builder setAppUtils(AppUtils appUtils) {
+            mAppUtils = appUtils;
+            return this;
+        }
+
+        public Builder setEngineService(ScriptEngineService service) {
+            mEngineService = service;
+            return this;
+        }
+
+
+        public ScriptRuntime build() {
+            return new ScriptRuntime(this);
+        }
+
     }
 
 }

@@ -13,11 +13,9 @@ import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.DatePicker;
 import android.widget.ProgressBar;
 
 import com.linsh.utilseverywhere.ContextUtils;
-import com.stardust.auojs.inrt.BuildConfig;
 import com.stardust.auojs.inrt.R;
 import com.stardust.util.IntentUtil;
 
@@ -40,7 +38,7 @@ public class UpdateUtil {
     private static final int DOWNLOAD = 3;
     private static final int DOWNLOAD_FINISH = 4;
     private static final String CHECK_UPDATE_URL = "http://120.25.164.233:8080/appstore/app/checkversion?id=22";
-    private Context mContext;
+    private final Context mContext;
     private ProgressBar mProgress;
     private Dialog mDownloadDialog;
     private String apkSavePath;
@@ -205,7 +203,7 @@ public class UpdateUtil {
                     FileOutputStream fos = new FileOutputStream(apkFile);
                     int count = 0;
                     // 缓存
-                    byte buf[] = new byte[1024];
+                    byte[] buf = new byte[1024];
                     // 写入到文件中
                     do {
                         int numread = is.read(buf);

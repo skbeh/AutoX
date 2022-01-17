@@ -13,7 +13,7 @@ import com.stardust.autojs.runtime.ScriptRuntime;
 
 public class CanvasViewInflater extends BaseViewInflater<ScriptCanvasView> {
 
-    private ScriptRuntime mScriptRuntime;
+    private final ScriptRuntime mScriptRuntime;
 
     public CanvasViewInflater(ResourceParser resourceParser, ScriptRuntime runtime) {
         super(resourceParser);

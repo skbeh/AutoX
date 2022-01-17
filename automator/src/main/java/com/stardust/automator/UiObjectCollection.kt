@@ -1,19 +1,8 @@
 package com.stardust.automator
 
 import android.os.Bundle
-
-import com.stardust.util.Consumer
-
-import java.util.ArrayList
-import java.util.Collections
-
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.*
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.ACTION_ACCESSIBILITY_FOCUS
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.ACTION_ARGUMENT_COLUMN_INT
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.ACTION_ARGUMENT_PROGRESS_VALUE
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.ACTION_ARGUMENT_ROW_INT
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.ACTION_ARGUMENT_SELECTION_END_INT
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.ACTION_ARGUMENT_SELECTION_START_INT
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.ACTION_CLEAR_ACCESSIBILITY_FOCUS
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.ACTION_CLEAR_FOCUS
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.ACTION_CLICK
@@ -38,6 +27,8 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.Accessibilit
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SCROLL_UP
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SET_PROGRESS
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SHOW_ON_SCREEN
+import com.stardust.util.Consumer
+import java.util.*
 
 /**
  * Created by Stardust on 2017/3/9.
@@ -169,26 +160,34 @@ class UiObjectCollection private constructor(private val mNodes: List<UiObject?>
     }
 
     fun setSelection(s: Int, e: Int): Boolean {
-        return performAction(ACTION_SET_SELECTION,
-                ActionArgument.IntActionArgument(ACTION_ARGUMENT_SELECTION_START_INT, s),
-                ActionArgument.IntActionArgument(ACTION_ARGUMENT_SELECTION_END_INT, e))
+        return performAction(
+            ACTION_SET_SELECTION,
+            ActionArgument.IntActionArgument(ACTION_ARGUMENT_SELECTION_START_INT, s),
+            ActionArgument.IntActionArgument(ACTION_ARGUMENT_SELECTION_END_INT, e)
+        )
     }
 
     fun setText(text: CharSequence): Boolean {
-        return performAction(ACTION_SET_TEXT,
-                ActionArgument.CharSequenceActionArgument(ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, text))
+        return performAction(
+            ACTION_SET_TEXT,
+            ActionArgument.CharSequenceActionArgument(ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, text)
+        )
     }
 
     fun setProgress(value: Float): Boolean {
-        return performAction(ACTION_SET_PROGRESS.id,
-                ActionArgument.FloatActionArgument(ACTION_ARGUMENT_PROGRESS_VALUE, value))
+        return performAction(
+            ACTION_SET_PROGRESS.id,
+            ActionArgument.FloatActionArgument(ACTION_ARGUMENT_PROGRESS_VALUE, value)
+        )
 
     }
 
     fun scrollTo(row: Int, column: Int): Boolean {
-        return performAction(ACTION_SCROLL_TO_POSITION.id,
-                ActionArgument.IntActionArgument(ACTION_ARGUMENT_ROW_INT, row),
-                ActionArgument.IntActionArgument(ACTION_ARGUMENT_COLUMN_INT, column))
+        return performAction(
+            ACTION_SCROLL_TO_POSITION.id,
+            ActionArgument.IntActionArgument(ACTION_ARGUMENT_ROW_INT, row),
+            ActionArgument.IntActionArgument(ACTION_ARGUMENT_COLUMN_INT, column)
+        )
     }
 
     operator fun get(i: Int): UiObject? {

@@ -1,29 +1,5 @@
 package com.stardust.autojs.core.accessibility;
 
-import android.os.Looper;
-import android.os.SystemClock;
-
-import androidx.annotation.NonNull;
-
-import android.util.Log;
-import android.view.accessibility.AccessibilityNodeInfo;
-
-import com.stardust.autojs.BuildConfig;
-import com.stardust.autojs.annotation.ScriptInterface;
-import com.stardust.autojs.runtime.exception.ScriptInterruptedException;
-import com.stardust.automator.ActionArgument;
-import com.stardust.automator.UiGlobalSelector;
-import com.stardust.automator.UiObject;
-import com.stardust.automator.UiObjectCollection;
-import com.stardust.automator.filter.Filter;
-import com.stardust.concurrent.VolatileBox;
-import com.stardust.view.accessibility.AccessibilityNodeInfoAllocator;
-
-import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.ACTION_ACCESSIBILITY_FOCUS;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.ACTION_ARGUMENT_COLUMN_INT;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.ACTION_ARGUMENT_PROGRESS_VALUE;
@@ -56,6 +32,29 @@ import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.Acces
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SET_PROGRESS;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SHOW_ON_SCREEN;
 
+import android.os.Looper;
+import android.os.SystemClock;
+import android.util.Log;
+import android.view.accessibility.AccessibilityNodeInfo;
+
+import androidx.annotation.NonNull;
+
+import com.stardust.autojs.BuildConfig;
+import com.stardust.autojs.annotation.ScriptInterface;
+import com.stardust.autojs.runtime.exception.ScriptInterruptedException;
+import com.stardust.automator.ActionArgument;
+import com.stardust.automator.UiGlobalSelector;
+import com.stardust.automator.UiObject;
+import com.stardust.automator.UiObjectCollection;
+import com.stardust.automator.filter.Filter;
+import com.stardust.concurrent.VolatileBox;
+import com.stardust.view.accessibility.AccessibilityNodeInfoAllocator;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Stardust on 2017/3/9.
  */
@@ -65,7 +64,7 @@ public class UiSelector extends UiGlobalSelector {
 
     private static final String TAG = "UiSelector";
 
-    private AccessibilityBridge mAccessibilityBridge;
+    private final AccessibilityBridge mAccessibilityBridge;
     private AccessibilityNodeInfoAllocator mAllocator = null;
 
     public UiSelector(AccessibilityBridge accessibilityBridge) {

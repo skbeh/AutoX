@@ -1,5 +1,8 @@
 package org.autojs.autojs.model.script;
 
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
@@ -8,9 +11,6 @@ import android.widget.Toast;
 
 import java.io.File;
 
-import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
-import static android.content.pm.PackageManager.PERMISSION_GRANTED;
-
 /**
  * Created by Stardust on 2017/4/1.
  */
@@ -18,7 +18,7 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 public class PathChecker {
     public static final int CHECK_RESULT_OK = 0;
 
-    private Context mContext;
+    private final Context mContext;
 
     public PathChecker(Context context) {
         mContext = context;

@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 public abstract class ScriptSource implements Serializable {
 
-    private String mName;
+    private final String mName;
 
     public ScriptSource(String name) {
         mName = name;

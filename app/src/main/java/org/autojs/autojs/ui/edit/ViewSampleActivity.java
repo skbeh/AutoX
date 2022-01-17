@@ -1,43 +1,37 @@
 package org.autojs.autojs.ui.edit;
 
+import static org.autojs.autojs.model.script.Scripts.ACTION_ON_EXECUTION_FINISHED;
+import static org.autojs.autojs.model.script.Scripts.EXTRA_EXCEPTION_MESSAGE;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-
-import com.google.android.material.snackbar.Snackbar;
-
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.snackbar.Snackbar;
 import com.stardust.app.OnActivityResultDelegate;
 import com.stardust.autojs.engine.JavaScriptEngine;
 import com.stardust.autojs.execution.ScriptExecution;
+import com.stardust.theme.ThemeColorManager;
+import com.stardust.util.SparseArrayEntries;
 
 import org.autojs.autojs.R;
 import org.autojs.autojs.autojs.AutoJs;
 import org.autojs.autojs.model.sample.SampleFile;
 import org.autojs.autojs.ui.BaseActivity;
 import org.autojs.autojs.ui.common.ScriptOperations;
-
-import com.stardust.theme.ThemeColorManager;
-import com.stardust.util.SparseArrayEntries;
-
 import org.autojs.autojs.ui.widget.ToolbarMenuItem;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
-
-import static org.autojs.autojs.model.script.Scripts.ACTION_ON_EXECUTION_FINISHED;
-import static org.autojs.autojs.model.script.Scripts.EXTRA_EXCEPTION_MESSAGE;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 
 
 /**
@@ -56,8 +50,8 @@ public class ViewSampleActivity extends AppCompatActivity implements OnActivityR
     private SampleFile mSample;
     private ScriptExecution mScriptExecution;
     private SparseArray<ToolbarMenuItem> mMenuMap;
-    private OnActivityResultDelegate.Mediator mMediator = new OnActivityResultDelegate.Mediator();
-    private BroadcastReceiver mOnRunFinishedReceiver = new BroadcastReceiver() {
+    private final OnActivityResultDelegate.Mediator mMediator = new OnActivityResultDelegate.Mediator();
+    private final BroadcastReceiver mOnRunFinishedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(ACTION_ON_EXECUTION_FINISHED)) {

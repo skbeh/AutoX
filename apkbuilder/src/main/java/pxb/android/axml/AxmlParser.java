@@ -1,12 +1,12 @@
 /*
  * Copyright (c) 2009-2013 Panxiaobo
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,15 +45,12 @@ public class AxmlParser implements ResConst {
     // private int attrResId[];
     // private int attrType[];
     // private Object attrValue[];
-
+    private final ByteBuffer in;
     private int attributeCount;
-
     private IntBuffer attrs;
-
     private int classAttribute;
     private int fileSize = -1;
     private int idAttribute;
-    private ByteBuffer in;
     private int lineNumber;
     private int nameIdx;
     private int nsIdx;

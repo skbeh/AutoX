@@ -63,12 +63,12 @@ public class ViewExtras {
         return mNativeView;
     }
 
-    public final ViewAttributes getViewAttributes() {
-        return mViewAttributes;
-    }
-
     public final void setNativeView(NativeView nativeView) {
         mNativeView = nativeView;
+    }
+
+    public final ViewAttributes getViewAttributes() {
+        return mViewAttributes;
     }
 
     public final void setViewAttributes(ViewAttributes viewAttributes) {

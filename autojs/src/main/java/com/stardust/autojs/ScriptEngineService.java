@@ -1,6 +1,9 @@
 package com.stardust.autojs;
 
+import static com.stardust.autojs.runtime.exception.ScriptInterruptedException.causedByInterrupted;
+
 import android.content.Context;
+
 import androidx.annotation.Nullable;
 
 import com.stardust.autojs.engine.JavaScriptEngine;
@@ -30,8 +33,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import static com.stardust.autojs.runtime.exception.ScriptInterruptedException.causedByInterrupted;
-
 /**
  * Created by Stardust on 2017/1/23.
  */
@@ -45,7 +46,7 @@ public class ScriptEngineService {
         public void onStart(ScriptExecution execution) {
             if (execution.getEngine() instanceof JavaScriptEngine) {
                 ((JavaScriptEngine) execution.getEngine()).getRuntime()
-                        .console.setTitle(execution.getSource().getName(),"#ffff0000",-1);
+                        .console.setTitle(execution.getSource().getName(), "#ffff0000", -1);
             }
             EVENT_BUS.post(new ScriptExecutionEvent(ScriptExecutionEvent.ON_START, execution.getSource().toString()));
         }
@@ -89,9 +90,11 @@ public class ScriptEngineService {
 
     private static ScriptEngineService sInstance;
     private final Context mContext;
-    private UiHandler mUiHandler;
+    private final UiHandler mUiHandler;
     private final Console mGlobalConsole;
     private final ScriptEngineManager mScriptEngineManager;
+    private final ScriptExecutionObserver mScriptExecutionObserver = new ScriptExecutionObserver();
+    private final LinkedHashMap<Integer, ScriptExecution> mScriptExecutions = new LinkedHashMap<>();
     private final EngineLifecycleObserver mEngineLifecycleObserver = new EngineLifecycleObserver() {
 
         @Override
@@ -100,8 +103,6 @@ public class ScriptEngineService {
             super.onEngineRemove(engine);
         }
     };
-    private ScriptExecutionObserver mScriptExecutionObserver = new ScriptExecutionObserver();
-    private LinkedHashMap<Integer, ScriptExecution> mScriptExecutions = new LinkedHashMap<>();
 
     ScriptEngineService(ScriptEngineServiceBuilder builder) {
         mUiHandler = builder.mUiHandler;
@@ -113,6 +114,17 @@ public class ScriptEngineService {
         EVENT_BUS.register(this);
         mScriptEngineManager.putGlobal("context", mUiHandler.getContext());
         ScriptRuntime.setApplicationContext(builder.mUiHandler.getContext().getApplicationContext());
+    }
+
+    public static ScriptEngineService getInstance() {
+        return sInstance;
+    }
+
+    public static void setInstance(ScriptEngineService service) {
+        if (sInstance != null) {
+            throw new IllegalStateException();
+        }
+        sInstance = service;
     }
 
     public Console getGlobalConsole() {
@@ -185,7 +197,6 @@ public class ScriptEngineService {
         return mScriptEngineManager.stopAll();
     }
 
-
     public void stopAllAndToast() {
         int n = stopAll();
         if (n > 0)
@@ -207,18 +218,6 @@ public class ScriptEngineService {
         }
         return mScriptExecutions.get(id);
     }
-
-    public static void setInstance(ScriptEngineService service) {
-        if (sInstance != null) {
-            throw new IllegalStateException();
-        }
-        sInstance = service;
-    }
-
-    public static ScriptEngineService getInstance() {
-        return sInstance;
-    }
-
 
     private static class EngineLifecycleObserver implements ScriptEngineManager.EngineLifecycleCallback {
 

@@ -16,20 +16,21 @@ package org.autojs.autojs.ui.widget;/*
 
 
 import android.content.Context;
+import android.util.AttributeSet;
+import android.view.MotionEvent;
+import android.webkit.WebView;
+
 import androidx.core.view.MotionEventCompat;
 import androidx.core.view.NestedScrollingChild;
 import androidx.core.view.NestedScrollingChildHelper;
 import androidx.core.view.ViewCompat;
-import android.util.AttributeSet;
-import android.view.MotionEvent;
-import android.webkit.WebView;
 
 public class NestedWebView extends WebView implements NestedScrollingChild {
     private int mLastY;
     private final int[] mScrollOffset = new int[2];
     private final int[] mScrollConsumed = new int[2];
     private int mNestedOffsetY;
-    private NestedScrollingChildHelper mChildHelper;
+    private final NestedScrollingChildHelper mChildHelper;
 
     public NestedWebView(Context context) {
         this(context, null);

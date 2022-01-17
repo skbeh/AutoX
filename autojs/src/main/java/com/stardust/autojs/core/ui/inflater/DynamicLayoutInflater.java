@@ -2,8 +2,6 @@ package com.stardust.autojs.core.ui.inflater;
 
 import android.content.Context;
 import android.os.Build;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.InflateException;
@@ -18,6 +16,9 @@ import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.TimePicker;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.stardust.autojs.core.ui.inflater.inflaters.AppBarInflater;
@@ -60,11 +61,10 @@ public class DynamicLayoutInflater {
     public static final int FLAG_JUST_DYNAMIC_ATTRS = 2;
 
     private static final String LOG_TAG = "DynamicLayoutInflater";
-
+    private final ResourceParser mResourceParser;
     private Map<String, ViewInflater<?>> mViewAttrSetters = new HashMap<>();
     private Map<String, ViewCreator<?>> mViewCreators = new HashMap<>();
     private Context mContext;
-    private ResourceParser mResourceParser;
     @NonNull
     private LayoutInflaterDelegate mLayoutInflaterDelegate = LayoutInflaterDelegate.NO_OP;
     private int mInflateFlags;
@@ -159,7 +159,7 @@ public class DynamicLayoutInflater {
         return mLayoutInflaterDelegate.afterInflation(context, doInflation(context, xml, parent, attachToParent), xml, parent);
     }
 
-    public InflateContext newInflateContext(){
+    public InflateContext newInflateContext() {
         return new InflateContext();
     }
 

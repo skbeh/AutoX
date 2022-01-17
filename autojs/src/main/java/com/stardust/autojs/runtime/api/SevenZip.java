@@ -9,7 +9,7 @@ import com.stardust.pio.PFiles;
 
 
 public class SevenZip {
-    private Context mContext;
+    private final Context mContext;
     private ScriptRuntime mRuntime;
 
     public SevenZip(Context context) {

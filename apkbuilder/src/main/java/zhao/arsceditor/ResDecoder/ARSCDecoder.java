@@ -57,145 +57,37 @@ import zhao.arsceditor.ResDecoder.data.value.ResValueFactory;
  */
 public class ARSCDecoder {
 
-    public static class ARSCData {
-
-        private final ResPackage[] mPackages;
-
-        private final ResTable mResTable;
-
-        public ARSCData(ResPackage[] packages, ResTable resTable) {
-            mPackages = packages;
-            mResTable = resTable;
-        }
-
-        public int findPackageWithMostResSpecs() {
-            int count = -1;
-            int id = 0;
-
-            // set starting point to package id 0.
-            count = mPackages[0].getResSpecCount();
-
-            // loop through packages looking for largest
-            for (int i = 0; i < mPackages.length; i++) {
-                if (mPackages[i].getResSpecCount() >= count) {
-                    count = mPackages[i].getResSpecCount();
-                    id = i;
-                }
-            }
-
-            return id;
-        }
-
-        public ResPackage getOnePackage() throws IOException {
-            if (mPackages.length <= 0) {
-                throw new IOException("Arsc file contains zero packages");
-            } else if (mPackages.length != 1) {
-                int id = findPackageWithMostResSpecs();
-                LOGGER.info("Arsc file contains multiple packages. Using package " + mPackages[id].getName()
-                        + " as default.");
-
-                return mPackages[id];
-            }
-            return mPackages[0];
-        }
-
-        public ResPackage[] getPackages() {
-            return mPackages;
-        }
-
-        public ResTable getResTable() {
-            return mResTable;
-        }
-    }
-
-    public static class Header {
-        public final static short TYPE_NONE = -1, TYPE_TABLE = 0x0002, TYPE_PACKAGE = 0x0200, TYPE_TYPE = 0x0201,
-                TYPE_SPEC_TYPE = 0x0202, TYPE_LIBRARY = 0x0203;
-
-        public static Header read(LEDataInputStream in) throws IOException {
-
-            short type;
-            try {
-                type = in.readShort();
-            } catch (EOFException ex) {
-                return new Header(TYPE_NONE, 0, (byte) 0, (byte) 0);
-            }
-            byte byte1 = in.readByte();
-            byte byte2 = in.readByte();
-            int chunkSize = in.readInt();
-            return new Header(type, chunkSize, byte1, byte2);
-        }
-
-        // 未知字节
-        public final byte byte1;
-        // 未知字节
-        public final byte byte2;
-
-        // chunkSize
-        public final int chunkSize;
-
-        // 资源类型
-        public final short type;
-
-        public Header(short type, int size, byte byte1, byte byte2) {
-            this.type = type;
-            this.chunkSize = size;
-            this.byte1 = byte1;
-            this.byte2 = byte2;
-        }
-    }
-
     private final static short ENTRY_FLAG_COMPLEX = 0x0001;
-
     private static final int KNOWN_CONFIG_BYTES = 52;
-
     private static final Logger LOGGER = Logger.getLogger(ARSCDecoder.class.getName());
-
-    private Header mHeader;
-
-    // 二进制文件输入流
-    private LEDataInputStream mIn;
-
     private final boolean mKeepBroken;
-
-    private boolean[] mMissingResSpecs;
-
-    // 包
-    public ResPackage mPkg;
-
-    private int mResId;
-
     // ResTable
     private final ResTable mResTable;
-
-    private HashMap<Byte, ResTypeSpec> mResTypeSpecs = new HashMap<>();
-
-    // 资源id常量池
-    private StringBlock mSpecNames;
-
+    private final HashMap<Byte, ResTypeSpec> mResTypeSpecs = new HashMap<>();
+    // 包
+    public ResPackage mPkg;
     // 字符串常量池
     public StringBlock mTableStrings;
-
+    private Header mHeader;
+    // 二进制文件输入流
+    private LEDataInputStream mIn;
+    private boolean[] mMissingResSpecs;
+    private int mResId;
+    // 资源id常量池
+    private StringBlock mSpecNames;
     // 资源类型
     private ResType mType;
-
     // 资源类型常量池
     private StringBlock mTypeNames;
-
     private ResTypeSpec mTypeSpec;
-
     // 包的数量
     private int packageCount;
-
     // 包名
     private String packageName;
-
     // 文件输入流的大小
     private int size1;
-
     // 除去字符串常量池后，文件输入流的大小
     private int size2;
-
     // 字符串常量池头
     private Header stringsHeader;
 
@@ -247,10 +139,10 @@ public class ARSCDecoder {
     private void checkChunkType(int expectedType) throws IOException {
         if (mHeader.type != expectedType) {
             /*
-			 * throw new IOException(String.format(
-			 * "Invalid chunk type: expected=0x%08x, got=0x%08x", expectedType,
-			 * mHeader.type));
-			 */
+             * throw new IOException(String.format(
+             * "Invalid chunk type: expected=0x%08x, got=0x%08x", expectedType,
+             * mHeader.type));
+             */
         }
     }
 
@@ -261,7 +153,7 @@ public class ARSCDecoder {
         int size1 = mIn.available();
         if (size1 == 1) {
             ByteArrayOutputStream bOut = new ByteArrayOutputStream();
-            byte buffer[] = new byte[2048];
+            byte[] buffer = new byte[2048];
             int count;
             while ((count = mIn.read(buffer, 0, 2048)) != -1) {
                 bOut.write(buffer, 0, count);
@@ -369,14 +261,14 @@ public class ARSCDecoder {
         byte keyboard = mIn.readByte();
         byte navigation = mIn.readByte();
         byte inputFlags = mIn.readByte();
-		/* inputPad0 */
+        /* inputPad0 */
         mIn.skipBytes(1);
 
         short screenWidth = mIn.readShort();
         short screenHeight = mIn.readShort();
 
         short sdkVersion = mIn.readShort();
-		/* minorVersion, now must always be 0 */
+        /* minorVersion, now must always be 0 */
         mIn.skipBytes(2);
 
         byte screenLayout = 0;
@@ -441,7 +333,7 @@ public class ARSCDecoder {
     }
 
     private void readEntry() throws IOException {
-		/* size */
+        /* size */
         mIn.skipBytes(2);
         short flags = mIn.readShort();
         int specNamesId = mIn.readInt();
@@ -516,13 +408,13 @@ public class ARSCDecoder {
         }
         // 包名
         packageName = mIn.readNulEndedString(128, true);
-		/* typeNameStrings */
+        /* typeNameStrings */
         mIn.skipInt();
-		/* typeNameCount */
+        /* typeNameCount */
         mIn.skipInt();
-		/* specNameStrings */
+        /* specNameStrings */
         mIn.skipInt();
-		/* specNameCount */
+        /* specNameCount */
         mIn.skipInt();
 
         // 读取资源类型常量池
@@ -570,7 +462,7 @@ public class ARSCDecoder {
         mIn.skipBytes(3);
         int entryCount = mIn.readInt();
 
-		/* flags */
+        /* flags */
         mIn.skipBytes(entryCount * 4);
         mTypeSpec = new ResTypeSpec(mTypeNames.getString(id - 1), mResTable, mPkg, id, entryCount);
         mPkg.addType(mTypeSpec);
@@ -582,7 +474,7 @@ public class ARSCDecoder {
         size1 = mIn.available();
         if (size1 == 1) {
             ByteArrayOutputStream bOut = new ByteArrayOutputStream();
-            byte buffer[] = new byte[2048];
+            byte[] buffer = new byte[2048];
             int count;
             while ((count = mIn.read(buffer, 0, 2048)) != -1) {
                 bOut.write(buffer, 0, count);
@@ -626,10 +518,10 @@ public class ARSCDecoder {
             mTypeSpec = mResTypeSpecs.get(typeId);
         }
 
-		/* res0, res1 */
+        /* res0, res1 */
         mIn.skipBytes(3);
         int entryCount = mIn.readInt();
-		/* entriesStart */
+        /* entriesStart */
         mIn.skipInt();
 
         mMissingResSpecs = new boolean[entryCount];
@@ -684,9 +576,9 @@ public class ARSCDecoder {
     }
 
     private ResValue readValue() throws IOException {
-		/* size */
+        /* size */
         mIn.skipCheckShort((short) 8);
-		/* zero */
+        /* zero */
         mIn.skipCheckByte((byte) 0);
         byte type = mIn.readByte();
         int data = mIn.readInt();
@@ -722,7 +614,7 @@ public class ARSCDecoder {
      *
      * @throws IOException
      */
-    public void write(OutputStream os,InputStream in) throws IOException {
+    public void write(OutputStream os, InputStream in) throws IOException {
         // 二进制文件输出流
         LEDataOutputStream lmOut = new LEDataOutputStream(os);
         // 先将字符串数据写入到一个临时的流中
@@ -766,6 +658,91 @@ public class ARSCDecoder {
             mTableStrings.sortStringBlock(str, tar);
             index++;
         }
-        write(os,in);
+        write(os, in);
+    }
+
+    public static class ARSCData {
+
+        private final ResPackage[] mPackages;
+
+        private final ResTable mResTable;
+
+        public ARSCData(ResPackage[] packages, ResTable resTable) {
+            mPackages = packages;
+            mResTable = resTable;
+        }
+
+        public int findPackageWithMostResSpecs() {
+            int count = -1;
+            int id = 0;
+
+            // set starting point to package id 0.
+            count = mPackages[0].getResSpecCount();
+
+            // loop through packages looking for largest
+            for (int i = 0; i < mPackages.length; i++) {
+                if (mPackages[i].getResSpecCount() >= count) {
+                    count = mPackages[i].getResSpecCount();
+                    id = i;
+                }
+            }
+
+            return id;
+        }
+
+        public ResPackage getOnePackage() throws IOException {
+            if (mPackages.length <= 0) {
+                throw new IOException("Arsc file contains zero packages");
+            } else if (mPackages.length != 1) {
+                int id = findPackageWithMostResSpecs();
+                LOGGER.info("Arsc file contains multiple packages. Using package " + mPackages[id].getName()
+                        + " as default.");
+
+                return mPackages[id];
+            }
+            return mPackages[0];
+        }
+
+        public ResPackage[] getPackages() {
+            return mPackages;
+        }
+
+        public ResTable getResTable() {
+            return mResTable;
+        }
+    }
+
+    public static class Header {
+        public final static short TYPE_NONE = -1, TYPE_TABLE = 0x0002, TYPE_PACKAGE = 0x0200, TYPE_TYPE = 0x0201,
+                TYPE_SPEC_TYPE = 0x0202, TYPE_LIBRARY = 0x0203;
+        // 未知字节
+        public final byte byte1;
+        // 未知字节
+        public final byte byte2;
+        // chunkSize
+        public final int chunkSize;
+        // 资源类型
+        public final short type;
+
+        public Header(short type, int size, byte byte1, byte byte2) {
+            this.type = type;
+            this.chunkSize = size;
+            this.byte1 = byte1;
+            this.byte2 = byte2;
+        }
+
+        public static Header read(LEDataInputStream in) throws IOException {
+
+            short type;
+            try {
+                type = in.readShort();
+            } catch (EOFException ex) {
+                return new Header(TYPE_NONE, 0, (byte) 0, (byte) 0);
+            }
+            byte byte1 = in.readByte();
+            byte byte2 = in.readByte();
+            int chunkSize = in.readInt();
+            return new Header(type, chunkSize, byte1, byte2);
+        }
     }
 }

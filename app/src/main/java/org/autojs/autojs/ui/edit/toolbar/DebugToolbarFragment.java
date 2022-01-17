@@ -2,12 +2,13 @@ package org.autojs.autojs.ui.edit.toolbar;
 
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.stardust.autojs.execution.ScriptExecution;
 import com.stardust.autojs.rhino.debug.DebugCallback;
@@ -48,7 +49,7 @@ public class DebugToolbarFragment extends ToolbarFragment implements DebugCallba
             updateWatchingVariables(positionStart, positionStart + itemCount);
         }
     };
-    private CodeEditor.BreakpointChangeListener mBreakpointChangeListener = new CodeEditor.BreakpointChangeListener() {
+    private final CodeEditor.BreakpointChangeListener mBreakpointChangeListener = new CodeEditor.BreakpointChangeListener() {
         @Override
         public void onBreakpointChange(int line, boolean enabled) {
             if (mDebugger != null) {

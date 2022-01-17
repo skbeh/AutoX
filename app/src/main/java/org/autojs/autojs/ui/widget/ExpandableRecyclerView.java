@@ -1,16 +1,16 @@
 package org.autojs.autojs.ui.widget;
 
 import android.content.Context;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.ThemeColorRecyclerView;
-
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.ThemeColorRecyclerView;
 
 import org.autojs.autojs.R;
 
@@ -30,14 +30,14 @@ public class ExpandableRecyclerView extends ThemeColorRecyclerView {
     }
 
 
-    private OnClickListener mOnTitleClickListener = new OnClickListener() {
+    private final OnClickListener mOnTitleClickListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
             toggle();
         }
 
     };
-    private OnClickListener mOnChildClickListenerWrapper = new OnClickListener() {
+    private final OnClickListener mOnChildClickListenerWrapper = new OnClickListener() {
 
         @Override
         public void onClick(View v) {

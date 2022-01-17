@@ -43,15 +43,15 @@ public abstract class JavaScriptEngine extends ScriptEngine.AbstractScriptEngine
         return (ScriptSource) getTag(TAG_SOURCE);
     }
 
+    public Object getExecArgv() {
+        return mExecArgv;
+    }
+
     public void setExecArgv(Object execArgv) {
         if (mExecArgv != null) {
             return;
         }
         mExecArgv = execArgv;
-    }
-
-    public Object getExecArgv() {
-        return mExecArgv;
     }
 
     @Override

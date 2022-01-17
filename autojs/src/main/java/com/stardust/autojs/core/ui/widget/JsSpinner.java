@@ -2,14 +2,15 @@ package com.stardust.autojs.core.ui.widget;
 
 import android.content.Context;
 import android.content.res.Resources;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class JsSpinner extends androidx.appcompat.widget.AppCompatSpinner {
 
@@ -50,6 +51,16 @@ public class JsSpinner extends androidx.appcompat.widget.AppCompatSpinner {
         return mTextSize;
     }
 
+    public void setTextSize(float textSize) {
+        mTextSize = textSize;
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            if (child instanceof TextView) {
+                ((TextView) child).setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextSize);
+            }
+        }
+    }
+
     public float getEntryTextSize() {
         return mEntryTextSize;
     }
@@ -73,17 +84,6 @@ public class JsSpinner extends androidx.appcompat.widget.AppCompatSpinner {
     public void setEntryTextColor(int entryTextColor) {
         mEntryTextColor = entryTextColor;
     }
-
-    public void setTextSize(float textSize) {
-        mTextSize = textSize;
-        for (int i = 0; i < getChildCount(); i++) {
-            View child = getChildAt(i);
-            if (child instanceof TextView) {
-                ((TextView) child).setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextSize);
-            }
-        }
-    }
-
 
     public int getTextStyle() {
         return mTextStyle;

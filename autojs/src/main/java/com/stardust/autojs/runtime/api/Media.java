@@ -17,9 +17,9 @@ import java.io.IOException;
 
 public class Media implements MediaScannerConnection.MediaScannerConnectionClient {
 
+    private final ScriptRuntime mRuntime;
     private MediaScannerConnection mScannerConnection;
     private MediaPlayerWrapper mMediaPlayer;
-    private ScriptRuntime mRuntime;
 
     public Media(Context context, ScriptRuntime runtime) {
         mScannerConnection = new MediaScannerConnection(context, this);

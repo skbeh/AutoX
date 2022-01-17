@@ -42,7 +42,10 @@ abstract class FilterAction(private val mFilter: Filter) : SimpleAction() {
             return list
         }
 
-        private fun findAccessibilityNodeInfosByBounds(root: UiObject?, list: MutableList<UiObject>) {
+        private fun findAccessibilityNodeInfosByBounds(
+            root: UiObject?,
+            list: MutableList<UiObject>
+        ) {
             if (root == null)
                 return
             val rect = Rect()

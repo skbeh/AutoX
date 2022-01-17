@@ -20,11 +20,13 @@ import java.util.concurrent.Executors
  */
 
 @SuppressLint("ViewConstructor")
-class ScriptCanvasView(context: Context, private val mScriptRuntime: ScriptRuntime) : TextureView(context), TextureView.SurfaceTextureListener {
+class ScriptCanvasView(context: Context, private val mScriptRuntime: ScriptRuntime) :
+    TextureView(context), TextureView.SurfaceTextureListener {
     @Volatile
     private var mDrawing = true
     private val mEventEmitter: EventEmitter = EventEmitter(mScriptRuntime.bridges)
     private var mDrawingThreadPool: ExecutorService? = null
+
     @Volatile
     private var mTimePerDraw = (1000 / 30).toLong()
 
@@ -89,7 +91,10 @@ class ScriptCanvasView(context: Context, private val mScriptRuntime: ScriptRunti
     }
 
     override fun onWindowVisibilityChanged(visibility: Int) {
-        Log.d(LOG_TAG, "onWindowVisibilityChanged: " + this + ": visibility=" + visibility + ", mDrawingThreadPool=" + mDrawingThreadPool)
+        Log.d(
+            LOG_TAG,
+            "onWindowVisibilityChanged: " + this + ": visibility=" + visibility + ", mDrawingThreadPool=" + mDrawingThreadPool
+        )
         val oldDrawing = mDrawing
         mDrawing = visibility == View.VISIBLE
         if (!oldDrawing && mDrawing) {

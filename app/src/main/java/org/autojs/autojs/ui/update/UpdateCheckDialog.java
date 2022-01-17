@@ -5,14 +5,14 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.stardust.app.GlobalAppContext;
-import org.autojs.autojs.App;
+
 import org.autojs.autojs.R;
 import org.autojs.autojs.network.VersionService;
 import org.autojs.autojs.network.entity.VersionInfo;
 import org.autojs.autojs.tool.SimpleObserver;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.annotations.NonNull;
 
 /**
  * Created by Stardust on 2017/9/20.
@@ -20,7 +20,7 @@ import io.reactivex.annotations.NonNull;
 
 public class UpdateCheckDialog {
 
-    private MaterialDialog mProgress;
+    private final MaterialDialog mProgress;
     private Context mContext;
 
     public UpdateCheckDialog(Context context) {

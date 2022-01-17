@@ -2,16 +2,15 @@ package com.stardust.autojs.core.image;
 
 import android.graphics.Color;
 import android.os.Build;
+
 import androidx.annotation.RequiresApi;
 
+import com.stardust.autojs.core.opencv.Mat;
 import com.stardust.autojs.core.opencv.MatOfPoint;
 import com.stardust.autojs.core.opencv.OpenCVHelper;
 import com.stardust.util.ScreenMetrics;
 
 import org.opencv.core.Core;
-
-import com.stardust.autojs.core.opencv.Mat;
-
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
@@ -23,7 +22,7 @@ import org.opencv.core.Scalar;
 @RequiresApi(api = Build.VERSION_CODES.KITKAT)
 public class ColorFinder {
 
-    private ScreenMetrics mScreenMetrics;
+    private final ScreenMetrics mScreenMetrics;
 
     public ColorFinder(ScreenMetrics screenMetrics) {
         mScreenMetrics = screenMetrics;

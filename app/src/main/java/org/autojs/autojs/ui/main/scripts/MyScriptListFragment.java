@@ -3,9 +3,10 @@ package org.autojs.autojs.ui.main.scripts;
 import android.app.Activity;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import androidx.annotation.Nullable;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import androidx.annotation.Nullable;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.stardust.app.GlobalAppContext;
 import com.stardust.util.IntentUtil;
 
@@ -30,7 +31,9 @@ import org.autojs.autojs.ui.viewmodel.ExplorerItemList;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import java.util.Objects;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 
 /**
  * Created by Stardust on 2017/3/13.
@@ -62,7 +65,7 @@ public class MyScriptListFragment extends ViewPagerFragment implements FloatingA
         mExplorerView.setExplorer(Explorers.workspace(), ExplorerDirPage.createRoot(Pref.getScriptDirPath()));
         mExplorerView.setOnItemClickListener((view, item) -> {
             if (item.isEditable()) {
-                Scripts.INSTANCE.edit(getActivity(), item.toScriptFile());
+                Scripts.INSTANCE.edit(requireActivity(), item.toScriptFile());
             } else {
                 IntentUtil.viewFile(GlobalAppContext.get(), item.getPath(), AppFileProvider.AUTHORITY);
             }
@@ -88,7 +91,7 @@ public class MyScriptListFragment extends ViewPagerFragment implements FloatingA
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SimpleObserver<Boolean>() {
                     @Override
-                    public void onNext(@io.reactivex.annotations.NonNull Boolean expanding) {
+                    public void onNext(@io.reactivex.rxjava3.annotations.NonNull Boolean expanding) {
                         fab.animate()
                                 .rotation(expanding ? 45 : 0)
                                 .setDuration(300)

@@ -1,11 +1,12 @@
 package com.stardust.app;
 
+import android.util.SparseArray;
+import android.view.ViewGroup;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
-import android.util.SparseArray;
-import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,14 +17,9 @@ import java.util.List;
 
 public class FragmentPagerAdapterBuilder {
 
-    public interface OnFragmentInstantiateListener {
-        void OnInstantiate(int pos, Fragment fragment);
-    }
-
-    private List<Fragment> mFragments = new ArrayList<>();
-    private List<String> mTitles = new ArrayList<>();
-    private FragmentActivity mActivity;
-
+    private final List<Fragment> mFragments = new ArrayList<>();
+    private final List<String> mTitles = new ArrayList<>();
+    private final FragmentActivity mActivity;
     public FragmentPagerAdapterBuilder(FragmentActivity activity) {
         mActivity = activity;
     }
@@ -57,9 +53,13 @@ public class FragmentPagerAdapterBuilder {
         };
     }
 
+    public interface OnFragmentInstantiateListener {
+        void OnInstantiate(int pos, Fragment fragment);
+    }
+
     public abstract static class StoredFragmentPagerAdapter extends FragmentPagerAdapter {
 
-        private SparseArray<Fragment> mStoredFragments = new SparseArray<>();
+        private final SparseArray<Fragment> mStoredFragments = new SparseArray<>();
         private OnFragmentInstantiateListener mOnFragmentInstantiateListener;
 
         public StoredFragmentPagerAdapter(FragmentManager fm) {
@@ -70,7 +70,7 @@ public class FragmentPagerAdapterBuilder {
         public Object instantiateItem(ViewGroup container, int position) {
             Fragment fragment = (Fragment) super.instantiateItem(container, position);
             mStoredFragments.put(position, fragment);
-            if(mOnFragmentInstantiateListener != null){
+            if (mOnFragmentInstantiateListener != null) {
                 mOnFragmentInstantiateListener.OnInstantiate(position, fragment);
             }
             return fragment;

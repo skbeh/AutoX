@@ -7,14 +7,14 @@ import org.autojs.autojs.network.VersionService;
 import org.autojs.autojs.network.entity.VersionInfo;
 import org.autojs.autojs.tool.SimpleObserver;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 /**
  * Created by Stardust on 2017/4/12.
  */
 
 public class VersionGuard {
-    private Activity mActivity;
-    private VersionService mVersionService = VersionService.getInstance();
+    private final Activity mActivity;
+    private final VersionService mVersionService = VersionService.getInstance();
     public VersionGuard(Activity activity) {
         mActivity = activity;
     }
@@ -27,7 +27,7 @@ public class VersionGuard {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SimpleObserver<VersionInfo>() {
                     @Override
-                    public void onNext(@io.reactivex.annotations.NonNull VersionInfo versionInfo) {
+                    public void onNext(@io.reactivex.rxjava3.annotations.NonNull VersionInfo versionInfo) {
                             showUpdateInfoIfNeeded(versionInfo);
                     }
                 });

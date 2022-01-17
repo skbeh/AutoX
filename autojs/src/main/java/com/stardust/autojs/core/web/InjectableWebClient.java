@@ -9,7 +9,6 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-
 import com.stardust.autojs.runtime.exception.ScriptInterruptedException;
 
 import org.mozilla.javascript.Context;
@@ -26,17 +25,17 @@ public class InjectableWebClient extends WebViewClient {
 
     private static final String TAG = "InjectableWebClient";
 
-    private Queue<Pair<String, ValueCallback<String>>> mToInjectJavaScripts = new LinkedList<>();
+    private final Queue<Pair<String, ValueCallback<String>>> mToInjectJavaScripts = new LinkedList<>();
     private final ValueCallback<String> defaultCallback = new ValueCallback<String>() {
         @Override
         public void onReceiveValue(String value) {
             Log.i(TAG, "onReceiveValue: " + value);
         }
     };
+    private final Context mContext;
+    private final Scriptable mScriptable;
+    private final ScriptBridge mScriptBridge = new ScriptBridge();
     private WebView mWebView;
-    private Context mContext;
-    private Scriptable mScriptable;
-    private ScriptBridge mScriptBridge = new ScriptBridge();
 
     public InjectableWebClient(Context context, Scriptable scriptable) {
         mContext = context;
@@ -84,6 +83,29 @@ public class InjectableWebClient extends WebViewClient {
         return callback.waitResult();
     }
 
+    private static class InjectReturnCallback implements ValueCallback<String> {
+
+        private String result;
+
+        @Override
+        public void onReceiveValue(String value) {
+            result = value;
+            synchronized (this) {
+                this.notify();
+            }
+        }
+
+        String waitResult() {
+            synchronized (this) {
+                try {
+                    this.wait();
+                } catch (InterruptedException e) {
+                    throw new ScriptInterruptedException();
+                }
+            }
+            return result;
+        }
+    }
 
     private class ScriptBridge {
 
@@ -108,30 +130,6 @@ public class InjectableWebClient extends WebViewClient {
                 }
             }
             return result.toString();
-        }
-    }
-
-    private static class InjectReturnCallback implements ValueCallback<String> {
-
-        private String result;
-
-        @Override
-        public void onReceiveValue(String value) {
-            result = value;
-            synchronized (this) {
-                this.notify();
-            }
-        }
-
-        String waitResult() {
-            synchronized (this) {
-                try {
-                    this.wait();
-                } catch (InterruptedException e) {
-                    throw new ScriptInterruptedException();
-                }
-            }
-            return result;
         }
     }
 

@@ -9,25 +9,14 @@ import java.util.Map;
 public class DatabaseResultSet {
 
 
-    public static class RowList {
-
-        public final int length;
-        private final ArrayList<Map<String, Object>> mData;
-
-
-        public RowList(ArrayList<Map<String, Object>> data) {
-            mData = data;
-            length = mData.size();
-        }
-
-        public Object item(int i) {
-            return mData.get(i);
-        }
-    }
-
     public final long insertId;
     public final long rowsAffected;
     public final RowList rows;
+    public DatabaseResultSet(long insertId, RowList rowList) {
+        this.insertId = insertId;
+        this.rowsAffected = rowList.length;
+        this.rows = rowList;
+    }
 
     public static DatabaseResultSet fromCursor(Cursor cursor) {
         ArrayList<Map<String, Object>> rows = new ArrayList<>();
@@ -52,10 +41,20 @@ public class DatabaseResultSet {
         return map;
     }
 
-    public DatabaseResultSet(long insertId, RowList rowList) {
-        this.insertId = insertId;
-        this.rowsAffected = rowList.length;
-        this.rows = rowList;
+    public static class RowList {
+
+        public final int length;
+        private final ArrayList<Map<String, Object>> mData;
+
+
+        public RowList(ArrayList<Map<String, Object>> data) {
+            mData = data;
+            length = mData.size();
+        }
+
+        public Object item(int i) {
+            return mData.get(i);
+        }
     }
 
 }

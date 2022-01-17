@@ -36,7 +36,7 @@ public class DictionaryTree<T> {
         }
     }
 
-    private Node<T> mRoot = new Node<>('@');
+    private final Node<T> mRoot = new Node<>('@');
 
     public void putWord(String word, T tag) {
         Node<T> node = mRoot;

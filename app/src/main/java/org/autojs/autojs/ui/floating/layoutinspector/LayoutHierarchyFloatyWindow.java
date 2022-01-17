@@ -10,12 +10,12 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.stardust.app.DialogUtils;
 import com.stardust.enhancedfloaty.FloatyService;
+import com.stardust.view.accessibility.NodeInfo;
+
 import org.autojs.autojs.R;
 import org.autojs.autojs.ui.codegeneration.CodeGenerateDialog;
 import org.autojs.autojs.ui.floating.FloatyWindowManger;
 import org.autojs.autojs.ui.floating.FullScreenFloatyWindow;
-
-import com.stardust.view.accessibility.NodeInfo;
 import org.autojs.autojs.ui.widget.BubblePopupMenu;
 
 import java.util.Arrays;
@@ -34,7 +34,7 @@ public class LayoutHierarchyFloatyWindow extends FullScreenFloatyWindow {
     private BubblePopupMenu mBubblePopMenu;
     private NodeInfoView mNodeInfoView;
     private Context mContext;
-    private NodeInfo mRootNode;
+    private final NodeInfo mRootNode;
     private NodeInfo mSelectedNode;
 
     public LayoutHierarchyFloatyWindow(NodeInfo rootNode) {
@@ -79,7 +79,7 @@ public class LayoutHierarchyFloatyWindow extends FullScreenFloatyWindow {
         if (mBubblePopMenu != null)
             return;
         mBubblePopMenu = new BubblePopupMenu(mContext, Arrays.asList(
-                mContext.getString(R.string.text_show_widget_infomation),
+                mContext.getString(R.string.text_show_widget_information),
                 mContext.getString(R.string.text_show_layout_bounds),
                 mContext.getString(R.string.text_generate_code)));
         mBubblePopMenu.setOnItemClickListener((view, position) -> {

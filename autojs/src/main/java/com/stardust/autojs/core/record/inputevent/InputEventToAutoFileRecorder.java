@@ -1,8 +1,9 @@
 package com.stardust.autojs.core.record.inputevent;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.stardust.autojs.core.inputevent.InputEventCodes;
 import com.stardust.autojs.core.inputevent.InputEventObserver;
@@ -25,10 +26,10 @@ import java.util.Date;
 public class InputEventToAutoFileRecorder extends InputEventRecorder {
 
     private static final String LOG_TAG = "InputEventToAutoFileRec";
+    private final DataOutputStream mDataOutputStream;
+    private final File mTmpFile;
     private double mLastEventTime;
     private int mTouchDevice = -1;
-    private DataOutputStream mDataOutputStream;
-    private File mTmpFile;
 
     public InputEventToAutoFileRecorder(Context context) {
         try {

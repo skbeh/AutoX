@@ -8,7 +8,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Broadcast {
 
-    private static CopyOnWriteArrayList<BroadcastEmitter> sEventEmitters = new CopyOnWriteArrayList<>();
+    private static final CopyOnWriteArrayList<BroadcastEmitter> sEventEmitters = new CopyOnWriteArrayList<>();
 
     public static void registerListener(BroadcastEmitter eventEmitter) {
         sEventEmitters.add(eventEmitter);

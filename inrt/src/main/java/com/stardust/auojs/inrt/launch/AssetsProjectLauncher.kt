@@ -43,7 +43,7 @@ open class AssetsProjectLauncher(private val mAssetsProjectDir: String, private 
         if (Pref.istHideLogs()) {
             //隐藏日志---直接运行
             runScript(activity)
-            return;
+            return
         }
         //不隐藏日志，
         if (!(activity is LogActivity)) {

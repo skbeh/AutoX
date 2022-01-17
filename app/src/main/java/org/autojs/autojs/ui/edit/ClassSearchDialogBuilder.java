@@ -3,14 +3,15 @@ package org.autojs.autojs.ui.edit;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Handler;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
@@ -22,7 +23,7 @@ import org.autojs.autojs.ui.widget.AutoAdapter;
 import org.autojs.autojs.ui.widget.BindableViewHolder;
 import org.autojs.autojs.ui.widget.SimpleTextWatcher;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 
 public class ClassSearchDialogBuilder extends ThemeColorMaterialDialogBuilder {

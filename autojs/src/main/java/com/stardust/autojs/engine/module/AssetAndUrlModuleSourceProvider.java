@@ -24,7 +24,7 @@ import java.util.List;
 
 public class AssetAndUrlModuleSourceProvider extends UrlModuleSourceProvider {
 
-    private android.content.Context mContext;
+    private final android.content.Context mContext;
     private final URI mBaseURI;
     private final String mAssetDirPath;
     private final AssetManager mAssetManager;

@@ -3,7 +3,7 @@
     <notice>
         <name>Rhino: JavaScript in Java</name>
         <url>https://github.com/mozilla/rhino</url>
-        <copyright/>
+        <copyright />
         <license>Mozilla Public License 2.0</license>
     </notice>
     <notice>
@@ -43,7 +43,7 @@
     </notice>
     <notice>
         <name>android-issue-reporter</name>
-        <copyright/>
+        <copyright />
         <url>https://github.com/HeinrichReimer/android-issue-reporter</url>
         <license>Apache Software License 2.0</license>
     </notice>
@@ -73,7 +73,7 @@
     </notice>
     <notice>
         <name>Android Terminal Emulator</name>
-        <copyright/>
+        <copyright />
         <url>https://github.com/jackpal/Android-Terminal-Emulator</url>
         <license>Apache Software License 2.0</license>
     </notice>
@@ -85,7 +85,7 @@
     </notice>
     <notice>
         <name>Volley</name>
-        <copyright/>
+        <copyright />
         <url>https://github.com/google/volley</url>
         <license>Apache Software License 2.0</license>
     </notice>
@@ -97,7 +97,7 @@
     </notice>
     <notice>
         <name>Zip4j</name>
-        <copyright/>
+        <copyright />
         <url>http://www.lingala.net/zip4j/</url>
         <license>Apache Software License 2.0</license>
     </notice>

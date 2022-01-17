@@ -30,12 +30,14 @@ import java.util.Map;
 
 public class TextViewInflater<V extends TextView> extends BaseViewInflater<V> {
 
+    static final ValueMapper<Integer> TEXT_STYLES = new ValueMapper<Integer>("textStyle")
+            .map("bold", Typeface.BOLD)
+            .map("italic", Typeface.ITALIC)
+            .map("normal", Typeface.NORMAL);
     private static final int LEFT = 0;
     private static final int TOP = 1;
     private static final int RIGHT = 2;
     private static final int BOTTOM = 3;
-
-
     private static final ValueMapper<Integer> AUTO_LINK_MASKS = new ValueMapper<Integer>("autoLink")
             .map("all", Linkify.ALL)
             .map("email", Linkify.EMAIL_ADDRESSES)
@@ -53,7 +55,6 @@ public class TextViewInflater<V extends TextView> extends BaseViewInflater<V> {
             .map("full", 2)
             .map("none", 0)
             .map("normal", 1);
-
     // TODO: 2017/11/4 IME FLAG
     private static final ValueMapper<Integer> IME_OPTIONS = new ValueMapper<Integer>("imeOptions")
             .map("actionDone", EditorInfo.IME_ACTION_DONE)
@@ -64,7 +65,6 @@ public class TextViewInflater<V extends TextView> extends BaseViewInflater<V> {
             .map("actionSearch", EditorInfo.IME_ACTION_DONE)
             .map("actionSend", EditorInfo.IME_ACTION_DONE)
             .map("actionUnspecified", EditorInfo.IME_ACTION_DONE);
-
     private static final ValueMapper<Integer> INPUT_TYPES = new ValueMapper<Integer>("inputType")
             .map("date", 0x14)
             .map("datetime", 0x4)
@@ -98,17 +98,10 @@ public class TextViewInflater<V extends TextView> extends BaseViewInflater<V> {
             .map("textWebEmailAddress", 0xd1)
             .map("textWebPassword", 0xe1)
             .map("time", 0x24);
-
     private static final ValueMapper<Integer> INPUT_TYPE_NUMERIC = new ValueMapper<Integer>("numeric")
             .map("decimal", InputType.TYPE_NUMBER_FLAG_DECIMAL)
             .map("number", InputType.TYPE_CLASS_NUMBER)
             .map("signed", InputType.TYPE_NUMBER_FLAG_SIGNED);
-
-    static final ValueMapper<Integer> TEXT_STYLES = new ValueMapper<Integer>("textStyle")
-            .map("bold", Typeface.BOLD)
-            .map("italic", Typeface.ITALIC)
-            .map("normal", Typeface.NORMAL);
-
     private static final ValueMapper<TextKeyListener.Capitalize> CAPITALIZE = new ValueMapper<TextKeyListener.Capitalize>("capitalize")
             .map("characters", TextKeyListener.Capitalize.CHARACTERS)
             .map("none", TextKeyListener.Capitalize.NONE)

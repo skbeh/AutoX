@@ -16,7 +16,7 @@ import java.io.Reader;
 
 public class JavaScriptFileSource extends JavaScriptSource {
 
-    private File mFile;
+    private final File mFile;
     private String mScript;
     private boolean mCustomsName = false;
 

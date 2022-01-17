@@ -2,7 +2,6 @@ package com.stardust.autojs.core.eventloop;
 
 import androidx.annotation.NonNull;
 
-
 import com.stardust.autojs.core.looper.Timer;
 import com.stardust.autojs.runtime.ScriptBridges;
 import com.stardust.autojs.runtime.exception.ScriptException;
@@ -20,99 +19,28 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class EventEmitter {
 
-    private static class ListenerWrapper {
-        Object listener;
-        boolean isOnce;
-
-        public ListenerWrapper(Object listener, boolean isOnce) {
-            this.listener = listener;
-            this.isOnce = isOnce;
-        }
-    }
-
-
-    private class Listeners {
-        private CopyOnWriteArrayList<ListenerWrapper> mListenerWrappers = new CopyOnWriteArrayList<>();
-
-        void add(Object listener, boolean once) {
-            ensureListenersNotAtLimit();
-            mListenerWrappers.add(new ListenerWrapper(listener, once));
-        }
-
-        private void ensureListenersNotAtLimit() {
-            if (mMaxListeners != 0 && mListenerWrappers.size() >= mMaxListeners) {
-                throw new ScriptException(new TooManyListenersException("max = " + mMaxListeners));
-            }
-        }
-
-        boolean empty() {
-            return mListenerWrappers.isEmpty();
-        }
-
-        void emit(Object[] args) {
-            Iterator<ListenerWrapper> listenerIterator = mListenerWrappers.iterator();
-            while (listenerIterator.hasNext()) {
-                ListenerWrapper listenerWrapper = listenerIterator.next();
-                if (mTimer != null) {
-                    mTimer.setImmediate(listenerWrapper.listener, args);
-                } else {
-                    mBridges.callFunction(listenerWrapper.listener, EventEmitter.this, args);
-                }
-                if (listenerWrapper.isOnce) {
-                    mListenerWrappers.remove(listenerWrapper);
-                }
-            }
-        }
-
-        int count() {
-            return mListenerWrappers.size();
-        }
-
-        Object[] toArray() {
-            Iterator<ListenerWrapper> listenerIterator = mListenerWrappers.iterator();
-            ArrayList<Object> listeners = new ArrayList<>(mListenerWrappers.size());
-            while (listenerIterator.hasNext()) {
-                listeners.add(listenerIterator.next().listener);
-            }
-            return listeners.toArray(new Object[listeners.size()]);
-        }
-
-        void prepend(Object listener, boolean once) {
-            ensureListenersNotAtLimit();
-            mListenerWrappers.add(0, new ListenerWrapper(listener, once));
-        }
-
-        void remove(Object listener) {
-            Iterator<ListenerWrapper> listenerIterator = mListenerWrappers.iterator();
-            while (listenerIterator.hasNext()) {
-                ListenerWrapper l = listenerIterator.next();
-                if (l.listener == listener) {
-                    listenerIterator.remove();
-                    break;
-                }
-            }
-        }
-    }
-
-    private Map<String, Listeners> mListenersMap = new HashMap<>();
     public static int defaultMaxListeners = 10;
-    private int mMaxListeners = defaultMaxListeners;
+    private final Map<String, Listeners> mListenersMap = new HashMap<>();
     protected ScriptBridges mBridges;
+    private int mMaxListeners = defaultMaxListeners;
     private Timer mTimer;
-
     public EventEmitter(ScriptBridges bridges) {
         mBridges = bridges;
     }
-
     public EventEmitter(ScriptBridges bridges, Timer timer) {
         mTimer = timer;
         mBridges = bridges;
+    }
+
+    public static int defaultMaxListeners() {
+        return defaultMaxListeners;
     }
 
     public EventEmitter once(String eventName, Object listener) {
         getListeners(eventName).add(listener, true);
         return this;
     }
+
     @NonNull
     private Listeners getListeners(String eventName) {
         Listeners listeners = mListenersMap.get(eventName);
@@ -122,7 +50,6 @@ public class EventEmitter {
         }
         return listeners;
     }
-
 
     public EventEmitter on(String eventName, Object listener) {
         getListeners(eventName).add(listener, false);
@@ -183,17 +110,84 @@ public class EventEmitter {
         return this;
     }
 
+    public int getMaxListeners() {
+        return mMaxListeners;
+    }
+
     public EventEmitter setMaxListeners(int n) {
         mMaxListeners = n;
         return this;
     }
 
-    public int getMaxListeners() {
-        return mMaxListeners;
+    private static class ListenerWrapper {
+        Object listener;
+        boolean isOnce;
+
+        public ListenerWrapper(Object listener, boolean isOnce) {
+            this.listener = listener;
+            this.isOnce = isOnce;
+        }
     }
 
-    public static int defaultMaxListeners() {
-        return defaultMaxListeners;
+    private class Listeners {
+        private final CopyOnWriteArrayList<ListenerWrapper> mListenerWrappers = new CopyOnWriteArrayList<>();
+
+        void add(Object listener, boolean once) {
+            ensureListenersNotAtLimit();
+            mListenerWrappers.add(new ListenerWrapper(listener, once));
+        }
+
+        private void ensureListenersNotAtLimit() {
+            if (mMaxListeners != 0 && mListenerWrappers.size() >= mMaxListeners) {
+                throw new ScriptException(new TooManyListenersException("max = " + mMaxListeners));
+            }
+        }
+
+        boolean empty() {
+            return mListenerWrappers.isEmpty();
+        }
+
+        void emit(Object[] args) {
+            for (ListenerWrapper listenerWrapper : mListenerWrappers) {
+                if (mTimer != null) {
+                    mTimer.setImmediate(listenerWrapper.listener, args);
+                } else {
+                    mBridges.callFunction(listenerWrapper.listener, EventEmitter.this, args);
+                }
+                if (listenerWrapper.isOnce) {
+                    mListenerWrappers.remove(listenerWrapper);
+                }
+            }
+        }
+
+        int count() {
+            return mListenerWrappers.size();
+        }
+
+        Object[] toArray() {
+            Iterator<ListenerWrapper> listenerIterator = mListenerWrappers.iterator();
+            ArrayList<Object> listeners = new ArrayList<>(mListenerWrappers.size());
+            while (listenerIterator.hasNext()) {
+                listeners.add(listenerIterator.next().listener);
+            }
+            return listeners.toArray(new Object[listeners.size()]);
+        }
+
+        void prepend(Object listener, boolean once) {
+            ensureListenersNotAtLimit();
+            mListenerWrappers.add(0, new ListenerWrapper(listener, once));
+        }
+
+        void remove(Object listener) {
+            Iterator<ListenerWrapper> listenerIterator = mListenerWrappers.iterator();
+            while (listenerIterator.hasNext()) {
+                ListenerWrapper l = listenerIterator.next();
+                if (l.listener == listener) {
+                    listenerIterator.remove();
+                    break;
+                }
+            }
+        }
     }
 
 

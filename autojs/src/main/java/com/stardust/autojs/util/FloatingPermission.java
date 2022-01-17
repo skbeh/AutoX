@@ -7,11 +7,9 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
-
-import android.text.TextUtils;
-import android.widget.Toast;
 
 import com.stardust.autojs.R;
 import com.stardust.enhancedfloaty.util.FloatingWindowPermissionUtil;
@@ -80,7 +78,7 @@ public class FloatingPermission {
             if (matcher.find()) {
                 version = Integer.parseInt(matcher.group());
             }
-            if (RomUtil.isMiui() && version >= 10&& Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (RomUtil.isMiui() && version >= 10 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 manageDrawOverlaysForAndroidM(context);
             } else if (RomUtil.isEmui() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 manageDrawOverlaysForAndroidM(context);

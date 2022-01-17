@@ -6,7 +6,8 @@ import com.stardust.automator.UiObject
  * Created by Stardust on 2017/1/27.
  */
 
-class DepthFirstSearchTargetAction(action: Int, filter: FilterAction.Filter) : SearchTargetAction(action, filter) {
+class DepthFirstSearchTargetAction(action: Int, filter: FilterAction.Filter) :
+    SearchTargetAction(action, filter) {
 
     private val mAble: Able = Able.ABLE_MAP.get(action)
 

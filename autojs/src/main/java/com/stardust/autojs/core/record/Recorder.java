@@ -8,38 +8,6 @@ import java.util.Arrays;
 
 public interface Recorder {
 
-    interface OnStateChangedListener {
-
-        void onStart();
-
-        void onStop();
-
-        void onPause();
-
-        void onResume();
-
-    }
-
-    class StateChangeEvent {
-
-        private int mOldState;
-        private int mCurrentState;
-
-        public StateChangeEvent(int oldState, int currentState) {
-            mOldState = oldState;
-            mCurrentState = currentState;
-        }
-
-        public int getOldState() {
-            return mOldState;
-        }
-
-        public int getCurrentState() {
-            return mCurrentState;
-        }
-    }
-
-
     int STATE_NOT_START = 0;
     int STATE_RECORDING = 1;
     int STATE_PAUSED = 2;
@@ -60,6 +28,37 @@ public interface Recorder {
     int getState();
 
     void setOnStateChangedListener(OnStateChangedListener onStateChangedListener);
+
+    interface OnStateChangedListener {
+
+        void onStart();
+
+        void onStop();
+
+        void onPause();
+
+        void onResume();
+
+    }
+
+    class StateChangeEvent {
+
+        private final int mOldState;
+        private final int mCurrentState;
+
+        public StateChangeEvent(int oldState, int currentState) {
+            mOldState = oldState;
+            mCurrentState = currentState;
+        }
+
+        public int getOldState() {
+            return mOldState;
+        }
+
+        public int getCurrentState() {
+            return mCurrentState;
+        }
+    }
 
     abstract class AbstractRecorder implements Recorder {
 
@@ -84,11 +83,8 @@ public interface Recorder {
 
             }
         };
-
-
-        private OnStateChangedListener mOnStateChangedListener = NO_OPERATION_LISTENER;
-
         private final boolean mSync;
+        private OnStateChangedListener mOnStateChangedListener = NO_OPERATION_LISTENER;
         private int mState = STATE_NOT_START;
 
         public AbstractRecorder(boolean syncOfState) {
@@ -134,16 +130,6 @@ public interface Recorder {
             mOnStateChangedListener.onPause();
         }
 
-        protected synchronized void setState(int state) {
-            if (mSync) {
-                synchronized (this) {
-                    mState = state;
-                }
-            } else {
-                mState = state;
-            }
-        }
-
         public synchronized int getState() {
             if (mSync) {
                 synchronized (this) {
@@ -151,6 +137,16 @@ public interface Recorder {
                 }
             } else {
                 return mState;
+            }
+        }
+
+        protected synchronized void setState(int state) {
+            if (mSync) {
+                synchronized (this) {
+                    mState = state;
+                }
+            } else {
+                mState = state;
             }
         }
 

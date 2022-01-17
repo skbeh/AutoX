@@ -51,10 +51,6 @@ public class CodeGenerator {
         mSearchMode = searchMode;
     }
 
-    public void setAction(int action) {
-        mAction = action;
-    }
-
     public String generateCode() {
         UiObject collection = getCollectionParent(mTarget);
         if (collection != null) {
@@ -71,7 +67,6 @@ public class CodeGenerator {
             return null;
         return generateAction(selector);
     }
-
 
     protected String generateCode(UiSelectorGenerator generator, UiObject root, UiObject target, int maxParentLevel, int maxChildrenLevel, boolean withFind) {
         String selector;
@@ -152,6 +147,10 @@ public class CodeGenerator {
                 return "setText(\"\")";
         }
         return "";
+    }
+
+    public void setAction(int action) {
+        mAction = action;
     }
 
     private String generateCodeForCollectionChild(UiObject collection, UiObject target) {

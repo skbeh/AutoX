@@ -1,6 +1,5 @@
 package org.autojs.autojs.autojs.build;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
@@ -13,7 +12,6 @@ import com.stardust.autojs.project.BuildInfo;
 import com.stardust.autojs.project.ProjectConfig;
 import com.stardust.autojs.script.EncryptedScriptFileHeader;
 import com.stardust.autojs.script.JavaScriptFileSource;
-import com.stardust.pio.PFile;
 import com.stardust.pio.PFiles;
 import com.stardust.util.AdvancedEncryptionStandard;
 import com.stardust.util.MD5;
@@ -25,7 +23,6 @@ import org.autojs.autojs.build.ApkSigner;
 import org.autojs.autojs.build.TinySign;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -35,20 +32,15 @@ import java.io.InputStream;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import pxb.android.StringItem;
 import pxb.android.axml.AxmlWriter;
-import zhao.arsceditor.AndrolibResources;
 import zhao.arsceditor.ArscUtil;
 import zhao.arsceditor.ResDecoder.ARSCDecoder;
-import zhao.arsceditor.ResDecoder.IO.LEDataInputStream;
 import zhao.arsceditor.ResDecoder.data.ResTable;
 
 
@@ -207,13 +199,13 @@ public class ApkBuilder {
     }
 
     private ProgressCallback mProgressCallback;
-    private ApkPackager mApkPackager;
+    private final ApkPackager mApkPackager;
     private String mArscPackageName;
     private ManifestEditor mManifestEditor;
-    private String mWorkspacePath;
+    private final String mWorkspacePath;
     private AppConfig mAppConfig;
     private final File mOutApkFile;
-    private String mWaitSignApk;
+    private final String mWaitSignApk;
     private String mInitVector;
     private String mKey;
 

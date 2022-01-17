@@ -2,11 +2,12 @@ package org.autojs.autojs.ui.edit;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
-import androidx.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+
+import androidx.annotation.NonNull;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
@@ -42,7 +43,7 @@ public class FindOrReplaceDialogBuilder extends ThemeColorMaterialDialogBuilder 
     @BindView(R.id.replacement)
     EditText mReplacementEditText;
 
-    private EditorView mEditorView;
+    private final EditorView mEditorView;
 
     public FindOrReplaceDialogBuilder(@NonNull Context context, EditorView editorView) {
         super(context);

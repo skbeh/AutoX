@@ -1,15 +1,9 @@
 package com.stardust.autojs.core.ui.dialog;
 
 import android.content.Context;
-
-
 import android.widget.EditText;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.afollestad.materialdialogs.StackingBehavior;
-import com.afollestad.materialdialogs.Theme;
 import com.stardust.autojs.core.eventloop.EventEmitter;
 import com.stardust.autojs.core.looper.Loopers;
 import com.stardust.autojs.core.looper.Timer;
@@ -37,6 +31,10 @@ public class JsDialogBuilder extends MaterialDialog.Builder {
         mEmitter = new EventEmitter(runtime.bridges);
         mUiHandler = runtime.uiHandler;
         setUpEvents();
+    }
+
+    public static int defaultMaxListeners() {
+        return EventEmitter.defaultMaxListeners();
     }
 
     private void setUpEvents() {
@@ -137,17 +135,13 @@ public class JsDialogBuilder extends MaterialDialog.Builder {
         return this;
     }
 
-    public JsDialogBuilder setMaxListeners(int n) {
-        mEmitter.setMaxListeners(n);
-        return this;
-    }
-
     public int getMaxListeners() {
         return mEmitter.getMaxListeners();
     }
 
-    public static int defaultMaxListeners() {
-        return EventEmitter.defaultMaxListeners();
+    public JsDialogBuilder setMaxListeners(int n) {
+        mEmitter.setMaxListeners(n);
+        return this;
     }
 
 }

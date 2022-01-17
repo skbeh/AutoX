@@ -20,10 +20,10 @@ import zhao.arsceditor.ResDecoder.ARSCDecoder;
 public class ApkBuilder {
 
 
-    private File mOutApkFile;
-    private ApkPackager mApkPackager;
+    private final File mOutApkFile;
+    private final ApkPackager mApkPackager;
+    private final String mWorkspacePath;
     private ManifestEditor mManifestEditor;
-    private String mWorkspacePath;
     private String mArscPackageName;
 
     public ApkBuilder(InputStream apkInputStream, File outApkFile, String workspacePath) {

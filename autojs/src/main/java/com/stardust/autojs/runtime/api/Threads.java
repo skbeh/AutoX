@@ -19,9 +19,9 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Threads {
 
     private final HashSet<Thread> mThreads = new HashSet<>();
-    private ScriptRuntime mRuntime;
+    private final ScriptRuntime mRuntime;
     private final Thread mMainThread;
-    private MainThreadProxy mMainThreadProxy;
+    private final MainThreadProxy mMainThreadProxy;
     private int mSpawnCount = 0;
     private boolean mExit = false;
 

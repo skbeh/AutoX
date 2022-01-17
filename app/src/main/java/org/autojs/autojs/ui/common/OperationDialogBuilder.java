@@ -1,16 +1,18 @@
 package com.stardust.app;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.afollestad.materialdialogs.MaterialDialog;
+
 import org.autojs.autojs.R;
 
 import java.util.ArrayList;
@@ -24,10 +26,10 @@ import butterknife.ButterKnife;
 
 public class OperationDialogBuilder extends MaterialDialog.Builder {
 
-    private RecyclerView mOperations;
-    private ArrayList<Integer> mIds = new ArrayList<>();
-    private ArrayList<Integer> mIcons = new ArrayList<>();
-    private ArrayList<String> mTexts = new ArrayList<>();
+    private final RecyclerView mOperations;
+    private final ArrayList<Integer> mIds = new ArrayList<>();
+    private final ArrayList<Integer> mIcons = new ArrayList<>();
+    private final ArrayList<String> mTexts = new ArrayList<>();
     private Object mOnItemClickTarget;
 
     public OperationDialogBuilder(@NonNull Context context) {

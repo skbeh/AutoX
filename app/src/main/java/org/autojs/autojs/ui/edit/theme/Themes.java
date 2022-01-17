@@ -3,6 +3,7 @@ package org.autojs.autojs.ui.edit.theme;
 import android.content.Context;
 
 import com.stardust.pio.UncheckedIOException;
+
 import org.autojs.autojs.Pref;
 
 import java.io.IOException;
@@ -11,9 +12,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import io.reactivex.Observable;
-import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+import io.reactivex.rxjava3.subjects.PublishSubject;
 
 /**
  * Created by Stardust on 2018/2/22.

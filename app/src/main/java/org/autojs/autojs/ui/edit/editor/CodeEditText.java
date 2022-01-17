@@ -17,6 +17,8 @@
  */
 package org.autojs.autojs.ui.edit.editor;
 
+import static org.autojs.autojs.ui.edit.editor.BracketMatching.UNMATCHED_BRACKET;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -25,8 +27,6 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.widget.AppCompatEditText;
 import android.text.Editable;
 import android.text.Layout;
 import android.util.AttributeSet;
@@ -34,20 +34,19 @@ import android.util.Log;
 import android.util.TimingLogger;
 import android.view.Gravity;
 import android.view.MotionEvent;
-import android.widget.TextView;
 import android.widget.TextViewHelper;
 
-import org.autojs.autojs.ui.edit.theme.Theme;
-import org.autojs.autojs.ui.edit.theme.TokenMapping;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.widget.AppCompatEditText;
 
 import com.stardust.util.TextUtils;
 
+import org.autojs.autojs.ui.edit.theme.Theme;
+import org.autojs.autojs.ui.edit.theme.TokenMapping;
 import org.mozilla.javascript.Token;
 
 import java.util.LinkedHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import static org.autojs.autojs.ui.edit.editor.BracketMatching.UNMATCHED_BRACKET;
 
 /**
  * Created by Administrator on 2018/2/11.
@@ -65,12 +64,12 @@ public class CodeEditText extends AppCompatEditText {
     private final CopyOnWriteArrayList<CodeEditor.CursorChangeCallback> mCursorChangeCallbacks = new CopyOnWriteArrayList<>();
     private volatile JavaScriptHighlighter.HighlightTokens mHighlightTokens;
     private Theme mTheme;
-    private TimingLogger mLogger = new TimingLogger(LOG_TAG, "draw");
-    private Paint mLineHighlightPaint = new Paint();
+    private final TimingLogger mLogger = new TimingLogger(LOG_TAG, "draw");
+    private final Paint mLineHighlightPaint = new Paint();
     private int mFirstLineForDraw = -1, mLastLineForDraw;
-    private int[] mMatchingBrackets = {-1, -1};
+    private final int[] mMatchingBrackets = {-1, -1};
     private int mUnmatchedBracket = -1;
-    private LinkedHashMap<Integer, CodeEditor.Breakpoint> mBreakpoints = new LinkedHashMap<>();
+    private final LinkedHashMap<Integer, CodeEditor.Breakpoint> mBreakpoints = new LinkedHashMap<>();
     private int mDebuggingLine = -1;
     private CodeEditor.BreakpointChangeListener mBreakpointChangeListener;
 
