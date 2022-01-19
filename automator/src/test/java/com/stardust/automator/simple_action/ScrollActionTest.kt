@@ -13,10 +13,10 @@ class ScrollActionTest {
     @Throws(Exception::class)
     fun perform() {
         val action = ScrollAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD, 0)
-        val root = TestUiObject(5)
+        val root = TestUiObject(10)
         action.perform(root)
         println(TestUiObject.max)
-        assertEquals(1, TestUiObject.count.toLong())
+        assertEquals(2, TestUiObject.count.toLong())
     }
 
 }
