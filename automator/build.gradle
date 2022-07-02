@@ -1,6 +1,5 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion versions.compile
@@ -9,17 +8,12 @@ android {
     defaultConfig {
         minSdkVersion versions.mini
         targetSdkVersion versions.target
-        versionCode 1
-        versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
-    }
-    lintOptions {
-        abortOnError false
     }
     buildTypes {
         release {
@@ -32,13 +26,16 @@ android {
             jniLibs.srcDirs = ['/libs']
         }
     }
+    lint {
+        abortOnError false
+    }
 }
 
 dependencies {
-    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.1-alpha01', {
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.4.0', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     testImplementation 'junit:junit:4.13.2'
-    api 'androidx.appcompat:appcompat:1.2.0'
+    api 'androidx.appcompat:appcompat:1.4.2'
     api project(path: ':common')
 }

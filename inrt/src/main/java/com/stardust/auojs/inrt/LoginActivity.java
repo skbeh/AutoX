@@ -213,19 +213,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    @SuppressLint("MissingPermission")
     private String getIMEI() {
-        String deviceId = null;
-        TelephonyManager tm = (TelephonyManager) this.getApplication().getSystemService(TELEPHONY_SERVICE);
-        deviceId = tm.getDeviceId();
-        if (TextUtils.isEmpty(deviceId)) {
-            deviceId = Settings.System.getString(
-                    getApplication().getContentResolver(), Settings.Secure.ANDROID_ID);
-        }
-        if (TextUtils.isEmpty(deviceId)) {
-            deviceId = Pref.getImei("");
-        }
-        return deviceId;
+        return "000000000000000";
     }
 
     public static String getGUID() {
@@ -256,12 +245,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private boolean checkPermission() {
-        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
-        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, 123);
-            return false;
-        }
-        return true;
+        return false;
     }
 
 

@@ -102,21 +102,14 @@ public class Device {
         mContext = context;
     }
 
-    @SuppressLint("HardwareIds")
     @Nullable
     public String getIMEI() {
-        checkReadPhoneStatePermission();
-        try {
-            return ((TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
-        } catch (SecurityException e) {
-            return null;
-        }
+        return null;
     }
 
 
-    @SuppressLint("HardwareIds")
     public String getAndroidId() {
-        return Settings.Secure.getString(mContext.getContentResolver(), Settings.Secure.ANDROID_ID);
+        return "0000000000000000";
     }
 
     public int getBrightness() throws Settings.SettingNotFoundException {
@@ -317,30 +310,8 @@ public class Device {
         return (T) systemService;
     }
 
-    private static final String FAKE_MAC_ADDRESS = "02:00:00:00:00:00";
-
-    @SuppressLint("HardwareIds")
     public String getMacAddress() throws Exception {
-        WifiManager wifiMan = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        if (wifiMan == null) {
-            return null;
-        }
-        WifiInfo wifiInf = wifiMan.getConnectionInfo();
-        if (wifiInf == null) {
-            return getMacByFile();
-        }
-
-        String mac = wifiInf.getMacAddress();
-        if (FAKE_MAC_ADDRESS.equals(mac)) {
-            mac = null;
-        }
-        if (mac == null) {
-            mac = getMacByInterface();
-            if (mac == null) {
-                mac = getMacByFile();
-            }
-        }
-        return mac;
+        return null;
     }
 
     private static String getMacByInterface() throws SocketException {

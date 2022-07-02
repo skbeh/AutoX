@@ -8,8 +8,6 @@ android {
     defaultConfig {
         minSdkVersion versions.mini
         targetSdkVersion versions.target
-        versionCode 1
-        versionName "1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -25,15 +23,15 @@ android {
 }
 
 dependencies {
-    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.1-alpha01', {
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.4.0', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13.2'
     api fileTree(dir: 'libs', include: ['*.jar'])
-    api files('libs/tiny-sign-0.9.jar') 
-    api files('libs/commons-io-2.5.jar')
-    implementation "androidx.core:core-ktx:+"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    api files('libs/tiny-sign-0.9.jar')
+    api 'commons-io:commons-io:2.11.0'
+    implementation "androidx.core:core-ktx:1.8.0"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
 repositories {
     mavenCentral()

@@ -5,8 +5,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.util.AttributeSet;
 
-import com.tencent.bugly.crashreport.BuglyLog;
-
 public class WrapContentGridLayoutManger extends GridLayoutManager {
 
     private String mDebugInfo;
@@ -31,8 +29,6 @@ public class WrapContentGridLayoutManger extends GridLayoutManager {
     public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
         try {
             super.onLayoutChildren(recycler, state);
-        } catch (IndexOutOfBoundsException e) {
-            BuglyLog.e("GridLayoutManager", "Android bug: debug info = " + mDebugInfo, e);
-        }
+        } catch (IndexOutOfBoundsException e) {}
     }
 }

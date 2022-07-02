@@ -3,10 +3,8 @@
   "appVersionName": "6.1.1",
   "devVersionCode": 611,
   "devVersionName": "6.1.1",
-  "target": 26,
-  "mini": 21,
+  "target": 29,
+  "mini": 24,
   "compile": 32,
-  "buildTool": "32.0.0",
-  "IDE": "Android Studio Bumblebee | 2021.1.1",
-  "JDK": "15"
+  "buildTool": "33.0.0"
 }

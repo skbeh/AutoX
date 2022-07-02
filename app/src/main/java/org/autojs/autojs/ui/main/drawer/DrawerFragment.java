@@ -352,19 +352,8 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
         }
     }
 
-    @SuppressLint("MissingPermission")
     private String getIMEI() {
-        if (!checkPermission()) {
-            return "错误数据";
-        }
-        String deviceId = null;
-        TelephonyManager tm = (TelephonyManager) getActivity().getApplication().getSystemService(TELEPHONY_SERVICE);
-        deviceId = tm.getDeviceId();
-        if (TextUtils.isEmpty(deviceId)) {
-            deviceId = Settings.System.getString(
-                    getActivity().getApplication().getContentResolver(), Settings.Secure.ANDROID_ID);
-        }
-        return deviceId;
+        return "000000000000000";
     }
 
     private boolean checkPermission() {

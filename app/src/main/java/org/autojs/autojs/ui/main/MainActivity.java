@@ -41,7 +41,6 @@ import com.stardust.pio.PFiles;
 import com.stardust.theme.ThemeColorManager;
 import com.stardust.util.BackPressedHandler;
 import com.stardust.util.DrawerAutoClose;
-import com.tencent.smtt.sdk.QbSdk;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Click;
@@ -56,7 +55,6 @@ import org.autojs.autojs.tool.AccessibilityServiceTool;
 import org.autojs.autojs.ui.BaseActivity;
 import org.autojs.autojs.ui.common.NotAskAgainDialog;
 import org.autojs.autojs.ui.doc.DocsFragment_;
-import org.autojs.autojs.ui.doc.DocsFragment_TBS_;
 import org.autojs.autojs.ui.floating.FloatyWindowManger;
 import org.autojs.autojs.ui.log.LogActivity_;
 import org.autojs.autojs.ui.main.community.CommunityFragment;
@@ -122,29 +120,8 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
         showAnnunciationIfNeeded();
         EventBus.getDefault().register(this);
         applyDayNightMode();
-        if (Pref.getWebData().contains("isTbs")) {
-            mWebData = gson.fromJson(Pref.getWebData(), WebData.class);
-        } else {
-            mWebData = new WebData();
-            Pref.setWebData(gson.toJson(mWebData));
-        }
-        if (mWebData.isTbs) {
-            QbSdk.initX5Environment(this, new QbSdk.PreInitCallback() {
-                @Override
-                public void onCoreInitFinished() {
-                    // 内核初始化完成，可能为系统内核，也可能为系统内核
-                }
-
-                /**
-                 * 预初始化结束
-                 * 由于X5内核体积较大，需要依赖网络动态下发，所以当内核不存在的时候，默认会回调false，此时将会使用系统内核代替
-                 * @param isX5 是否使用X5内核
-                 */
-                @Override
-                public void onViewInitFinished(boolean isX5) {
-                }
-            });
-        }
+        mWebData = new WebData();
+        Pref.setWebData(gson.toJson(mWebData));
     }
 
     @SuppressLint("RestrictedApi")
@@ -164,12 +141,8 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
             }
         });
         rightDrawer.setNavigationItemSelectedListener(menuItem -> {
-            if (Pref.getWebData().contains("isTbs")) {
-                mWebData = gson.fromJson(Pref.getWebData(), WebData.class);
-            } else {
-                mWebData = new WebData();
-                Pref.setWebData(gson.toJson(mWebData));
-            }
+            mWebData = new WebData();
+            Pref.setWebData(gson.toJson(mWebData));
             switch (menuItem.getItemId()) {
                 case R.id.ali_exit:
                     exitCompletely();
@@ -246,13 +219,8 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
                             .show();
                     break;
                 case R.id.web_kernel:
-                    mWebData.isTbs = !mWebData.isTbs;
                     Pref.setWebData(gson.toJson(mWebData));
-                    if (mWebData.isTbs) {
-                        Toast.makeText(this, "默认Web内核已切换为：TBS WebView，重启APP后生效！", Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(this, "默认Web内核已切换为：系统 WebView，重启APP后生效！", Toast.LENGTH_LONG).show();
-                    }
+                    Toast.makeText(this, "默认Web内核已切换为：系统 WebView，重启APP后生效！", Toast.LENGTH_LONG).show();
                     break;
                 case R.id.switch_fullscreen:
                     if (((getWindow().getDecorView().getWindowSystemUiVisibility() & View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN) == 0) | ((getWindow().getDecorView().getWindowSystemUiVisibility() & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0)) {
@@ -355,29 +323,15 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
 
     private void setUpTabViewPager() {
         mTabLayout = $(R.id.tab);
-        if (Pref.getWebData().contains("isTbs")) {
-            mWebData = gson.fromJson(Pref.getWebData(), WebData.class);
-        } else {
-            mWebData = new WebData();
-            Pref.setWebData(gson.toJson(mWebData));
-        }
-        if (mWebData.isTbs) {
-            mPagerAdapter = new FragmentPagerAdapterBuilder(this)
-                    .add(new MyScriptListFragment_(), R.string.text_file)
-                    .add(new TaskManagerFragment_(), R.string.text_manage)
-                    .add(new DocsFragment_TBS_(), R.string.text_WebX)
-//                .add(new CommunityFragment_(), R.string.text_community)
-//                .add(new MarketFragment_(), R.string.text_market)
-                    .build();
-        } else {
-            mPagerAdapter = new FragmentPagerAdapterBuilder(this)
-                    .add(new MyScriptListFragment_(), R.string.text_file)
-                    .add(new TaskManagerFragment_(), R.string.text_manage)
-                    .add(new DocsFragment_(), R.string.text_WebX)
-//                .add(new CommunityFragment_(), R.string.text_community)
-//                .add(new MarketFragment_(), R.string.text_market)
-                    .build();
-        }
+        mWebData = new WebData();
+        Pref.setWebData(gson.toJson(mWebData));
+        mPagerAdapter = new FragmentPagerAdapterBuilder(this)
+                .add(new MyScriptListFragment_(), R.string.text_file)
+                .add(new TaskManagerFragment_(), R.string.text_manage)
+                .add(new DocsFragment_(), R.string.text_WebX)
+//              .add(new CommunityFragment_(), R.string.text_community)
+//              .add(new MarketFragment_(), R.string.text_market)
+                .build();
         mViewPager.setAdapter(mPagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
         setUpViewPagerFragmentBehaviors();

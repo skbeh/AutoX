@@ -9,7 +9,6 @@ import org.autojs.autojs.tool.IntentTool;
 import org.autojs.autojs.ui.BaseActivity;
 import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder;
 import com.stardust.util.IntentUtil;
-import com.tencent.bugly.crashreport.CrashReport;
 
 import org.autojs.autojs.BuildConfig;
 import org.autojs.autojs.R;
@@ -72,7 +71,6 @@ public class AboutActivity extends BaseActivity {
         mLolClickCount++;
 //        Toast.makeText(this, R.string.text_lll, Toast.LENGTH_LONG).show();
         if (mLolClickCount >= 5) {
-            crashTest();
             showEasterEgg();
         }
     }
@@ -81,15 +79,6 @@ public class AboutActivity extends BaseActivity {
         new MaterialDialog.Builder(this)
                 .customView(R.layout.paint_layout, false)
                 .show();
-    }
-
-    private void crashTest() {
-        new ThemeColorMaterialDialogBuilder(this)
-                .title("Crash Test")
-                .positiveText("Crash")
-                .onPositive((dialog, which) -> {
-                    CrashReport.testJavaCrash();
-                }).show();
     }
 
     @Click(R.id.developer)
