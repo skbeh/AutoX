@@ -25,10 +25,7 @@ import org.autojs.autojs.ui.update.UpdateCheckDialog;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import de.psdev.licensesdialog.LicenseResolver;
-import de.psdev.licensesdialog.LicensesDialog;
-import de.psdev.licensesdialog.licenses.License;
+import java.util.Objects;
 
 /**
  * Created by Stardust on 2017/2/2.
@@ -78,7 +75,7 @@ public class SettingsActivity extends BaseActivity {
         Toolbar toolbar = $(R.id.toolbar);
         toolbar.setTitle(R.string.text_setting);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -135,58 +132,17 @@ public class SettingsActivity extends BaseActivity {
                             .show())
                     .put(getString(R.string.text_issue_report), () -> startActivity(new Intent(getActivity(), IssueReporterActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)))
                     .put(getString(R.string.text_about_me_and_repo), () -> startActivity(new Intent(getActivity(), AboutActivity_.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)))
-                    .put(getString(R.string.text_licenses), () -> showLicenseDialog())
                     .build();
         }
 
-
         @Override
         public boolean onPreferenceTreeClick( Preference preference) {
-            Runnable action = ACTION_MAP.get(preference.getTitle().toString());
+            Runnable action = ACTION_MAP.get(Objects.requireNonNull(preference.getTitle()).toString());
             if (action != null) {
                 action.run();
                 return true;
             } else {
                 return super.onPreferenceTreeClick(preference);
-            }
-        }
-
-        private void showLicenseDialog() {
-            LicenseResolver.registerLicense(MozillaPublicLicense20.instance);
-            new LicensesDialog.Builder(getActivity())
-                    .setNotices(R.raw.licenses)
-                    .setIncludeOwnLicense(true)
-                    .build()
-                    .show();
-        }
-
-        public static class MozillaPublicLicense20 extends License {
-
-            public static MozillaPublicLicense20 instance = new MozillaPublicLicense20();
-
-            @Override
-            public String getName() {
-                return "Mozilla Public License 2.0";
-            }
-
-            @Override
-            public String readSummaryTextFromResources(Context context) {
-                return getContent(context, R.raw.mpl_20_summary);
-            }
-
-            @Override
-            public String readFullTextFromResources(Context context) {
-                return getContent(context, R.raw.mpl_20_full);
-            }
-
-            @Override
-            public String getVersion() {
-                return "2.0";
-            }
-
-            @Override
-            public String getUrl() {
-                return "https://www.mozilla.org/en-US/MPL/2.0/";
             }
         }
 
