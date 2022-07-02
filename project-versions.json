@@ -1,10 +1,10 @@
 {
-  "appVersionCode": 611,
-  "appVersionName": "6.1.1",
-  "devVersionCode": 611,
-  "devVersionName": "6.1.1",
-  "target": 29,
-  "mini": 24,
+  "appVersionCode": 619,
+  "appVersionName": "6.1.9",
+  "devVersionCode": 619,
+  "devVersionName": "6.1.9",
+  "target": 26,
+  "mini": 21,
   "compile": 32,
   "buildTool": "33.0.0"
 }

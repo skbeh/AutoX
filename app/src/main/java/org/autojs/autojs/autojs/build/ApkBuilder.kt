@@ -3,6 +3,7 @@ package org.autojs.autojs.autojs.build
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
+import android.widget.Toast
 import com.stardust.app.GlobalAppContext
 import com.stardust.autojs.apkbuilder.ApkPackager
 import com.stardust.autojs.apkbuilder.ManifestEditor
@@ -60,7 +61,9 @@ class ApkBuilder(
         var splashText: String? = null,
         var hideLauncher: Boolean = false,
         var serviceDesc: String? = null,
-        var excludeLibraries: MutableList<String> = mutableListOf()
+        var excludeLibraries: MutableList<String> = mutableListOf(),
+        var excludeAssets: MutableList<String> = mutableListOf(),
+        var customOcrModelPath: String? = null
     ) {
 
         fun addExcludeLibrary(library: String) {
@@ -160,10 +163,10 @@ class ApkBuilder(
     }
 
     @Throws(IOException::class)
-    fun copyDir(relativePath: String?, path: String?) {
-        val fromDir = File(path)
-        val toDir = File(mWorkspacePath, relativePath)
-        toDir.mkdir()
+    fun copyDir(relativeTargetPath: String?, srcPath: String?) {
+        val fromDir = File(srcPath)
+        val toDir = File(mWorkspacePath, relativeTargetPath)
+        toDir.mkdirs()
         for (child in fromDir.listFiles()) {
             if (child.isFile) {
                 if (child.name.endsWith(".js")) {
@@ -176,7 +179,7 @@ class ApkBuilder(
                 }
             } else {
                 if (!mAppConfig!!.ignoredDirs.contains(child)) {
-                    copyDir(PFiles.join(relativePath, child.name + "/"), child.path)
+                    copyDir(PFiles.join(relativeTargetPath, child.name + "/"), child.path)
                 }
             }
         }
@@ -232,6 +235,11 @@ class ApkBuilder(
 
         Log.d(TAG, config.excludeLibraries.toString())
         deleteLibraries(config)
+        deleteAssets(config)
+        if (!config.customOcrModelPath.isNullOrEmpty()) {
+            val dirName = File(config.customOcrModelPath!!).name
+            copyDir("/assets/${Constant.Assets.OCR_MODELS}/$dirName", config.customOcrModelPath)
+        }
         setScriptFile(config.sourcePath)
         return this
     }
@@ -260,6 +268,12 @@ class ApkBuilder(
                     }
                 }
             }
+        }
+    }
+
+    private fun deleteAssets(config: AppConfig) {
+        config.excludeAssets.forEach { name ->
+            delete(File(mWorkspacePath, "/assets/${name}"))
         }
     }
 

@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,6 +34,9 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomViewTarget;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.tabs.TabLayout;
 import com.stardust.app.AppOpsKt;
 import com.stardust.app.GlobalAppContext;
 import com.stardust.enhancedfloaty.FloatyService;
@@ -55,7 +59,6 @@ import org.autojs.autojs.network.entity.user.User;
 import org.autojs.autojs.network.entity.VersionInfo;
 import org.autojs.autojs.tool.SimpleObserver;
 import org.autojs.autojs.ui.main.MainActivity;
-import org.autojs.autojs.ui.main.community.CommunityFragment;
 import org.autojs.autojs.ui.settings.SettingsActivity_;
 import org.autojs.autojs.ui.user.LoginActivity_;
 import org.autojs.autojs.ui.settings.SettingsActivity;
@@ -87,6 +90,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Random;
 
 import io.reactivex.Observable;
@@ -140,7 +144,6 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
 
     private DrawerMenuAdapter mDrawerMenuAdapter;
     private Disposable mConnectionStateDisposable;
-    private CommunityDrawerMenu mCommunityDrawerMenu = new CommunityDrawerMenu();
 
 
     @Override
@@ -191,6 +194,7 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
                 new DrawerMenuItem(R.drawable.ic_backup_black_48dp, R.string.text_auto_back, R.string.key_auto_back, null),
 
                 new DrawerMenuGroup(R.string.text_others),
+                new DrawerMenuItem(R.drawable.ic_fullscreen, R.string.switch_fullscreen, this::switchFullscreen),
                 new DrawerMenuItem(R.drawable.ic_personalize, R.string.regist, this::regist),
                 mConnectionItem
                 // new DrawerMenuItem(R.drawable.ic_night_mode, R.string.text_night_mode, R.string.key_night_mode, this::toggleNightMode),
@@ -248,23 +252,20 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
     }
 
     void goToUsageStatsSettings(DrawerMenuItemViewHolder holder) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            return;
-        }
-        boolean enabled = AppOpsKt.isOpPermissionGranted(getContext(), AppOpsManager.OPSTR_GET_USAGE_STATS);
+        boolean enabled = AppOpsKt.isOpPermissionGranted(requireContext(), AppOpsManager.OPSTR_GET_USAGE_STATS);
         boolean checked = holder.getSwitchCompat().isChecked();
         if (checked && !enabled) {
             if (new NotAskAgainDialog.Builder(getContext(), "DrawerFragment.usage_stats")
                     .title(R.string.text_usage_stats_permission)
                     .content(R.string.description_usage_stats_permission)
                     .positiveText(R.string.ok)
-                    .dismissListener(dialog -> IntentUtil.requestAppUsagePermission(getContext()))
+                    .dismissListener(dialog -> IntentUtil.requestAppUsagePermission(requireContext()))
                     .show() == null) {
-                IntentUtil.requestAppUsagePermission(getContext());
+                IntentUtil.requestAppUsagePermission(requireContext());
             }
         }
         if (!checked && enabled) {
-            IntentUtil.requestAppUsagePermission(getContext());
+            IntentUtil.requestAppUsagePermission(requireContext());
         }
     }
 
@@ -283,7 +284,30 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
     }
 
     void toggleNightMode(DrawerMenuItemViewHolder holder) {
-        ((BaseActivity) getActivity()).setNightModeEnabled(holder.getSwitchCompat().isChecked());
+        ((BaseActivity) requireActivity()).setNightModeEnabled(holder.getSwitchCompat().isChecked());
+    }
+
+    void switchFullscreen(DrawerMenuItemViewHolder holder) {
+        AppBarLayout mAppBarLayout = requireActivity().findViewById(R.id.app_bar);
+        TabLayout mTabLayout = requireActivity().findViewById(R.id.tab);
+        FloatingActionButton mFab = requireActivity().findViewById(R.id.fab);
+        if (mAppBarLayout.getVisibility() != View.GONE) {
+            mTabLayout.setVisibility(View.GONE);
+            mAppBarLayout.setVisibility(View.GONE);
+            mFab.hide();
+            requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            requireActivity().getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            | View.SYSTEM_UI_FLAG_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_IMMERSIVE);
+        } else {
+            mTabLayout.setVisibility(View.VISIBLE);
+            mAppBarLayout.setVisibility(View.VISIBLE);
+            mFab.show();
+            requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            requireActivity().getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+        }
     }
 
     @SuppressLint("CheckResult")
@@ -517,31 +541,6 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
         setChecked(mFloatingWindowItem, event.getCurrentState() != CircularMenu.STATE_CLOSED);
     }
 
-    @Subscribe
-    public void onCommunityPageVisibilityChange(CommunityFragment.VisibilityChange change) {
-        if (change.visible) {
-            mCommunityDrawerMenu.showCommunityMenu(mDrawerMenuAdapter);
-        } else {
-            mCommunityDrawerMenu.hideCommunityMenu(mDrawerMenuAdapter);
-        }
-        mDrawerMenu.scrollToPosition(0);
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onLoginStateChange(UserService.LoginStateChange change) {
-        syncUserInfo();
-        if (mCommunityDrawerMenu.isShown()) {
-            mCommunityDrawerMenu.setUserOnlineStatus(mDrawerMenuAdapter, change.isOnline());
-        }
-    }
-
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onDrawerOpen(MainActivity.DrawerOpenEvent event) {
-        if (mCommunityDrawerMenu.isShown()) {
-            mCommunityDrawerMenu.refreshNotificationCount(mDrawerMenuAdapter);
-        }
-    }
 
     private void showStableModePromptIfNeeded() {
         new NotAskAgainDialog.Builder(getContext(), "DrawerFragment.stable_mode")

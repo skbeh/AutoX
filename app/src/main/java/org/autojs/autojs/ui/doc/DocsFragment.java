@@ -11,7 +11,6 @@ import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -57,12 +56,21 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 @EFragment(R.layout.fragment_online_docs)
 public class DocsFragment extends ViewPagerFragment implements BackPressedHandler, FloatingActionMenu.OnFloatingActionButtonClickListener {
 
+    public static class LoadUrl {
+        public final String url;
+
+        public LoadUrl(String url) {
+            this.url = url;
+        }
+
+    }
+
     public static final String ARGUMENT_URL = "url";
 
     @ViewById(R.id.eweb_view_docs)
     EWebView mEWebView;
 
-    WebView mWebView;
+    android.webkit.WebView mWebView;
 
     private String mPreviousQuery;
     private FloatingActionMenu mFloatingActionMenu;
@@ -98,7 +106,7 @@ public class DocsFragment extends ViewPagerFragment implements BackPressedHandle
                 mEWebView.onRefresh();
             }
         });
-        Bundle savedWebViewState = getArguments().getBundle("savedWebViewState");
+        Bundle savedWebViewState = requireArguments().getBundle("savedWebViewState");
         if (savedWebViewState != null) {
             mWebView.restoreState(savedWebViewState);
         } else {
@@ -107,12 +115,8 @@ public class DocsFragment extends ViewPagerFragment implements BackPressedHandle
     }
 
     private void loadUrl() {
-        if (Pref.getWebData().contains("isTbs")) {
-            mWebData = gson.fromJson(Pref.getWebData(), WebData.class);
-        } else {
-            mWebData = new WebData();
-            Pref.setWebData(gson.toJson(mWebData));
-        }
+        mWebData = new WebData();
+        Pref.setWebData(gson.toJson(mWebData));
         mWebView.loadUrl(mWebData.homepage);
     }
 
@@ -122,7 +126,7 @@ public class DocsFragment extends ViewPagerFragment implements BackPressedHandle
         super.onPause();
         Bundle savedWebViewState = new Bundle();
         mWebView.saveState(savedWebViewState);
-        getArguments().putBundle("savedWebViewState", savedWebViewState);
+        requireArguments().putBundle("savedWebViewState", savedWebViewState);
     }
 
     @Override
@@ -142,11 +146,12 @@ public class DocsFragment extends ViewPagerFragment implements BackPressedHandle
                 R.drawable.ic_homepage,
                 R.drawable.ic_star,
                 R.drawable.ic_pc_mode,
+                R.drawable.ic_console,
                 R.drawable.ic_web,
                 R.drawable.ic_code_black_48dp,
                 R.drawable.ic_floating_action_menu_open
         };
-        String[] fabLabs = {"主页1", "主页2", "收藏", "切换桌面模式", "网址/搜索", "网页源码", "本地文档"};
+        String[] fabLabs = {"主页1", "主页2", "收藏", "切换桌面模式", "开关控制台", "网址/搜索", "网页源码", "本地文档"};
         mFloatingActionMenu.buildFabs(fabIcons, fabLabs);
         mFloatingActionMenu.setOnFloatingActionButtonClickListener(this);
         if (mFloatingActionMenu.isExpanded()) {
@@ -159,7 +164,7 @@ public class DocsFragment extends ViewPagerFragment implements BackPressedHandle
     private void initFloatingActionMenuIfNeeded(final FloatingActionButton fab) {
         if (mFloatingActionMenu != null)
             return;
-        mFloatingActionMenu = getActivity().findViewById(R.id.floating_action_menu);
+        mFloatingActionMenu = requireActivity().findViewById(R.id.floating_action_menu);
         mFloatingActionMenu.getState()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SimpleObserver<Boolean>() {
@@ -205,175 +210,223 @@ public class DocsFragment extends ViewPagerFragment implements BackPressedHandle
 
     @Override
     public void onClick(FloatingActionButton button, int pos) {
-        if (Pref.getWebData().contains("isTbs")) {
-            mWebData = gson.fromJson(Pref.getWebData(), WebData.class);
-        } else {
-            mWebData = new WebData();
-            Pref.setWebData(gson.toJson(mWebData));
-        }
-        switch (pos) {
-            case 0:
-                mWebView.loadUrl(mWebData.homepage);
-                break;
-            case 1:
-                mWebView.loadUrl(mWebData.homepage2);
-                break;
-            case 2:
-                new MaterialDialog.Builder(requireContext())
-                        .title("当前页：" + mWebView.getTitle() + "（设置当前页面或点击打开书签：）")
-                        .positiveText("添加收藏")
-                        .negativeText("设为主页1")
-                        .neutralText("设为主页2")
-                        .items(mWebData.bookmarkLabels)
-                        .itemsCallback(new MaterialDialog.ListCallback() {
-                            @Override
-                            public void onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
-                                mWebView.loadUrl(mWebData.bookmarks[which]);
-                                dialog.dismiss();
-                            }
-                        })
-                        .onPositive(new MaterialDialog.SingleButtonCallback() {
-                            @Override
-                            public void onClick(MaterialDialog dialog, DialogAction which) {
-                                String[] strList = new String[mWebData.bookmarks.length + 1];
-                                String[] strLabelList = new String[mWebData.bookmarks.length + 1];
-                                int j = 0;
-                                for (int i = 0; i < mWebData.bookmarks.length; i++) {
-                                    strList[j] = mWebData.bookmarks[i];
-                                    strLabelList[j] = mWebData.bookmarkLabels[i];
-                                    j += 1;
+        mWebData = new WebData();
+        Pref.setWebData(gson.toJson(mWebData));
+            switch (pos) {
+                case 0:
+                    mWebView.loadUrl(mWebData.homepage);
+                    break;
+                case 1:
+                    mWebView.loadUrl(mWebData.homepage2);
+                    break;
+                case 2:
+                    new MaterialDialog.Builder(requireContext())
+                            .title("当前页：" + mWebView.getTitle() + "（设置当前页面或点击打开书签：）")
+                            .positiveText("添加收藏")
+                            .negativeText("设为主页1")
+                            .neutralText("设为主页2")
+                            .items(mWebData.bookmarkLabels)
+                            .itemsCallback(new MaterialDialog.ListCallback() {
+                                @Override
+                                public void onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
+                                    mWebView.loadUrl(mWebData.bookmarks[which]);
+                                    dialog.dismiss();
                                 }
-                                strList[j] = mWebView.getOriginalUrl();
-                                strLabelList[j] = mWebView.getTitle();
-                                mWebData.bookmarks = strList;
-                                mWebData.bookmarkLabels = strLabelList;
-                                Pref.setWebData(gson.toJson(mWebData));
-                                dialog.dismiss();
-                            }
-                        })
-                        .onNegative(new MaterialDialog.SingleButtonCallback() {
-                            @Override
-                            public void onClick(MaterialDialog dialog, DialogAction which) {
-                                mWebData.homepage = mWebView.getOriginalUrl();
-                                Pref.setWebData(gson.toJson(mWebData));
-                                Toast.makeText(getContext(), "设置为主页1：" + mWebView.getTitle(), Toast.LENGTH_LONG).show();
-                                dialog.dismiss();
-                            }
-                        })
-                        .onNeutral(new MaterialDialog.SingleButtonCallback() {
-                            @Override
-                            public void onClick(MaterialDialog dialog, DialogAction which) {
-                                mWebData.homepage2 = mWebView.getOriginalUrl();
-                                Pref.setWebData(gson.toJson(mWebData));
-                                Toast.makeText(getContext(), "设置为主页2：" + mWebView.getTitle(), Toast.LENGTH_LONG).show();
-                                dialog.dismiss();
-                            }
-                        })
-                        .show();
-                break;
-            case 3:
-                mEWebView.switchRescale();
-                if (mEWebView.getIsRescale()) {
-                    mWebView.getSettings().setLoadWithOverviewMode(true);
-                    mWebView.getSettings().setUserAgentString(mWebData.userAgents[6]);
-                } else {
-                    mWebView.getSettings().setLoadWithOverviewMode(false);
-                    mWebView.getSettings().setUserAgentString(mWebData.userAgents[1]);
-                }
-                mWebView.reload();
-                break;
-            case 4:
-                EditText et = new EditText(getContext());
-                new MaterialDialog.Builder(requireContext())
-                        .title(mWebView.getOriginalUrl())
-                        .customView(et, false)
-                        .positiveText("打开")
-                        .negativeText("复制网址")
-                        .neutralText("搜索")
-                        .onNeutral(new MaterialDialog.SingleButtonCallback() {
-                            @Override
-                            public void onClick(MaterialDialog dialog, DialogAction which) {
-                                new MaterialDialog.Builder(requireContext())
-                                        .title("选择搜索引擎：")
-                                        .negativeText("取消")
-                                        .items(mWebData.searchEngineLabels)
-                                        .itemsCallback(new MaterialDialog.ListCallback() {
-                                            @Override
-                                            public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-                                                mWebView.loadUrl(mWebData.searchEngines[which] + et.getText().toString());
-                                                dialog.dismiss();
+                            })
+                            .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(MaterialDialog dialog, DialogAction which) {
+                                    String[] strList = new String[mWebData.bookmarks.length + 1];
+                                    String[] strLabelList = new String[mWebData.bookmarks.length + 1];
+                                    int j = 0;
+                                    for (int i = 0; i < mWebData.bookmarks.length; i++) {
+                                        strList[j] = mWebData.bookmarks[i];
+                                        strLabelList[j] = mWebData.bookmarkLabels[i];
+                                        j += 1;
+                                    }
+                                    strList[j] = mWebView.getOriginalUrl();
+                                    strLabelList[j] = mWebView.getTitle();
+                                    mWebData.bookmarks = strList;
+                                    mWebData.bookmarkLabels = strLabelList;
+                                    Pref.setWebData(gson.toJson(mWebData));
+                                    dialog.dismiss();
+                                }
+                            })
+                            .onNegative(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(MaterialDialog dialog, DialogAction which) {
+                                    mWebData.homepage = mWebView.getOriginalUrl();
+                                    Pref.setWebData(gson.toJson(mWebData));
+                                    Toast.makeText(getContext(), "设置为主页1：" + mWebView.getTitle(), Toast.LENGTH_LONG).show();
+                                    dialog.dismiss();
+                                }
+                            })
+                            .onNeutral(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(MaterialDialog dialog, DialogAction which) {
+                                    mWebData.homepage2 = mWebView.getOriginalUrl();
+                                    Pref.setWebData(gson.toJson(mWebData));
+                                    Toast.makeText(getContext(), "设置为主页2：" + mWebView.getTitle(), Toast.LENGTH_LONG).show();
+                                    dialog.dismiss();
+                                }
+                            })
+                            .show();
+                    break;
+                case 3:
+                    mEWebView.switchRescale();
+                    if (mEWebView.getIsRescale()) {
+                        mWebView.getSettings().setLoadWithOverviewMode(true);
+                        mWebView.getSettings().setUserAgentString(mWebData.userAgents[6]);
+                    } else {
+                        mWebView.getSettings().setLoadWithOverviewMode(false);
+                        mWebView.getSettings().setUserAgentString(mWebData.userAgents[1]);
+                    }
+                    mWebView.reload();
+                    break;
+                case 4:
+                    mEWebView.switchConsole();
+                    if (mEWebView.getIsConsole()) {
+                        android.webkit.WebView.setWebContentsDebuggingEnabled(true);
+                    } else {
+                        android.webkit.WebView.setWebContentsDebuggingEnabled(false);
+                    }
+                    mWebView.reload();
+                    break;
+                case 5:
+                    EditText et = new EditText(getContext());
+                    new MaterialDialog.Builder(requireContext())
+                            .title(mWebView.getOriginalUrl())
+                            .customView(et, false)
+                            .positiveText("打开")
+                            .negativeText("复制网址")
+                            .neutralText("搜索")
+                            .onNeutral(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(MaterialDialog dialog, DialogAction which) {
+                                    new MaterialDialog.Builder(requireContext())
+                                            .title("选择搜索引擎：")
+                                            .negativeText("取消")
+                                            .items(mWebData.searchEngineLabels)
+                                            .itemsCallback(new MaterialDialog.ListCallback() {
+                                                @Override
+                                                public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                                                    mWebView.loadUrl(mWebData.searchEngines[which] + et.getText().toString());
+                                                    dialog.dismiss();
+                                                }
+                                            })
+                                            .show();
+                                    dialog.dismiss();
+                                }
+                            })
+                            .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                    mWebView.loadUrl(et.getText().toString());
+                                    dialog.dismiss();
+                                }
+                            })
+                            .onNegative(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                    ClipboardManager mClipboardManager = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                                    ClipData mClipData = ClipData.newPlainText("Label", mWebView.getOriginalUrl());
+                                    mClipboardManager.setPrimaryClip(mClipData);
+                                    Toast.makeText(getContext(), "当前网址已复制到剪贴板！", Toast.LENGTH_SHORT).show();
+                                    dialog.dismiss();
+                                }
+                            })
+                            .show();
+                    break;
+                case 6:
+                    mWebView.loadUrl(
+                            "file://" + requireContext().getExternalFilesDir(
+                                    null
+                            ).getPath() + File.separator + "html_source.txt"
+                    );
+                    break;
+                case 7:
+                    HashMap<String, Integer> images = new HashMap<String, Integer>();
+                    // 下面几句设置各文件类型的图标， 需要你先把图标添加到资源文件夹
+                    images.put(sRoot, R.drawable.filedialog_root);    // 根目录图标
+                    images.put(sParent, R.drawable.filedialog_folder_up);    //返回上一层的图标
+                    images.put(sFolder, R.drawable.filedialog_folder);    //文件夹图标
+                    images.put(sEmpty, R.drawable.filedialog_file);
+                    mDialog = createDialog(getActivity(), "打开本地文档", new CallbackBundle() {
+                                @Override
+                                public void callback(Bundle bundle) {
+                                    String filepath = bundle.getString("filepath").toLowerCase();
+                                    if (filepath.endsWith(".html") || filepath.endsWith(".htm") || filepath.endsWith(
+                                            ".xhtml"
+                                    ) || filepath.endsWith(
+                                            ".xml"
+                                    ) || filepath.endsWith(
+                                            ".mhtml"
+                                    ) || filepath.endsWith(
+                                            ".mht"
+                                    ) || filepath.endsWith(
+                                            ".txt"
+                                    ) || filepath.endsWith(
+                                            ".js"
+                                    ) || filepath.endsWith(
+                                            ".log"
+                                    )
+                                    ) {
+                                        mWebView.loadUrl("file://" + filepath);
+                                    } else {
+                                        Toast.makeText(getContext(), "系统Web内核不支持查看该格式文档！", Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                            },
+                            "html;htm;xhtml;xml;mhtml;mht;doc;docx;ppt;pptx;xls;xlsx;pdf;txt;js;log;epub",
+                            images);
+                    mDialog.show();
+                    break;
+                default:
+                    new MaterialDialog.Builder(requireContext())
+                            .title("请选择书签：")
+                            .positiveText("删除(多选)")
+                            .negativeText("取消")
+                            .items(mWebData.bookmarkLabels)
+                            .itemsCallbackMultiChoice(null, new MaterialDialog.ListCallbackMultiChoice() {
+                                @Override
+                                public boolean onSelection(MaterialDialog dialog, Integer[] which, CharSequence[] text) {
+                                    return true;
+                                }
+                            })
+                            .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(MaterialDialog dialog, DialogAction which) {
+                                    if (Objects.requireNonNull(dialog.getSelectedIndices()).length >= mWebData.bookmarks.length) {
+                                        mWebData.bookmarks = new String[]{};
+                                        mWebData.bookmarkLabels = new String[]{};
+                                        Pref.setWebData(gson.toJson(mWebData));
+                                    } else if (Objects.requireNonNull(dialog.getSelectedIndices()).length > 0) {
+                                        String[] strList = new String[mWebData.bookmarks.length - dialog.getSelectedIndices().length];
+                                        String[] strLabelList = new String[mWebData.bookmarks.length - dialog.getSelectedIndices().length];
+                                        int j = 0;
+                                        for (int i = 0; i < mWebData.bookmarks.length; i++) {
+                                            boolean flag = true;
+                                            for (Integer index : dialog.getSelectedIndices()) {
+                                                if (i == index) {
+                                                    flag = false;
+                                                    break;
+                                                }
                                             }
-                                        })
-                                        .show();
-                                dialog.dismiss();
-                            }
-                        })
-                        .onPositive(new MaterialDialog.SingleButtonCallback() {
-                            @Override
-                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                mWebView.loadUrl(et.getText().toString());
-                                dialog.dismiss();
-                            }
-                        })
-                        .onNegative(new MaterialDialog.SingleButtonCallback() {
-                            @Override
-                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                ClipboardManager mClipboardManager = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                                ClipData mClipData = ClipData.newPlainText("Label", mWebView.getOriginalUrl());
-                                mClipboardManager.setPrimaryClip(mClipData);
-                                Toast.makeText(getContext(), "当前网址已复制到剪贴板！", Toast.LENGTH_SHORT).show();
-                                dialog.dismiss();
-                            }
-                        })
-                        .show();
-                break;
-            case 5:
-                mWebView.loadUrl(
-                        "file://" + requireContext().getExternalFilesDir(
-                                null
-                        ).getPath() + File.separator + "html_source.txt"
-                );
-                break;
-            case 6:
-                HashMap<String, Integer> images = new HashMap<String, Integer>();
-                // 下面几句设置各文件类型的图标， 需要你先把图标添加到资源文件夹
-                images.put(sRoot, R.drawable.filedialog_root);    // 根目录图标
-                images.put(sParent, R.drawable.filedialog_folder_up);    //返回上一层的图标
-                images.put(sFolder, R.drawable.filedialog_folder);    //文件夹图标
-                images.put(sEmpty, R.drawable.filedialog_file);
-                mDialog = createDialog(getActivity(), "打开本地文档", new CallbackBundle() {
-                            @Override
-                            public void callback(Bundle bundle) {
-                                String filepath = bundle.getString("filepath").toLowerCase();
-                                if (filepath.endsWith(".html") || filepath.endsWith(".htm") || filepath.endsWith(
-                                        ".xhtml"
-                                ) || filepath.endsWith(
-                                        ".xml"
-                                ) || filepath.endsWith(
-                                        ".mhtml"
-                                ) || filepath.endsWith(
-                                        ".mht"
-                                ) || filepath.endsWith(
-                                        ".txt"
-                                ) || filepath.endsWith(
-                                        ".js"
-                                ) || filepath.endsWith(
-                                        ".log"
-                                )
-                                ) {
-                                    mWebView.loadUrl("file://" + filepath);
-                                } else {
-                                    Toast.makeText(getContext(), "系统Web内核不支持查看该格式文档！", Toast.LENGTH_LONG).show();
+                                            if (flag) {
+                                                strList[j] = mWebData.bookmarks[i];
+                                                strLabelList[j] = mWebData.bookmarkLabels[i];
+                                                j += 1;
+                                            }
+                                        }
+                                        mWebData.bookmarks = strList;
+                                        mWebData.bookmarkLabels = strLabelList;
+                                        Pref.setWebData(gson.toJson(mWebData));
+                                    }
+                                    dialog.dismiss();
                                 }
-                            }
-                        },
-                        "html;htm;xhtml;xml;mhtml;mht;doc;docx;ppt;pptx;xls;xlsx;pdf;txt;js;log;epub",
-                        images);
-                mDialog.show();
-                break;
-            default:
-                mWebView.loadUrl("http://www.autoxjs.com/");
-                break;
+                            })
+                            .show();
+                    break;
         }
     }
 

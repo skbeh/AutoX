@@ -51,16 +51,15 @@ import org.autojs.autojs.R;
 import org.autojs.autojs.autojs.AutoJs;
 import org.autojs.autojs.external.foreground.ForegroundService;
 import org.autojs.autojs.model.explorer.Explorers;
+import org.autojs.autojs.timing.TimedTaskScheduler;
 import org.autojs.autojs.tool.AccessibilityServiceTool;
 import org.autojs.autojs.ui.BaseActivity;
 import org.autojs.autojs.ui.common.NotAskAgainDialog;
 import org.autojs.autojs.ui.doc.DocsFragment_;
 import org.autojs.autojs.ui.floating.FloatyWindowManger;
 import org.autojs.autojs.ui.log.LogActivity_;
-import org.autojs.autojs.ui.main.community.CommunityFragment;
 import org.autojs.autojs.ui.main.scripts.MyScriptListFragment_;
 import org.autojs.autojs.ui.main.task.TaskManagerFragment_;
-import org.autojs.autojs.ui.settings.SettingsActivity;
 import org.autojs.autojs.ui.settings.SettingsActivity_;
 import org.autojs.autojs.ui.widget.CommonMarkdownView;
 import org.autojs.autojs.ui.widget.SearchViewItem;
@@ -79,7 +78,6 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
         static DrawerOpenEvent SINGLETON = new DrawerOpenEvent();
     }
 
-    //private static final String  signal ="uyMt3t/FqNUjYvXE6KElfppO17L1Nzhm0mXlnsPBl1o=";
     private static final String LOG_TAG = "MainActivity";
 
     @ViewById(R.id.drawer_layout)
@@ -169,8 +167,63 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
                         Toast.makeText(this, "Android 10 及以下系统无需设置该项", Toast.LENGTH_LONG).show();
                     }
                     break;
-                case R.id.theme_color:
-                    SettingsActivity.selectThemeColor(this);
+                case R.id.switch_line_wrap:
+                    Pref.setLineWrap(!Pref.getLineWrap());
+                    if (Pref.getLineWrap()) {
+                        Toast.makeText(this, "已打开编辑器自动换行，重启编辑器后生效！", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(this, "已关闭编辑器自动换行，重启编辑器后生效！", Toast.LENGTH_LONG).show();
+                    }
+                    break;
+                case R.id.switch_task_manager:
+                    String[] taskManagerList = new String[]{"WorkManager", "AndroidJob", "AlarmManager"};
+                    new MaterialDialog.Builder(this)
+                            .title("请选择定时任务调度器：")
+                            .negativeText("取消")
+                            .items(taskManagerList)
+                            .itemsCallback(new MaterialDialog.ListCallback() {
+                                @Override
+                                public void onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
+                                    Pref.setTaskManager(which);
+                                    Toast.makeText(getApplicationContext(), "定时任务调度器已切换为：" + taskManagerList[which] + "，重启APP后生效！", Toast.LENGTH_LONG).show();
+                                    AutoJs.getInstance().debugInfo("切换任务调度模式为：" + taskManagerList[which] + "，重启APP后生效！");
+                                    dialog.dismiss();
+                                }
+                            })
+                            .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(MaterialDialog dialog, DialogAction which) {
+                                    if (Objects.requireNonNull(dialog.getSelectedIndices()).length >= mWebData.bookmarks.length) {
+                                        mWebData.bookmarks = new String[]{};
+                                        mWebData.bookmarkLabels = new String[]{};
+                                        Pref.setWebData(gson.toJson(mWebData));
+                                    } else if (Objects.requireNonNull(dialog.getSelectedIndices()).length > 0) {
+                                        String[] strList = new String[mWebData.bookmarks.length - dialog.getSelectedIndices().length];
+                                        String[] strLabelList = new String[mWebData.bookmarks.length - dialog.getSelectedIndices().length];
+                                        int j = 0;
+                                        for (int i = 0; i < mWebData.bookmarks.length; i++) {
+                                            boolean flag = true;
+                                            for (Integer index : dialog.getSelectedIndices()) {
+                                                if (i == index) {
+                                                    flag = false;
+                                                    break;
+                                                }
+                                            }
+                                            if (flag) {
+                                                strList[j] = mWebData.bookmarks[i];
+                                                strLabelList[j] = mWebData.bookmarkLabels[i];
+                                                j += 1;
+                                            }
+                                        }
+                                        mWebData.bookmarks = strList;
+                                        mWebData.bookmarkLabels = strLabelList;
+                                        Pref.setWebData(gson.toJson(mWebData));
+                                    }
+                                    dialog.dismiss();
+                                }
+                            })
+                            .show();
+                    TimedTaskScheduler.ensureCheckTaskWorks(this);
                     break;
                 case R.id.web_bookmarks:
                     new MaterialDialog.Builder(this)
@@ -329,8 +382,6 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
                 .add(new MyScriptListFragment_(), R.string.text_file)
                 .add(new TaskManagerFragment_(), R.string.text_manage)
                 .add(new DocsFragment_(), R.string.text_WebX)
-//              .add(new CommunityFragment_(), R.string.text_community)
-//              .add(new MarketFragment_(), R.string.text_market)
                 .build();
         mViewPager.setAdapter(mPagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
@@ -386,7 +437,7 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
     protected void onResume() {
         super.onResume();
 
-        //TimedTaskScheduler.ensureCheckTaskWorks(getApplicationContext());
+        TimedTaskScheduler.ensureCheckTaskWorks(getApplicationContext());
     }
 
     @Override
@@ -418,9 +469,6 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
     @Override
     protected void onStart() {
         super.onStart();
-        //if (!BuildConfig.DEBUG) {
-        //    DeveloperUtils.verifyApk(this, signal, R.string.dex_crcs);
-        //}
     }
 
 
@@ -432,12 +480,6 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
 
     @Override
     public void onBackPressed() {
-        if (mAppBarLayout.getVisibility() != View.VISIBLE || mTabLayout.getVisibility() != View.VISIBLE) {
-            mTabLayout.setVisibility(View.VISIBLE);
-            mAppBarLayout.setVisibility(View.VISIBLE);
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-        }
         Fragment fragment = mPagerAdapter.getStoredFragment(mViewPager.getCurrentItem());
         if (fragment instanceof BackPressedHandler) {
             if (((BackPressedHandler) fragment).onBackPressed(this)) {
@@ -484,12 +526,29 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
                 LogActivity_.intent(this).start();
             }
             return true;
+        } else if (item.getItemId() == R.id.action_fullscreen) {
+            if (((getWindow().getDecorView().getWindowSystemUiVisibility() & View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN) == 0) | ((getWindow().getDecorView().getWindowSystemUiVisibility() & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0)) {
+                mTabLayout.setVisibility(View.GONE);
+                getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LOW_PROFILE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE);
+            } else {
+                mTabLayout.setVisibility(View.VISIBLE);
+                mAppBarLayout.setVisibility(View.VISIBLE);
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+            }
+        } else if (item.getItemId() == R.id.action_drawer_right) {
+            mDrawerLayout.openDrawer(rightDrawer);
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Subscribe
-    public void onLoadUrl(CommunityFragment.LoadUrl loadUrl) {
+    public void onLoadUrl(DocsFragment_.LoadUrl loadUrl) {
         mDrawerLayout.closeDrawer(GravityCompat.START);
     }
 

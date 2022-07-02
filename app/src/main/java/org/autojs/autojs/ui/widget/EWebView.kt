@@ -11,17 +11,19 @@ import android.os.Build
 import android.text.InputFilter
 import android.util.AttributeSet
 import android.util.Log
-import android.webkit.*
+import android.webkit.JavascriptInterface
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.gson.Gson
-import com.stardust.app.GlobalAppContext
 import com.stardust.app.OnActivityResultDelegate
 import com.stardust.app.OnActivityResultDelegate.DelegateHost
 import com.stardust.autojs.execution.ScriptExecution
+import com.stardust.autojs.runtime.api.Files
+import com.stardust.autojs.runtime.api.SevenZip
 import com.stardust.autojs.script.StringScriptSource
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -38,21 +40,22 @@ import java.util.concurrent.TimeUnit
 /**
  * Created by Stardust on 2017/8/22.
  */
-open class EWebView : FrameLayout, SwipeRefreshLayout.OnRefreshListener, OnActivityResultDelegate {
-    private lateinit var mWebView: WebView
+open class EWebView : FrameLayout, SwipeRefreshLayout.OnRefreshListener,
+    OnActivityResultDelegate {
     private lateinit var mProgressBar: ProgressBar
     private lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
     private lateinit var downloadManagerUtil: DownloadManagerUtil
+    private lateinit var mWebView: NestedWebView
     private lateinit var mWebData: WebData
     val gson = Gson()
 
     companion object {
         private var downloadId = 0L
         private var isRescale = false
+        private var isConsole = false
         private val IMAGE_TYPES = listOf("png", "jpg", "bmp")
         private const val CHOOSE_IMAGE = 42222
     }
-
 
     constructor(context: Context?) : super(context!!) {
         init()
@@ -66,25 +69,36 @@ open class EWebView : FrameLayout, SwipeRefreshLayout.OnRefreshListener, OnActiv
 
     private fun init() {
         inflate(context, R.layout.ewebview, this)
-        mWebView = findViewById(R.id.web_view);
         mSwipeRefreshLayout = findViewById(R.id.swipe_refresh_layout)
         mProgressBar = findViewById(R.id.progress_bar)
         mSwipeRefreshLayout.setOnRefreshListener(this)
-        downloadManagerUtil = DownloadManagerUtil(GlobalAppContext.get())
+        downloadManagerUtil = DownloadManagerUtil(context)
+        if (Pref.getWebData().contains("isTbs")) {
+            mWebData = gson.fromJson(
+                Pref.getWebData(),
+                WebData::class.java
+            )
+        } else {
+            mWebData = WebData()
+            Pref.setWebData(gson.toJson(mWebData))
+        }
+        mWebView = NestedWebView(context)
+        mSwipeRefreshLayout.addView(mWebView)
         webInit(mWebView)
     }
 
-    private fun webInit(mWebView: WebView) {
+    @SuppressLint("JavascriptInterface")
+    private fun webInit(mWebView: android.webkit.WebView) {
         with(mWebView.settings) {
             javaScriptEnabled = true  //设置支持Javascript交互
             javaScriptCanOpenWindowsAutomatically = true //支持通过JS打开新窗口
             allowFileAccess = true //设置可以访问文件
-            setAllowFileAccessFromFileURLs(true);
-            setAllowUniversalAccessFromFileURLs(true);
-            allowContentAccess = true;
+            allowFileAccessFromFileURLs = true
+            allowUniversalAccessFromFileURLs = true
+            allowContentAccess = true
             defaultTextEncodingName = "utf-8"//设置编码格式
             setSupportMultipleWindows(false)
-            layoutAlgorithm = WebSettings.LayoutAlgorithm.NORMAL
+            layoutAlgorithm = android.webkit.WebSettings.LayoutAlgorithm.NORMAL
             setSupportZoom(true) //支持缩放，默认为true。是下面那个的前提。
             builtInZoomControls = true //设置内置的缩放控件。若为false，则该WebView不可缩放
             displayZoomControls = false //设置原生的缩放控件，启用时被leakcanary检测到内存泄露
@@ -92,24 +106,20 @@ open class EWebView : FrameLayout, SwipeRefreshLayout.OnRefreshListener, OnActiv
             loadWithOverviewMode = false
             loadsImagesAutomatically = true //设置自动加载图片
             blockNetworkImage = false
-            blockNetworkLoads = false;
-            setNeedInitialFocus(true);
-            saveFormData = true;
-            cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK //使用缓存
-            setAppCacheEnabled(true);
+            blockNetworkLoads = false
+            setNeedInitialFocus(true)
+            saveFormData = true
+            cacheMode = android.webkit.WebSettings.LOAD_CACHE_ELSE_NETWORK //使用缓存
+            setAppCacheEnabled(false)
             domStorageEnabled = true
             databaseEnabled = true   //开启 database storage API 功能
-            pluginState = WebSettings.PluginState.ON
+            pluginState = android.webkit.WebSettings.PluginState.ON
             if (Build.VERSION.SDK_INT >= 26) {
                 safeBrowsingEnabled = false
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                mediaPlaybackRequiresUserGesture = false;
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                // 5.0以上允许加载http和https混合的页面(5.0以下默认允许，5.0+默认禁止)
-                mixedContentMode = android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW;
-            }
+            mediaPlaybackRequiresUserGesture = false
+            // 5.0以上允许加载http和https混合的页面(5.0以下默认允许，5.0+默认禁止)
+            mixedContentMode = android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
         }
         mWebView.webViewClient = MyWebViewClient()
         mWebView.webChromeClient = MyWebChromeClient()
@@ -125,19 +135,17 @@ open class EWebView : FrameLayout, SwipeRefreshLayout.OnRefreshListener, OnActiv
                     downloadManagerUtil.clearCurrentTask(downloadId)
                 }
                 downloadId = downloadManagerUtil.download(url, fileName, fileName)
-                Toast.makeText(GlobalAppContext.get(), "正在后台下载：$fileName", Toast.LENGTH_LONG)
+                Toast.makeText(context, "正在后台下载：$fileName", Toast.LENGTH_LONG)
                     .show()
             }
         }
         mWebView.addJavascriptInterface(this, "_autojs")
+        mWebView.addJavascriptInterface(Files(null), "\$files")
+        mWebView.addJavascriptInterface(SevenZip(), "\$zips")
     }
 
     fun evalJavaScript(script: String) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            mWebView!!.evaluateJavascript(script, null)
-        } else {
-            mWebView!!.loadUrl("javascript:$script")
-        }
+        mWebView.evaluateJavascript(script, null)
     }
 
 
@@ -159,22 +167,22 @@ open class EWebView : FrameLayout, SwipeRefreshLayout.OnRefreshListener, OnActiv
 
     @SuppressLint("CheckResult")
     override fun onRefresh() {
-        mSwipeRefreshLayout!!.isRefreshing = false
-        mWebView!!.reload()
+        mSwipeRefreshLayout.isRefreshing = false
+        mWebView.reload()
         Observable.timer(2, TimeUnit.SECONDS)
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { t: Long? -> mSwipeRefreshLayout!!.isRefreshing = false }
+            .subscribe { t: Long? -> mSwipeRefreshLayout.isRefreshing = false }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {}
 
-    protected open inner class MyWebViewClient() : WebViewClient() {
-        override fun onLoadResource(view: WebView, url: String?) {
+    protected open inner class MyWebViewClient : android.webkit.WebViewClient() {
+        override fun onLoadResource(view: android.webkit.WebView, url: String?) {
             super.onLoadResource(view, url)
         }
 
         override fun onPageStarted(
-            view: WebView,
+            view: android.webkit.WebView,
             url: String,
             favicon: Bitmap?
         ) {
@@ -184,23 +192,31 @@ open class EWebView : FrameLayout, SwipeRefreshLayout.OnRefreshListener, OnActiv
                 WebData()
             }
             Pref.setWebData(gson.toJson(mWebData))
-            with(mWebView.settings) {
-                userAgentString = mWebData?.userAgent
+            if (isRescale) {
+                with(mWebView.settings) {
+                    userAgentString = mWebData.userAgents[6]
+                }
+            } else {
+                with(mWebView.settings) {
+                    userAgentString = mWebData.userAgent
+                }
             }
             super.onPageStarted(view, url, favicon)
             mProgressBar.progress = 0
             mProgressBar.visibility = VISIBLE
-            var jsCode =
-                "javascript: " + readAssetsTxt(context, "modules/vconsole.min.js")
-            Log.i("onPageStarted", jsCode)
-            view.evaluateJavascript(
-                jsCode,
-                ValueCallback<String> {
+            if (isConsole) {
+                val jsCode =
+                    "javascript: " + readAssetsTxt(context, "modules/vconsole.min.js")
+                Log.i("onPageStarted", jsCode)
+                view.evaluateJavascript(
+                    jsCode
+                ) {
                     Log.i("evaluateJavascript", "JS　return:  $it")
-                })
+                }
+            }
         }
 
-        override fun onPageFinished(view: WebView, url: String) {
+        override fun onPageFinished(view: android.webkit.WebView, url: String) {
             view.settings.blockNetworkImage = false
             super.onPageFinished(view, url)
             mProgressBar.visibility = GONE
@@ -210,25 +226,25 @@ open class EWebView : FrameLayout, SwipeRefreshLayout.OnRefreshListener, OnActiv
                 null
             )
             if (isRescale) {
-                var jsCode =
+                val jsCode =
                     "javascript: " + readAssetsTxt(context, "modules/rescale.js")
                 view.evaluateJavascript(
                     jsCode,
-                    ValueCallback<String> {
+                    android.webkit.ValueCallback<String> {
                         Log.i("evaluateJavascript", "JS　return:  $it")
                     })
             }
         }
 
         override fun shouldOverrideUrlLoading(
-            view: WebView,
-            request: WebResourceRequest
+            view: android.webkit.WebView,
+            request: android.webkit.WebResourceRequest
         ): Boolean {
             return shouldOverrideUrlLoading(view, request.url.toString())
         }
 
         override fun shouldOverrideUrlLoading(
-            view: WebView,
+            view: android.webkit.WebView,
             url: String
         ): Boolean {
 
@@ -241,16 +257,16 @@ open class EWebView : FrameLayout, SwipeRefreshLayout.OnRefreshListener, OnActiv
         }
     }
 
-    protected open inner class MyWebChromeClient : WebChromeClient() {
+    protected open inner class MyWebChromeClient : android.webkit.WebChromeClient() {
         //设置响应js 的Alert()函数
         override fun onJsAlert(
-            p0: WebView?,
+            p0: android.webkit.WebView?,
             url: String?,
             message: String?,
-            result: JsResult?
+            result: android.webkit.JsResult?
         ): Boolean {
             val b: android.app.AlertDialog.Builder =
-                android.app.AlertDialog.Builder(GlobalAppContext.get())
+                android.app.AlertDialog.Builder(context)
             b.setTitle("Alert")
             b.setMessage(message)
             b.setPositiveButton(
@@ -263,13 +279,13 @@ open class EWebView : FrameLayout, SwipeRefreshLayout.OnRefreshListener, OnActiv
 
         //设置响应js 的Confirm()函数
         override fun onJsConfirm(
-            p0: WebView?,
+            p0: android.webkit.WebView?,
             url: String?,
             message: String?,
-            result: JsResult?
+            result: android.webkit.JsResult?
         ): Boolean {
             val b: android.app.AlertDialog.Builder =
-                android.app.AlertDialog.Builder(GlobalAppContext.get())
+                android.app.AlertDialog.Builder(context)
             b.setTitle("Confirm")
             b.setMessage(message)
             b.setPositiveButton(
@@ -284,15 +300,15 @@ open class EWebView : FrameLayout, SwipeRefreshLayout.OnRefreshListener, OnActiv
 
         //设置响应js 的Prompt()函数
         override fun onJsPrompt(
-            p0: WebView?,
+            p0: android.webkit.WebView?,
             url: String?,
             message: String?,
             defaultValue: String?,
-            result: JsPromptResult
+            result: android.webkit.JsPromptResult
         ): Boolean {
             val b: android.app.AlertDialog.Builder =
-                android.app.AlertDialog.Builder(GlobalAppContext.get())
-            val inputServer = EditText(GlobalAppContext.get())
+                android.app.AlertDialog.Builder(context)
+            val inputServer = EditText(context)
             inputServer.filters = arrayOf<InputFilter>(InputFilter.LengthFilter(255))
             inputServer.setText(defaultValue)
             b.setTitle("Prompt")
@@ -311,23 +327,26 @@ open class EWebView : FrameLayout, SwipeRefreshLayout.OnRefreshListener, OnActiv
             return true
         }
 
-        override fun onProgressChanged(view: WebView, newProgress: Int) {
+        override fun onProgressChanged(view: android.webkit.WebView, newProgress: Int) {
             super.onProgressChanged(view, newProgress)
             mProgressBar.progress = newProgress
         }
 
         //For Android  >= 4.1
-        fun openFileChooser(uploadFile: ValueCallback<Uri>, acceptType: String, capture: String) {
+        fun openFileChooser(
+            valueCallback: android.webkit.ValueCallback<Uri?>,
+            acceptType: String?, capture: String?
+        ) {
             if (acceptType == null) {
-                openFileChooser(uploadFile, acceptType)
+                openFileChooser(valueCallback, null)
             } else {
-                openFileChooser(uploadFile, acceptType.split(",").toTypedArray())
+                openFileChooser(valueCallback, acceptType.split(",").toTypedArray())
             }
         }
 
         open fun openFileChooser(
-            valueCallback: ValueCallback<Uri>,
-            acceptType: Array<String>
+            valueCallback: android.webkit.ValueCallback<Uri?>,
+            acceptType: Array<String>?
         ): Boolean {
             if (context is DelegateHost &&
                 context is Activity && isImageType(acceptType)
@@ -337,9 +356,27 @@ open class EWebView : FrameLayout, SwipeRefreshLayout.OnRefreshListener, OnActiv
             }
             return false
         }
+
+
+        override fun onShowFileChooser(
+            webView: android.webkit.WebView?,
+            p1: android.webkit.ValueCallback<Array<Uri>>?,
+            fileChooserParams: FileChooserParams?
+        ): Boolean {
+            if (fileChooserParams != null) {
+                openFileChooser({ value: Uri? ->
+                    if (value == null) {
+                        p1?.onReceiveValue(null)
+                    } else {
+                        p1?.onReceiveValue(arrayOf(value))
+                    }
+                }, fileChooserParams.acceptTypes)
+            }
+            return true
+        }
     }
 
-    private fun chooseImage(valueCallback: ValueCallback<Uri>) {
+    private fun chooseImage(valueCallback: android.webkit.ValueCallback<Uri?>) {
         val delegateHost = context as DelegateHost
         val mediator = delegateHost.onActivityResultDelegateMediator
         val activity = context as Activity
@@ -365,12 +402,24 @@ open class EWebView : FrameLayout, SwipeRefreshLayout.OnRefreshListener, OnActiv
         return false
     }
 
-    fun getWebView(): WebView {
+    fun getWebView(): android.webkit.WebView {
         return mWebView
     }
 
     fun getIsRescale(): Boolean {
         return isRescale
+    }
+
+    fun switchRescale() {
+        isRescale = !isRescale
+    }
+
+    fun getIsConsole(): Boolean {
+        return isConsole
+    }
+
+    fun switchConsole() {
+        isConsole = !isConsole
     }
 
     fun getSwipeRefreshLayout(): SwipeRefreshLayout {
@@ -383,14 +432,14 @@ open class EWebView : FrameLayout, SwipeRefreshLayout.OnRefreshListener, OnActiv
     fun run(code: String?, name: String?): String {
         stop(execution)
         execution = Scripts.run(StringScriptSource(name, code))
-        return if (execution == null) "Fail! Code: "+code.toString() else "Success! Code: "+code.toString()
+        return if (execution == null) "Fail! Code: " + code.toString() else "Success! Code: " + code.toString()
     }
 
     @JavascriptInterface
     fun run(code: String?): String {
         stop(execution)
         execution = Scripts.run(StringScriptSource("", code))
-        return if (execution == null) "Fail! Code: "+code.toString() else "Success! Code: "+code.toString()
+        return if (execution == null) "Fail! Code: " + code.toString() else "Success! Code: " + code.toString()
     }
 
     @JavascriptInterface
@@ -418,7 +467,4 @@ open class EWebView : FrameLayout, SwipeRefreshLayout.OnRefreshListener, OnActiv
         return "读取错误，请检查文件名"
     }
 
-    fun switchRescale() {
-        isRescale = !isRescale;
-    }
 }
