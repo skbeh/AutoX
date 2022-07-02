@@ -296,7 +296,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-service:$lifecycle_version"
-    implementation "androidx.savedstate:savedstate-ktx:1.1.0"
+    implementation "androidx.savedstate:savedstate-ktx:1.2.0"
     implementation "androidx.savedstate:savedstate:1.1.0"
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 }
