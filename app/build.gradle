@@ -285,7 +285,7 @@ dependencies {
     implementation project(':autojs')
     implementation project(':apkbuilder')
 
-    def lifecycle_version = "2.5.0-rc01"
+    def lifecycle_version = "2.6.0-alpha01"
     // ViewModel
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
     // ViewModel utilities for Compose
