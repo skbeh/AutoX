@@ -179,7 +179,7 @@ task publishDevApp(group: "build") {
 }
 
 dependencies {
-    def accompanist_version = "0.24.10-beta"
+    def accompanist_version = "0.24.13-rc"
     implementation "com.google.accompanist:accompanist-permissions:$accompanist_version"
     implementation "com.google.accompanist:accompanist-pager-indicators:$accompanist_version"
     implementation "com.google.accompanist:accompanist-pager:$accompanist_version"
